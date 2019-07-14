@@ -1,0 +1,157 @@
+#!/usr/bin/perl
+
+##use strict;
+use lib "/opt/rt4/lib";
+use lib "/opt/rt4/local/lib";
+
+use RT;
+use RT::Interface::CLI qw(CleanEnv GetCurrentUser);
+
+
+
+#CleanEnv();
+RT::LoadConfig();
+RT::Init();
+
+use RT::Search::FromSQL;
+use XML::Simple;
+use LWP::Simple;
+
+use File::Slurp qw( read_dir );
+use File::Spec::Functions qw( catfile );
+use File::Basename qw ( basename );
+use POSIX qw(strftime);
+use Time::Local;
+
+use RT::Queue;
+use RT::Ticket;
+use RT::Tickets;
+use RT::CustomField;
+
+
+sub ReloadTicketSet {
+    my $current_user = shift;
+    my @PMQueueTickets;
+    my $queue = RT::Queue->new($current_user);
+    $queue->Load("_Pluginmanager");
+
+    my $tickets = RT::Tickets->new($current_user);
+    my $foo = RT::Search::FromSQL->new(Argument => "Queue='_Pluginmanager'", TicketsObj => $tickets);
+    $foo->Prepare();
+    while ( my $ticket = $tickets->Next() ) {
+    # Do something with each ticket we've found
+    my $QueueObj = $ticket->QueueObj;
+    my $queue_cfs = $queue->TicketCustomFields;
+    $queue_cfs->LimitToQueue($queue->Id);
+    my %cf;
+    while (my $queue_cf=$queue_cfs->Next()) {
+        $cf{$queue_cf->Name} = $ticket->FirstCustomFieldValue($queue_cf->Name);
+    }
+
+    push @PMQueueTickets, {
+        id=>$ticket->Id, 
+        subject=>$ticket->Subject,
+        _pm_OffDate => $cf{'_pm_OffDate'} || "",
+        _pm_OnDate => $cf{'_pm_OnDate'} || "",
+        _pm_PlannedOffDate => $cf{'_pm_PlannedOffDate'} || "",
+        _pm_PlannedOnDate => $cf{'_pm_PlannedOnDate'} || "",
+        _pm_PluginName => $cf{'_pm_PluginName'} || "",
+        _pm_PluginStatus => $cf{'_pm_PluginStatus'} || 0,
+    }
+    }
+    return @PMQueueTickets;
+}
+
+
+my $CurrentUser = $RT::SystemUser;
+#GetCurrentUser();
+
+print "Hello, ", $CurrentUser->RealName, " \n";
+
+my @PMQueueTickets;
+@PMQueueTickets = ReloadTicketSet($CurrentUser);
+
+my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime();
+$year += 1900; 
+$mon+=1;
+
+foreach my $PluginTicket (@PMQueueTickets) {
+    if ($PluginTicket->{_pm_PluginStatus} < 2) {
+        my $config_name = "$RT::EtcPath/RT_SiteConfig.d/$PluginTicket->{_pm_PluginName}.pm";
+        (my $cfg_name_off = $config_name) =~ s/pm$/off/;
+        print "$PluginTicket->{_pm_PluginName}\n";
+        if ($PluginTicket->{_pm_PlannedOffDate} ne "") {
+            print "\t*A: Off = $PluginTicket->{_pm_PlannedOffDate}\n";
+        my ($_year,$_mon,$_mday,$_hour,$_min,$_sec) = split(/[\s-:]+/, $PluginTicket->{_pm_PlannedOffDate});
+        if (($year == $_year) and ($mon==$_mon) and ($mday==$_mday) and ($hour==$_hour)) {
+                if (!rename ($config_name, $cfg_name_off)) {
+                    my $err = RT::Ticket->new($CurrentUser);
+                    $err->Load($PluginTicket->{id});
+                    $err->Comment(Content => "Could not perform this action: \'DEACTIVATE\'");
+                    my $cfObj = RT::CustomField->new($CurrentUser);
+                    $cfObj->Load('_pm_PlannedOffDate');
+                    my $values = $err->CustomFieldValues($cfObj->id);
+                    while(my $value = $values->Next){
+                        my ($transactionID, $msg) = $err->DeleteCustomFieldValue(Field => $cfObj, ValueId =>  $value->id);
+                    }
+                    $cfObj->Load('_pm_PluginStatus');
+                    $err->AddCustomFieldValue(Field => $cfObj->id, Value => 1);
+                } else {
+                    my $ok  = RT::Ticket->new($CurrentUser);
+                    $ok->Load($PluginTicket->{id});
+                    $ok->Comment(Content => "Plugin deactivated successfully: $PluginTicket->{_pm_PluginName}");
+                    my $cfObj = RT::CustomField->new($CurrentUser);
+                    $cfObj->Load('_pm_PlannedOffDate');
+                    my $values = $ok->CustomFieldValues($cfObj->id);
+                    while(my $value = $values->Next){
+                        my ($transactionID, $msg) =  $ok->DeleteCustomFieldValue(Field => $cfObj, ValueId =>  $value->id);
+                    }
+                    $cfObj->Load('_pm_OffDate');
+                    $ok->AddCustomFieldValue(Field => $cfObj->id, Value => strftime("%Y-%m-%d %T", localtime) );
+                    $cfObj->Load('_pm_PluginStatus');
+                    $ok->AddCustomFieldValue(Field => $cfObj->id, Value => 0);
+                }
+            } else {
+                print "\tPlugin \'$PluginTicket->{_pm_PluginName}\' will be deactivated after $PluginTicket->{_pm_PlannedOffDate}\n";
+            }
+    }
+        if ($PluginTicket->{_pm_PlannedOnDate} ne "") {
+        print "\t*A: On  = $PluginTicket->{_pm_PlannedOnDate}\n";
+        my ($_year,$_mon,$_mday,$_hour,$_min,$_sec) = split(/[\s-:]+/, $PluginTicket->{_pm_PlannedOnDate});
+        if (($year == $_year) and ($mon==$_mon) and ($mday==$_mday) and ($hour==$_hour)) {
+                if (!rename($cfg_name_off, $config_name)) {
+            my $err = RT::Ticket->new($CurrentUser);
+            $err->Load($PluginTicket->{id});
+            $err->Comment(Content => "Could not perform this action: \'ACTIVATE\'");
+            my $cfObj = RT::CustomField->new($CurrentUser);
+            $cfObj->Load('_pm_PlannedOnDate');
+            my $values = $err->CustomFieldValues($cfObj->id);
+            while(my $value = $values->Next){
+            my ($transactionID, $msg) =  $err->DeleteCustomFieldValue(Field => $cfObj, ValueId =>  $value->id);
+            }
+            $cfObj->Load('_pm_PluginStatus');
+            $err->AddCustomFieldValue(Field => $cfObj->id, Value => 0);
+        } else {
+            my $ok  = RT::Ticket->new($CurrentUser);
+            $ok->Load($PluginTicket->{id});
+            $ok->Comment(Content => "Plugin activated successfully: $PluginTicket->{_pm_PluginName}");
+            my $cfObj = RT::CustomField->new($CurrentUser);
+            $cfObj->Load('_pm_PlannedOnDate');
+            my $values = $ok->CustomFieldValues($cfObj->id);
+            while(my $value = $values->Next){
+            my ($transactionID, $msg) =  $ok->DeleteCustomFieldValue(Field => $cfObj, ValueId =>  $value->id);
+            }
+            $cfObj->Load('_pm_OnDate');
+            $ok->AddCustomFieldValue(Field => $cfObj->id, Value => strftime("%Y-%m-%d %T", localtime) );
+            $cfObj->Load('_pm_PluginStatus');
+            $ok->AddCustomFieldValue(Field => $cfObj, Value => 1);
+        }
+        } else {
+        print "\tPlugin \'$PluginTicket->{_pm_PluginName}\' will be activated after $PluginTicket->{_pm_PlannedOnDate}\n";
+        }
+        }
+    }
+}
+
+1;
+

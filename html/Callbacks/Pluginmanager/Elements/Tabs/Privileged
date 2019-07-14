@@ -1,0 +1,34 @@
+<%init>
+my $request_path = $HTML::Mason::Commands::r->path_info;
+$request_path =~ s!/{2,}!/!g;
+##
+#  Main menu element
+##
+my $query_string = sub {
+    my %args = @_;
+    my $u    = URI->new();
+    $u->query_form(map { $_ => $args{$_} } sort keys %args);
+    return $u->query;
+};
+
+##
+#  Windows menu 
+##
+my $tools_menu = Menu->child('tools'); 
+$tools_menu->child( market =>
+        title       => loc('DOX Market'),
+        description => loc('Install Plug-Ins from marketplace'),
+        path        => '/Tools/Market.html',
+    );
+
+if ($request_path =~ m{^(/Tools/Market.html)}) {
+    my $tabs = PageMenu();
+    $tabs->child( 
+        marketplace => title => 'First run', 
+	path => "/Tools/Market.html?".$query_string->(Firstrun => 1) 
+    );
+}
+</%init>
+<%args>
+$Path => undef
+</%args>

@@ -1,0 +1,312 @@
+<& /Elements/Header, Title => loc('DOX Marketplace') &>
+<& /Elements/Tabs &>
+
+<& /Elements/ListActions, actions => \@results &>
+
+<table width="100%" border="0">
+    <tr>
+
+	<td valign="top" width="60%" class="boxcontainer">
+<&| /Widgets/TitleBox, title => loc('Marketplace') &>
+	<form method="post" name="Marketplace" enctype="multipart/form-data  action="<%RT->Config->Get('WebPath')%>/Tools/Market.html">
+	    <input type="hidden" class='hidden' name="MarketAction" value='1'>
+	    <table width="100%">
+		<thead>
+		    <tr >
+			<th align="left" width="65%">Plug-in name</th>
+			<th align="left" width="25%">Contributor</th>
+			<th align="left" width="11%">Version</th>
+		    </tr>
+		    <tr>
+			<th align="left" width="65%">Description</th>
+			<th align="left" width="25%">Learn more</th>
+			<th align="left" width="11%">Mark</th>
+		    </tr>
+		</thead>
+		<tbody>
+		
+%foreach my $element ( @catalogue ) {
+		    <tr  class="oddline" >
+			<td align="left" width="65%"><% $element->{name}[0] %></td>
+			<td width="25%"><% $element->{contributor}[0] %></td>
+			<td width="11%">v. <% $element->{version}[0] %></td>
+		    </tr>
+		    <tr class="evenline" >
+			<td width="65%""><% $element->{description}[0] %></td>
+			<td width="25%"><a href="<% $element->{learnmore}[0] %>" target="_blank">Learn more</a></td>
+			<td width="11%"><label><input type="checkbox" name="plugin" value="<%$element->{link}[0]%>" /> Get</label></td>
+		    </tr>
+%}
+		</tbody>
+		<tfoot>
+		    <tr>
+			<td width="65%"><label>Activate at
+			    <& /Elements/SelectDate, Name => 'mp_process_at' &></label>
+			</td>
+			<td colspan="2" width="35%">
+			    <& /Elements/Submit, Label => loc('Download and Install') &>
+			</td>
+		    </tr>
+		
+		</tfoot>
+	    </table>
+	</form>
+</&>
+	</td>
+
+	<td valign="top" width="40%" class="boxcontainer">
+<&| /Widgets/TitleBox, title => loc('Manager'), titleright_href=>'/Tools/Market.html?Refresh=1', titleright=>loc('Refresh') &>
+
+    <form method="post" name="Manager" enctype="multipart/form-data  action="<%RT->Config->Get('WebPath')%>/Tools/Market.html">
+        <input type='hidden' class='hidden' name='ManagerAction' value='1'>
+        <table width="100%">
+	<thead>
+	    <tr>
+	    <th align="left" colspan="2" width="90%">Plugin</th>
+	    <th align="left" width="10%">on/off</th>
+	    </tr>
+	</thead>
+	<tbody>
+%foreach my $PluginTicket (@PMQueueTickets) {
+	    <tr>
+	    <td width="90%" colspan="2">
+		<span style="float:left; width:50%; display: inline-block; border: 1px solid gray; border-radius: 3px; padding: 5px"><font color="<% ($PluginTicket->{_pm_PluginStatus}<1)?'gray':'black' %>"><% $PluginTicket->{_pm_PluginName} %></font></span>
+%(my $nm = $PluginTicket->{_pm_PluginName}) =~s/-/::/ig;
+%$nm .= '::VERSION';
+		<span style="float:left; width:10%; display: inline-block; border: 1px solid gray; border-radius: 3px; margin-left: 5px; padding: 5px">ver. <%eval("\$$nm") || 'N/A'%></span>
+	        <span style="float:right; width: 30%; display: inline-block; border: 1px solid gray; border-radius: 3px; padding: 5px">
+	<i style="color:gray">On: <% $PluginTicket->{_pm_OnDate} %></i>
+%if ($PluginTicket->{_pm_OffDate}) {
+	<br><i style="color:gray">Off: <% $PluginTicket->{_pm_OffDate} %></i>
+%}
+%if ($PluginTicket->{_pm_PlannedOffDate}) {
+	<br><i style="color:red">A: Off@<% $PluginTicket->{_pm_PlannedOffDate}%></i>
+%}
+
+%if ($PluginTicket->{_pm_PlannedOnDate}) {
+	<br><i style="color:red">A: On@ <%$PluginTicket->{_pm_PlannedOnDate}  %> </i>
+%}
+
+	        </span>
+
+	    </td>
+	    <td width="10%" align="center">
+	        <input type="checkbox" name="<% $PluginTicket->{_pm_PluginName} %>" value="1" 
+		<% $PluginTicket->{_pm_PluginStatus} == 1 ?"checked":"" %> 
+		<% $PluginTicket->{_pm_PluginStatus} == 2?"checked disabled":"" %>
+	        />
+	    </td>
+	    </tr>
+%}
+	</tbody>
+	<tfoot>
+	    <tr>
+	    <td width="50%"><label>Process changes at
+	        <& /Elements/SelectDate, Name => 'pm_action_at' &></label>
+	    </td>
+	    <td width="40%"><& /Elements/Submit, Label => loc('Save Changes') &></td>
+	    <td width="10%"><br /></td>
+	    </tr>
+	</tfoot>
+        </table>
+        </form>
+
+</&>
+
+	</td>
+
+    </tr>
+
+</table>
+
+
+
+<pre>
+<%## Dumper(\%ARGS)%>
+</pre>
+
+<hr />
+
+<pre>
+<%## Dumper(\@PMQueueTickets)%>
+</pre>
+
+<%INIT>
+use utf8;
+use XML::Simple;
+use LWP::Simple;
+
+use File::Slurp qw( read_dir );
+use File::Spec::Functions qw( catfile );
+use File::Basename qw ( basename );
+
+use Data::Dumper;
+use RT::Search::FromSQL;
+
+my ( $xml, $url, $file, @catalogue, @results, @cfs );
+
+my $path = $RT::LocalPluginPath;
+my @sub_dirs = grep { -d } map { catfile $path, $_ } read_dir ($path);
+
+my @installed = RT->Config->GetObfuscated( 'Plugins', $session{'CurrentUser'} );
+
+
+##foreach my $ext ( @installed ) {
+##    $ext =~ s/::/-/ig;
+##    push @results, $ext;
+##}
+
+# create object
+$xml = new XML::Simple;
+
+$url = 'http://libuzhnu.brinkster.net/market/';
+$file = 'catalogue.xml';
+
+getstore($url.$file, "/tmp/$file");
+
+my $ref = XMLin("/tmp/$file", ForceArray => 1);
+
+my %plugins = %$ref{'plugin'};
+@catalogue = @{$plugins{'plugin'}};
+
+##
+# Tickets
+##
+my $current_user = $session{CurrentUser};
+
+my $queue = RT::Queue->new($current_user);
+$queue->Load("_Pluginmanager");
+my $queue_cfs = $queue->TicketCustomFields;
+$queue_cfs->LimitToQueue($queue->Id);
+
+while (my $queue_cf=$queue_cfs->Next()) {
+    push @cfs, 'CustomField-'.$queue_cf->Id. ' == '. $queue_cf->Name;
+}
+
+##
+#  Script part for first run
+##
+#foreach my $srtPN (@sub_dirs) {
+#    my $d = basename($srtPN);
+#
+#    my $p=$d;
+#    $p=~s/-/::/ig;
+#    my $l = ((( grep $_ eq $p, @installed )||0) and (not (-e -f -r "$RT::EtcPath/RT_SiteConfig.d/$d.pm")||0))||0;
+#
+#    my %args = (
+#        Queue=>"_Pluginmanager",
+#        Requestor=>$current_user->Name,
+#        Owner=>$current_user->id,
+#        Subject=>$d, 
+#        Priority=>10,
+#        InitialPriority=>0,
+#    );
+#    $args{'CustomField-12'}=$d;
+#    $args{'CustomField-11'}=( (( grep $_ eq $p, @installed )||0) && (-e -f -r "$RT::EtcPath/RT_SiteConfig.d/$d.pm") )?1:0;
+#    $args{'CustomField-11'}=$l?2:$args{'CustomField-11'};
+#
+#    my $ticket = RT::Ticket->new($current_user); # empty ticket object
+#    my ($val, $msg) = $ticket->Create(%args);
+#
+#    if ($val) {
+#        push @results, loc('Ticket: #[_1] [_2]', $ticket->EffectiveId, $args{Subject});
+#        $ticket->Comment(Content => $args{Subject});
+#    } else {
+#        push @results, loc('Oops, something went wrong: [_1]', $msg);
+#    }
+#}
+
+##my ($val, $msg) = $ticket->Create(%args);
+
+if ($Firstrun==1) {
+    push @results, loc("Firstun mode [_1]", $Firstrun);
+}
+
+##if ($val) {
+##    push @results, loc('Ticket: #[_1]', $ticket->EffectiveId);
+##    $ticket->Comment(Content => $textLine);
+##} else {
+##    push @results, loc('Oops, something went wrong: [_1]', $msg);
+##    $title = loc("Create test ticket");
+##}
+
+
+    my @PMQueueTickets;
+    @PMQueueTickets = ReloadTicketSet($current_user);
+
+    if ( $ManagerAction) {
+    if ($ARGS{pm_action_at} eq '') {
+        push @results, loc('Action date and time must be specified!');
+    } else {
+        foreach my $key (keys %ARGS) {
+	foreach my $PluginTicket (@PMQueueTickets) {
+	    my $ticketObj = RT::Ticket->new($current_user);
+	    my $cfObj = RT::CustomField->new($current_user);
+	    if ($PluginTicket->{_pm_PluginName} eq $key) {
+	    $ticketObj->Load($PluginTicket->{id});
+	    my $flag = $ARGS{$key} || 0;
+	    if ($PluginTicket->{_pm_PluginStatus} < $flag) {
+	        $cfObj->Load('_pm_PlannedOnDate');
+	        $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $ARGS{pm_action_at});
+	        $cfObj->Load('_pm_PluginStatus');
+	        $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => 1);
+	    } 
+	    } elsif ($PluginTicket->{_pm_PluginStatus}==1) {
+	    my $noflag = $ARGS{$PluginTicket->{_pm_PluginName}} || 0;
+	    if ($noflag == 0) {
+	        $ticketObj->Load($PluginTicket->{id});
+	        $cfObj->Load('_pm_PlannedOffDate');
+	        $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $ARGS{pm_action_at});
+	        $cfObj->Load('_pm_PluginStatus');
+	        $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => 0);
+	    }
+	    }
+	}
+        }
+    }
+    @PMQueueTickets = ReloadTicketSet($current_user);
+    }
+
+
+sub ReloadTicketSet {
+    my $current_user = shift;
+    my @PMQueueTickets;
+    my $queue = RT::Queue->new($current_user);
+    $queue->Load("_Pluginmanager");
+
+    my $tickets = RT::Tickets->new($current_user);
+    my $foo = RT::Search::FromSQL->new(Argument => "Queue='_Pluginmanager'",
+                              TicketsObj => $tickets);
+    $foo->Prepare();
+    while ( my $ticket = $tickets->Next() ) {
+        # Do something with each ticket we've found
+    my $QueueObj = $ticket->QueueObj;
+    my $queue_cfs = $queue->TicketCustomFields;
+    $queue_cfs->LimitToQueue($queue->Id);
+    my %cf;
+    while (my $queue_cf=$queue_cfs->Next()) {
+        $cf{$queue_cf->Name} = $ticket->FirstCustomFieldValue($queue_cf->Name);
+    }
+    
+    push @PMQueueTickets, {
+        id=>$ticket->Id, 
+        subject=>$ticket->Subject,
+        _pm_OffDate => $cf{'_pm_OffDate'},
+        _pm_OnDate => $cf{'_pm_OnDate'},
+        _pm_PlannedOffDate => $cf{'_pm_PlannedOffDate'},
+        _pm_PlannedOnDate => $cf{'_pm_PlannedOnDate'},
+        _pm_PluginName => $cf{'_pm_PluginName'},
+        _pm_PluginStatus => $cf{'_pm_PluginStatus'},
+    };
+    }
+    return @PMQueueTickets;
+}
+
+
+</%INIT>
+<%ARGS>
+$Firstrun => undef
+$Refresh => undef
+$ManagerAction => undef
+$MarketAction => undef
+</%ARGS>
