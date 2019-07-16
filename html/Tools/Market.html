@@ -7,7 +7,7 @@
     <tr>
 
 	<td valign="top" width="60%" class="boxcontainer">
-<&| /Widgets/TitleBox, title => loc('Marketplace') &>
+<&| /Widgets/TitleBox, title => loc('Marketplace'), titleright_href=>'/Tools/Market.html?Reload=1', titleright=>loc('Reload') &>
 	<form method="post" name="Marketplace" enctype="multipart/form-data  action="<%RT->Config->Get('WebPath')%>/Tools/Market.html">
 	    <input type="hidden" class='hidden' name="MarketAction" value='1'>
 	    <table width="100%">
@@ -122,7 +122,7 @@
 
 
 <pre>
-<%## Dumper(\%ARGS)%>
+<%Dumper(\%ARGS)%>
 </pre>
 
 <hr />
@@ -159,10 +159,10 @@ my @installed = RT->Config->GetObfuscated( 'Plugins', $session{'CurrentUser'} );
 # create object
 $xml = new XML::Simple;
 
-$url = 'http://libuzhnu.brinkster.net/market/';
+$url = 'https://servicedesk-marketplace.com/wp-content/uploads/2019/07/';
 $file = 'catalogue.xml';
 
-getstore($url.$file, "/tmp/$file");
+# getstore($url.$file, "/tmp/$file");
 
 my $ref = XMLin("/tmp/$file", ForceArray => 1);
 
@@ -235,36 +235,71 @@ if ($Firstrun==1) {
     @PMQueueTickets = ReloadTicketSet($current_user);
 
     if ( $ManagerAction) {
-    if ($ARGS{pm_action_at} eq '') {
-        push @results, loc('Action date and time must be specified!');
-    } else {
-        foreach my $key (keys %ARGS) {
-	foreach my $PluginTicket (@PMQueueTickets) {
-	    my $ticketObj = RT::Ticket->new($current_user);
-	    my $cfObj = RT::CustomField->new($current_user);
-	    if ($PluginTicket->{_pm_PluginName} eq $key) {
-	    $ticketObj->Load($PluginTicket->{id});
-	    my $flag = $ARGS{$key} || 0;
-	    if ($PluginTicket->{_pm_PluginStatus} < $flag) {
-	        $cfObj->Load('_pm_PlannedOnDate');
-	        $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $ARGS{pm_action_at});
-	        $cfObj->Load('_pm_PluginStatus');
-	        $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => 1);
-	    } 
-	    } elsif ($PluginTicket->{_pm_PluginStatus}==1) {
-	    my $noflag = $ARGS{$PluginTicket->{_pm_PluginName}} || 0;
-	    if ($noflag == 0) {
-	        $ticketObj->Load($PluginTicket->{id});
-	        $cfObj->Load('_pm_PlannedOffDate');
-	        $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $ARGS{pm_action_at});
-	        $cfObj->Load('_pm_PluginStatus');
-	        $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => 0);
-	    }
-	    }
-	}
+        if ($ARGS{pm_action_at} eq '') {
+            push @results, loc('Action date and time must be specified!');
+        } else {
+            foreach my $key (keys %ARGS) {
+                foreach my $PluginTicket (@PMQueueTickets) {
+                    my $ticketObj = RT::Ticket->new($current_user);
+                    my $cfObj = RT::CustomField->new($current_user);
+                    if ($PluginTicket->{_pm_PluginName} eq $key) {
+                        $ticketObj->Load($PluginTicket->{id});
+                        my $flag = $ARGS{$key} || 0;
+                        if ($PluginTicket->{_pm_PluginStatus} < $flag) {
+                            $cfObj->Load('_pm_PlannedOnDate');
+                            $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $ARGS{pm_action_at});
+                            $cfObj->Load('_pm_PluginStatus');
+                            $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => 1);
+                        }
+                    } elsif ($PluginTicket->{_pm_PluginStatus}==1) {
+                        my $noflag = $ARGS{$PluginTicket->{_pm_PluginName}} || 0;
+                        if ($noflag == 0) {
+                            $ticketObj->Load($PluginTicket->{id});
+                            $cfObj->Load('_pm_PlannedOffDate');
+                            $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $ARGS{pm_action_at});
+                            $cfObj->Load('_pm_PluginStatus');
+                            $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => 0);
+                        }
+                    }
+                }
+            }
         }
+        @PMQueueTickets = ReloadTicketSet($current_user);
     }
-    @PMQueueTickets = ReloadTicketSet($current_user);
+
+    if ( $MarketAction ) {
+        if ($ARGS{mp_process_at} eq '') {
+            push @results, loc('Action date and time must be specified!');
+        } else {
+            my $queueObj = RT::Queue->new($current_user);
+            $queueObj->Load("_Pluginmanager");
+            my $ticketObj = RT::Ticket->new($current_user); # empty ticket object
+            (my $nm = $ARGS{plugin}) =~ s/^.*\///;
+            $nm=~ s/\.[^.]+$//;
+            my %args = (
+                Queue=>"_Marketplace",
+                Requestor=>$current_user->Name,
+                Owner=>$current_user->id,
+                Subject => $nm,
+                Priority=>10,
+                InitialPriority=>0,
+            );
+
+            my ($val, $msg) = $ticketObj->Create(%args);
+            if ($val) {
+                $ticketObj->Comment(Content => $nm);
+                my $cfObj = RT::CustomField->new($current_user);
+                $cfObj->Load('_mp_PluginName');
+                $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $nm);
+                $cfObj->Load('_mp_RestartDate');
+                $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $ARGS{mp_process_at});
+                $cfObj->Load('_mp_LinkToDownload');
+                $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $ARGS{plugin});
+                push @results, loc('Ticket: #[_1]', $ticketObj->EffectiveId);
+            } else {
+                push @results, loc('Oops, something went wrong: [_1]', $msg);
+            }
+        }
     }
 
 
@@ -307,6 +342,7 @@ sub ReloadTicketSet {
 <%ARGS>
 $Firstrun => undef
 $Refresh => undef
+$Reload => undef
 $ManagerAction => undef
 $MarketAction => undef
 </%ARGS>

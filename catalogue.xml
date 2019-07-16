@@ -1,5 +1,14 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <plugins>
+
+	<plugin>
+		<name>JuSt an Easter Egg</name>
+		<version>0.1</version>
+		<contributor>Péter Petks</contributor>
+		<learnmore>https://servicedesk-marketplace.com/</learnmore>
+		<description>This is a test plug-in for market testing</description>
+		<link>http://libuzhnu.brinkster.net/market/RT-Extension-Jse.zip</link>
+	</plugin>
 	<plugin>
 		<name>AttachmentsColored</name>
 		<version>0.1</version>

@@ -1,0 +1,124 @@
+#!/usr/bin/perl
+
+##use strict;
+use lib "/opt/rt4/lib";
+use lib "/opt/rt4/local/lib";
+
+use RT;
+use RT::Interface::CLI qw(CleanEnv GetCurrentUser);
+
+use Data::Dumper;
+
+#CleanEnv();
+RT::LoadConfig();
+RT::Init();
+
+use RT::Search::FromSQL;
+use XML::Simple;
+use LWP::Simple;
+
+use File::Slurp qw(write_file);
+use File::Spec::Functions qw( catfile );
+use File::Basename qw ( basename );
+use POSIX qw(strftime);
+use Time::Local;
+use Archive::Zip qw(:ERROR_CODES :CONSTANTS);
+
+use RT::Queue;
+use RT::Ticket;
+use RT::Tickets;
+use RT::CustomField;
+
+# new
+
+# resolved
+
+sub ReloadTicketSet {
+    my $current_user = shift;
+    my @PMQueueTickets;
+    my $queue = RT::Queue->new($current_user);
+    $queue->Load("_Marketplace");
+
+    my $tickets = RT::Tickets->new($current_user);
+    my $foo = RT::Search::FromSQL->new(Argument => "Queue='_Marketplace' AND Status='new'", TicketsObj => $tickets);
+    $foo->Prepare();
+    while ( my $ticket = $tickets->Next() ) {
+        # Do something with each ticket we've found
+        my $QueueObj = $ticket->QueueObj;
+        my $queue_cfs = $queue->TicketCustomFields;
+        $queue_cfs->LimitToQueue($queue->Id);
+        my %cf;
+        while (my $queue_cf=$queue_cfs->Next()) {
+            $cf{$queue_cf->Name} = $ticket->FirstCustomFieldValue($queue_cf->Name);
+        }
+
+        push @PMQueueTickets, {
+            id=>$ticket->Id, 
+            subject=>$ticket->Subject,
+            _mp_PluginName => $cf{'_mp_PluginName'} || "",
+            _mp_RestartDate => $cf{'_mp_RestartDate'} || "",
+            _mp_LinkToDownload => $cf{'_mp_LinkToDownload'} || "",
+        }
+    }
+    return @PMQueueTickets;
+}
+
+sub WriteMessageAndCloseTicket {
+    my ($current_user, $ticketID, $ticketMsg) = @_;
+    print "$ticketID\t$ticketMsg\n";
+
+    my $obj = RT::Ticket->new($current_user);
+    if ($obj->Load($ticketID)) {
+        $obj->Comment(Content => $ticketMsg);
+
+    } else {
+        print ":(\n";
+    }
+    my ($status, $msg) = $obj->SetStatus("resolved"); 
+    return ($status, $msg);
+}
+
+
+sub DownloadZIP {
+    my $url      = shift;
+    (my $filename = $url) =~ s/^.*\///;
+
+    my $rc = getstore($url, "/tmp/$filename");
+    if (is_error($rc)) {
+        return undef;
+    }
+    return "/tmp/$filename";
+}
+
+my $CurrentUser = $RT::SystemUser;
+#GetCurrentUser();
+
+print "Hello, ", $CurrentUser->RealName, " \n";
+
+my @MPQueueTickets;
+@MPQueueTickets = ReloadTicketSet($CurrentUser);
+
+my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime();
+$year += 1900; 
+$mon+=1;
+
+print Dumper(\@MPQueueTickets);
+foreach my $PluginTicket (@MPQueueTickets) {
+    my $rc = DownloadZIP($PluginTicket->{_mp_LinkToDownload});
+    if ( $rc ) {
+        my $path = $RT::LocalPluginPath;
+        my $conf = "$RT::EtcPath/RT_SiteConfig.d/$PluginTicket->{_mp_PluginName}.pm";
+        my $zip = Archive::Zip->new($rc);
+        $zip->extractTree('', $path);
+        (my $c = $PluginTicket->{_mp_PluginName})=~s/-/::/ig;
+        write_file($conf, "Plugin(\"$c\");\n");
+        WriteMessageAndCloseTicket($CurrentUser, $PluginTicket->{id}, "Successfully installed plugin $PluginTicket->{_mp_PluginName}");
+    } else {
+##
+#   If something wrong
+##
+        WriteMessageAndCloseTicket($CurrentUser, $PluginTicket->{id}, "Could not install plugin $PluginTicket->{_mp_PluginName}");
+    }
+}
+
+1;
