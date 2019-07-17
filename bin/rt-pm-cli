@@ -36,7 +36,7 @@ sub ReloadTicketSet {
     $queue->Load("_Pluginmanager");
 
     my $tickets = RT::Tickets->new($current_user);
-    my $foo = RT::Search::FromSQL->new(Argument => "Queue='_Pluginmanager'", TicketsObj => $tickets);
+    my $foo = RT::Search::FromSQL->new(Argument => "Queue='_Pluginmanager' AND Status='new'", TicketsObj => $tickets);
     $foo->Prepare();
     while ( my $ticket = $tickets->Next() ) {
     # Do something with each ticket we've found

@@ -7,7 +7,7 @@
 		<contributor>Péter Petks</contributor>
 		<learnmore>https://servicedesk-marketplace.com/</learnmore>
 		<description>This is a test plug-in for market testing</description>
-		<link>http://libuzhnu.brinkster.net/market/RT-Extension-Jse.zip</link>
+		<link>http://libuzhnu.brinkster.net/market/RT-Extension-Jse.tar.gz</link>
 	</plugin>
 	<plugin>
 		<name>AttachmentsColored</name>
@@ -79,7 +79,7 @@
 		<contributor>Best Practical Solutions</contributor>
 		<learnmore>https://metacpan.org/pod/RT::Extension::JSGantt</learnmore>
 		<description>This extension uses the Starts and Due dates, along with ticket dependencies, to produce Gantt charts.</description>
-		<link>https://cpan.metacpan.org/authors/id/B/BP/BPS/RT-Extension-JSGantt-1.04.tar.gz</link>
+		<link>https://cpan.metacpan.org/authors/id/B/BP/BPS/RT-Extension-JSGantt.tar.gz</link>
 	</plugin>
 	<plugin>
 		<name>Gravatar</name>
@@ -87,7 +87,7 @@
 		<contributor>Christian Loos</contributor>
 		<learnmore>https://metacpan.org/pod/RT::Extension::Gravatar</learnmore>
 		<description>This Plugin displays Gravatar image on the following pages: More about the requestors widget. Modify user page. About me (Preferences). User Summary</description>
-		<link>https://cpan.metacpan.org/authors/id/C/CL/CLOOS/RT-Extension-Gravatar-2.01.tar.gz</link>
+		<link>https://cpan.metacpan.org/authors/id/C/CL/CLOOS/RT-Extension-Gravatar.tar.gz</link>
 	</plugin>
 	<plugin>
 		<name>REST2</name>
@@ -95,7 +95,7 @@
 		<contributor>Best Practical Solutions</contributor>
 		<learnmore>https://metacpan.org/pod/RT::Extension::REST2</learnmore>
 		<description>RT::Extension::REST2 - Adds a modern REST API to RT under /REST/2.0/</description>
-		<link>https://cpan.metacpan.org/authors/id/B/BP/BPS/RT-Extension-REST2-1.07.tar.gz</link>
+		<link>https://cpan.metacpan.org/authors/id/B/BP/BPS/RT-Extension-REST2.tar.gz</link>
 	</plugin>
 	<plugin>
 		<name>Macro recorder</name>
