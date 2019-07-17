@@ -112,56 +112,60 @@ $year += 1900;
 $mon+=1;
 
 foreach my $PluginTicket (@MPQueueTickets) {
-    my $rc = DownloadZIP($PluginTicket->{_mp_LinkToDownload});
-    if ( $rc ) {
-        my $path = $RT::LocalPluginPath;
-        my $conf = "$RT::EtcPath/RT_SiteConfig.d/$PluginTicket->{_mp_PluginName}.pm";
+    my ($_year,$_mon,$_mday,$_hour,$_min,$_sec) = split(/[\s-:]+/, $PluginTicket->{_mp_RestartDate});
+    if (($year == $_year) and ($mon==$_mon) and ($mday==$_mday) and ($hour==$_hour)) {
+        my $rc = DownloadZIP($PluginTicket->{_mp_LinkToDownload});
+        if ( $rc ) {
+            my $path = $RT::LocalPluginPath;
+            my $conf = "$RT::EtcPath/RT_SiteConfig.d/$PluginTicket->{_mp_PluginName}.pm";
 ##        my $zip = Archive::Zip->new($rc);
 ##        $zip->extractTree('', $path);
-        my $ae = Archive::Extract->new( archive => $rc );
+            my $ae = Archive::Extract->new( archive => $rc );
 ### what if something went wrong?
-        my $ok = $ae->extract(to => $path); ## or die $ae->error;
-        if ( $ok ) {
-            (my $c = $PluginTicket->{_mp_PluginName})=~s/-/::/ig;
-            write_file($conf, "Plugin(\"$c\");\n");
-            WriteMessageAndCloseTicket($CurrentUser, $PluginTicket->{id}, "Successfully installed plugin $PluginTicket->{_mp_PluginName}");
-        } else {
-            WriteMessageAndCloseTicket($CurrentUser, $PluginTicket->{id}, "Could not install plugin $PluginTicket->{_mp_PluginName}. $ae->error");
-        }
+            my $ok = $ae->extract(to => $path); ## or die $ae->error;
+            if ( $ok ) {
+                (my $c = $PluginTicket->{_mp_PluginName})=~s/-/::/ig;
+                write_file($conf, "Plugin(\"$c\");\n");
+                WriteMessageAndCloseTicket($CurrentUser, $PluginTicket->{id}, "Successfully installed plugin $PluginTicket->{_mp_PluginName}");
+            } else {
+                WriteMessageAndCloseTicket($CurrentUser, $PluginTicket->{id}, "Could not install plugin $PluginTicket->{_mp_PluginName}. $ae->error");
+            }
 ##
 #   Create ticket for PluginManager
 ##
-        my $user = RT::User->new($current_user);
-        $user->Load('root');
+            my $user = RT::User->new($current_user);
+            $user->Load('root');
 
-        my $ticketObj = RT::Ticket->new($user); # empty ticket object
-        my %args = (
-            Queue=>"_Pluginmanager",
-            Subject => $PluginTicket->{_mp_PluginName},
-            Requestor=>$user->Name,
-            Owner=>$user->id,
-            Priority=>10,
-            InitialPriority=>0,
-        );
+            my $ticketObj = RT::Ticket->new($user); # empty ticket object
+            my %args = (
+                Queue=>"_Pluginmanager",
+                Subject => $PluginTicket->{_mp_PluginName},
+                Requestor=>$user->Name,
+                Owner=>$user->id,
+                Priority=>10,
+                InitialPriority=>0,
+            );
 
-        my ($val, $msg) = $ticketObj->Create(%args);
-        if ($val) {
-            $ticketObj->Comment(Content => $PluginTicket->{_mp_PluginName});
-            my $cfObj = RT::CustomField->new($user);
-            $cfObj->Load('_pm_PluginName');
-            $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $PluginTicket->{_mp_PluginName});
-            $cfObj->Load('_pm_OnDate');
-            $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => getTimestamp());
-            $cfObj->Load('_pm_PluginStatus');
-            $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => 1);
-	    print "$val \t $ticketObj->EffectiveId\n";
-        }
-    } else {
+            my ($val, $msg) = $ticketObj->Create(%args);
+            if ($val) {
+                $ticketObj->Comment(Content => $PluginTicket->{_mp_PluginName});
+                my $cfObj = RT::CustomField->new($user);
+                $cfObj->Load('_pm_PluginName');
+                $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $PluginTicket->{_mp_PluginName});
+                $cfObj->Load('_pm_OnDate');
+                $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => getTimestamp());
+                $cfObj->Load('_pm_PluginStatus');
+                $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => 1);
+                print "$val \t $ticketObj->EffectiveId\n";
+            }
+        } else {
 ##
 #   If something wrong
 ##
-        WriteMessageAndCloseTicket($CurrentUser, $PluginTicket->{id}, "Could not install plugin $PluginTicket->{_mp_PluginName}");
+            WriteMessageAndCloseTicket($CurrentUser, $PluginTicket->{id}, "Could not install plugin $PluginTicket->{_mp_PluginName}");
+        }
+    } else {
+        print "\tPlugin \'$PluginTicket->{_mp_PluginName}\' will be installed after $PluginTicket->{_mp_RestartDate}\n";
     }
 }
-
 1;
