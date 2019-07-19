@@ -36,7 +36,7 @@ sub ReloadTicketSet {
     $queue->Load("_Pluginmanager");
 
     my $tickets = RT::Tickets->new($current_user);
-    my $foo = RT::Search::FromSQL->new(Argument => "Queue='_Pluginmanager' AND Status='new'", TicketsObj => $tickets);
+    my $foo = RT::Search::FromSQL->new(Argument => "Queue='_Pluginmanager' AND Status='open'", TicketsObj => $tickets);
     $foo->Prepare();
     while ( my $ticket = $tickets->Next() ) {
     # Do something with each ticket we've found
@@ -67,7 +67,7 @@ my $CurrentUser = $RT::SystemUser;
 #GetCurrentUser();
 
 print "Hello, ", $CurrentUser->RealName, " \n";
-
+##ss
 my @PMQueueTickets;
 @PMQueueTickets = ReloadTicketSet($CurrentUser);
 
@@ -76,19 +76,21 @@ $year += 1900;
 $mon+=1;
 
 foreach my $PluginTicket (@PMQueueTickets) {
+        my $user = RT::User->new($CurrentUser);
+        $user->Load('root');
     if ($PluginTicket->{_pm_PluginStatus} < 2) {
         my $config_name = "$RT::EtcPath/RT_SiteConfig.d/$PluginTicket->{_pm_PluginName}.pm";
         (my $cfg_name_off = $config_name) =~ s/pm$/off/;
         print "$PluginTicket->{_pm_PluginName}\n";
         if ($PluginTicket->{_pm_PlannedOffDate} ne "") {
             print "\t*A: Off = $PluginTicket->{_pm_PlannedOffDate}\n";
-        my ($_year,$_mon,$_mday,$_hour,$_min,$_sec) = split(/[\s-:]+/, $PluginTicket->{_pm_PlannedOffDate});
-        if (($year == $_year) and ($mon==$_mon) and ($mday==$_mday) and ($hour==$_hour)) {
+            my ($_year,$_mon,$_mday,$_hour,$_min,$_sec) = split(/[\s-:]+/, $PluginTicket->{_pm_PlannedOffDate});
+            if (($year == $_year) and ($mon==$_mon) and ($mday==$_mday) and ($hour==$_hour)) {
                 if (!rename ($config_name, $cfg_name_off)) {
-                    my $err = RT::Ticket->new($CurrentUser);
+                    my $err = RT::Ticket->new($user);user
                     $err->Load($PluginTicket->{id});
                     $err->Comment(Content => "Could not perform this action: \'DEACTIVATE\'");
-                    my $cfObj = RT::CustomField->new($CurrentUser);
+                    my $cfObj = RT::CustomField->new($user);
                     $cfObj->Load('_pm_PlannedOffDate');
                     my $values = $err->CustomFieldValues($cfObj->id);
                     while(my $value = $values->Next){
@@ -97,10 +99,10 @@ foreach my $PluginTicket (@PMQueueTickets) {
                     $cfObj->Load('_pm_PluginStatus');
                     $err->AddCustomFieldValue(Field => $cfObj->id, Value => 1);
                 } else {
-                    my $ok  = RT::Ticket->new($CurrentUser);
+                    my $ok  = RT::Ticket->new($user);
                     $ok->Load($PluginTicket->{id});
                     $ok->Comment(Content => "Plugin deactivated successfully: $PluginTicket->{_pm_PluginName}");
-                    my $cfObj = RT::CustomField->new($CurrentUser);
+                    my $cfObj = RT::CustomField->new($user);
                     $cfObj->Load('_pm_PlannedOffDate');
                     my $values = $ok->CustomFieldValues($cfObj->id);
                     while(my $value = $values->Next){
@@ -116,14 +118,14 @@ foreach my $PluginTicket (@PMQueueTickets) {
             }
         }
         if ($PluginTicket->{_pm_PlannedOnDate} ne "") {
-        print "\t*A: On  = $PluginTicket->{_pm_PlannedOnDate}\n";
-        my ($_year,$_mon,$_mday,$_hour,$_min,$_sec) = split(/[\s-:]+/, $PluginTicket->{_pm_PlannedOnDate});
-        if (($year == $_year) and ($mon==$_mon) and ($mday==$_mday) and ($hour==$_hour)) {
+            print "\t*A: On  = $PluginTicket->{_pm_PlannedOnDate}\n";
+            my ($_year,$_mon,$_mday,$_hour,$_min,$_sec) = split(/[\s-:]+/, $PluginTicket->{_pm_PlannedOnDate});
+            if (($year == $_year) and ($mon==$_mon) and ($mday==$_mday) and ($hour==$_hour)) {
                 if (!rename($cfg_name_off, $config_name)) {
-                    my $err = RT::Ticket->new($CurrentUser);
+                    my $err = RT::Ticket->new($user);
                     $err->Load($PluginTicket->{id});
                     $err->Comment(Content => "Could not perform this action: \'ACTIVATE\'");
-                    my $cfObj = RT::CustomField->new($CurrentUser);
+                    my $cfObj = RT::CustomField->new($user);
                     $cfObj->Load('_pm_PlannedOnDate');
                     my $values = $err->CustomFieldValues($cfObj->id);
                     while(my $value = $values->Next){
@@ -132,10 +134,10 @@ foreach my $PluginTicket (@PMQueueTickets) {
                     $cfObj->Load('_pm_PluginStatus');
                     $err->AddCustomFieldValue(Field => $cfObj->id, Value => 0);
                 } else {
-                    my $ok  = RT::Ticket->new($CurrentUser);
+                    my $ok  = RT::Ticket->new($user);
                     $ok->Load($PluginTicket->{id});
                     $ok->Comment(Content => "Plugin activated successfully: $PluginTicket->{_pm_PluginName}");
-                    my $cfObj = RT::CustomField->new($CurrentUser);
+                    my $cfObj = RT::CustomField->new($user);
                     $cfObj->Load('_pm_PlannedOnDate');
                     my $values = $ok->CustomFieldValues($cfObj->id);
                     while(my $value = $values->Next){

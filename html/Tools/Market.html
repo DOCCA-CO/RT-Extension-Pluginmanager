@@ -279,7 +279,7 @@ if ($Firstrun==1) {
                     (my $nm = $pl) =~ s/^.*\///;
                     $nm = substr $nm, 0, index( $nm, q{.} ) ;##  =~ s/\.[^.]+$//;
                     my %args = (
-                        Queue=>"_Marketplace",
+                        Queue=>"_Pluginmanager",
                         Requestor=>$current_user->Name,
                         Owner=>$current_user->id,
                         Subject => $nm,
@@ -307,15 +307,16 @@ if ($Firstrun==1) {
                 (my $nm = $ARGS{plugin}) =~ s/^.*\///;
                 $nm = substr $nm, 0, index( $nm, q{.} ) ;##  =~ s/\.[^.]+$//;
                 my %args = (
-                    Queue=>"_Marketplace",
+                    Queue=>"_Pluginmanager",
                     Requestor=>$current_user->Name,
                     Owner=>$current_user->id,
                     Subject => $nm,
                     Priority=>10,
                     InitialPriority=>0,
                 );
-                    my ($val, $msg) = $ticketObj->Create(%args);
+                my ($val, $msg) = $ticketObj->Create(%args);
                 if ($val) {
+                    $ticketObj->SetStatus('stalled');
                     $ticketObj->Comment(Content => $nm);
                     my $cfObj = RT::CustomField->new($current_user);
                     $cfObj->Load('_mp_PluginName');
@@ -340,7 +341,7 @@ sub ReloadTicketSet {
     $queue->Load("_Pluginmanager");
 
     my $tickets = RT::Tickets->new($current_user);
-    my $foo = RT::Search::FromSQL->new(Argument => "Queue='_Pluginmanager' AND Status='new'",
+    my $foo = RT::Search::FromSQL->new(Argument => "Queue='_Pluginmanager' AND Status='open'",
                               TicketsObj => $tickets);
     $foo->Prepare();
     while ( my $ticket = $tickets->Next() ) {
