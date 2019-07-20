@@ -127,10 +127,6 @@
 
 <hr />
 
-<pre>
-<%## Dumper(\@PMQueueTickets)%>
-</pre>
-
 <%INIT>
 use utf8;
 use strict;
@@ -212,6 +208,7 @@ while (my $queue_cf=$queue_cfs->Next()) {
 #
 #    if ($val) {
 #        push @results, loc('Ticket: #[_1] [_2]', $ticket->EffectiveId, $args{Subject});
+#        $ticket->SetStatus("open"); 
 #        $ticket->Comment(Content => $args{Subject});
 #    } else {
 #        push @results, loc('Oops, something went wrong: [_1]', $msg);
