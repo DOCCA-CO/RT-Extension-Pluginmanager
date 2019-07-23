@@ -1,0 +1,101 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use utf8;
+
+our @Queues = (
+	# some definitions here
+);
+
+our @CustomFields = (
+	# some other definitions here
+);
+
+push @Queues, {
+	Name => '_Pluginmanager',
+	Description => 'Pluginmanager',
+};
+
+push @CustomFields, {
+	Name => '_pm_OffDate',
+	Type => 'DateTime',
+	MaxValues => '1',
+	LookupType  => 'RT::Queue-RT::Ticket',
+	Description =>'',
+	ApplyTo => qw / _Pluginmanager  /,
+};
+
+push @CustomFields, {
+	Name => '_pm_OnDate',
+	Type => 'DateTime',
+	MaxValues => '1',
+	LookupType  => 'RT::Queue-RT::Ticket',
+	Description =>'',
+	ApplyTo => qw / _Pluginmanager  /,
+};
+
+push @CustomFields, {
+	Name => '_pm_PlannedOffDate',
+	Type => 'DateTime',
+	MaxValues => '1',
+	LookupType  => 'RT::Queue-RT::Ticket',
+	Description =>'',
+	ApplyTo => qw / _Pluginmanager  /,
+};
+
+push @CustomFields, {
+	Name => '_pm_PlannedOnDate',
+	Type => 'DateTime',
+	MaxValues => '1',
+	LookupType  => 'RT::Queue-RT::Ticket',
+	Description =>'',
+	ApplyTo => qw / _Pluginmanager  /,
+};
+
+push @CustomFields, {
+	Name => '_pm_PluginName',
+	Type => 'Freeform',
+	MaxValues => '1',
+	LookupType  => 'RT::Queue-RT::Ticket',
+	Description =>'',
+	ApplyTo => qw / _Pluginmanager  /,
+};
+
+push @CustomFields, {
+	Name => '_pm_PluginStatus',
+	Type => 'Freeform',
+	MaxValues => '1',
+	LookupType  => 'RT::Queue-RT::Ticket',
+	Description =>'',
+	ApplyTo => qw / _Pluginmanager  /,
+};
+
+push @CustomFields, {
+	Name => '_mp_LinkToDownload',
+	Type => 'Freeform',
+	MaxValues => '1',
+	LookupType  => 'RT::Queue-RT::Ticket',
+	Description =>'',
+	ApplyTo => qw / _Pluginmanager  /,
+};
+
+push @CustomFields, {
+	Name => '_mp_PluginName',
+	Type => 'Freeform',
+	MaxValues => '1',
+	LookupType  => 'RT::Queue-RT::Ticket',
+	Description =>'',
+	ApplyTo => qw / _Pluginmanager  /,
+};
+
+push @CustomFields, {
+	Name => '_mp_RestartDate',
+	Type => 'DateTime',
+	MaxValues => '1',
+	LookupType  => 'RT::Queue-RT::Ticket',
+	Description =>'',
+	ApplyTo => qw / _Pluginmanager  /,
+};
+
+1;
