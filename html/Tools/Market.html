@@ -3,127 +3,120 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<table width="100%" border="0">
-    <tr>
-
-	<td valign="top" width="60%" class="boxcontainer">
+<table width="100%">
+<tr>
+<!-- Left -->
+<td valign="top" class="boxcontainer" width="60%">
 <&| /Widgets/TitleBox, title => loc('Marketplace'), titleright_href=>'/Tools/Market.html?Reload=1', titleright=>loc('Reload') &>
-	<form method="post" name="Marketplace" enctype="multipart/form-data  action="<%RT->Config->Get('WebPath')%>/Tools/Market.html">
-	    <input type="hidden" class='hidden' name="MarketAction" value='1'>
-	    <table width="100%">
-		<thead>
-		    <tr >
-			<th align="left" width="65%">Plug-in name</th>
-			<th align="left" width="25%">Contributor</th>
-			<th align="left" width="11%">Version</th>
-		    </tr>
-		    <tr>
-			<th align="left" width="65%">Description</th>
-			<th align="left" width="25%">Learn more</th>
-			<th align="left" width="11%">Mark</th>
-		    </tr>
-		</thead>
-		<tbody>
-		
+<form method="post" name="Marketplace" enctype="multipart/form-data" action="<%RT->Config->Get('WebPath')%>/Tools/Market.html">
+<input type="hidden" class='hidden' name="MarketAction" value='1'>
+<table width="100%">
+<thead>
+<tr >
+<th align="left" width="65%">Plug-in name</th>
+<th align="left" width="25%">Contributor</th>
+<th align="left" width="10%">Version</th>
+</tr>
+<tr>
+<th align="left" width="65%">Description</th>
+<th align="left" width="25%">Learn more</th>
+<th align="left" width="10%">Mark</th>
+</tr>
+</thead>
+<tbody>
+
 %foreach my $element ( @catalogue ) {
-		    <tr  class="oddline" >
-			<td align="left" width="65%"><% $element->{name}[0] %></td>
-			<td width="25%"><% $element->{contributor}[0] %></td>
-			<td width="11%">v. <% $element->{version}[0] %></td>
-		    </tr>
-		    <tr class="evenline" >
-			<td width="65%""><% $element->{description}[0] %></td>
-			<td width="25%"><a href="<% $element->{learnmore}[0] %>" target="_blank">Learn more</a></td>
-			<td width="11%"><label><input type="checkbox" name="plugin" value="<%$element->{link}[0]%>" /> Get</label></td>
-		    </tr>
+<tr  class="oddline" >
+<td align="left" width="65%"><% $element->{name}[0] %></td>
+<td width="25%"><% $element->{contributor}[0] %></td>
+<td width="10%">v. <% $element->{version}[0] %></td>
+</tr>
+<tr class="evenline" >
+<td width="65%"><% $element->{description}[0] %></td>
+<td width="25%"><a href="<% $element->{learnmore}[0] %>" target="_blank">Learn more</a></td>
+<td width="10%"><label><input type="checkbox" name="plugin" value="<%$element->{link}[0]%>" /> Get</label></td>
+</tr>
 %}
-		</tbody>
-		<tfoot>
-		    <tr>
-			<td width="65%"><label>Activate at
-			    <& /Elements/SelectDate, Name => 'mp_process_at' &></label>
-			</td>
-			<td colspan="2" width="35%">
-			    <& /Elements/Submit, Label => loc('Download and Install') &>
-			</td>
-		    </tr>
-		
-		</tfoot>
-	    </table>
-	</form>
+</tbody>
+<tfoot>
+<tr>
+<td width="65%"><label>Activate at
+<& /Elements/SelectDate, Name => 'mp_process_at' &></label>
+</td>
+<td colspan="2" width="35%">
+<& /Elements/Submit, Label => loc('Download and Install') &>
+</td>
+</tr>
+
+</tfoot>
+</table>
+</form>
 </&>
-	</td>
+</td>
 
-	<td valign="top" width="40%" class="boxcontainer">
+<!-- /Left -->
+
+<!-- Right -->
+<td valign="top" class="boxcontainer" width="40%" >
 <&| /Widgets/TitleBox, title => loc('Manager'), titleright_href=>'/Tools/Market.html?Refresh=1', titleright=>loc('Refresh') &>
-
-    <form method="post" name="Manager" enctype="multipart/form-data  action="<%RT->Config->Get('WebPath')%>/Tools/Market.html">
-        <input type='hidden' class='hidden' name='ManagerAction' value='1'>
-        <table width="100%">
-	<thead>
-	    <tr>
-	    <th align="left" colspan="2" width="90%">Plugin</th>
-	    <th align="left" width="10%">on/off</th>
-	    </tr>
-	</thead>
-	<tbody>
+<form method="post" name="Manager" enctype="multipart/form-data"  action="<%RT->Config->Get('WebPath')%>/Tools/Market.html">
+<input type='hidden' class='hidden' name='ManagerAction' value='1'>
+<table style="width: 100%">
+<thead>
+<tr>
+<th align="left" width="60%">Plugin</th>
+<th align="left" width="20%">&nbsp;</th>
+<th align="left" width="10%">on/off</th>
+</tr>
+</thead>
+<tbody>
+%my $number = 0;
 %foreach my $PluginTicket (@PMQueueTickets) {
-	    <tr>
-	    <td width="90%" colspan="2">
-		<span style="float:left; width:50%; display: inline-block; border: 1px solid gray; border-radius: 3px; padding: 5px"><font color="<% ($PluginTicket->{_pm_PluginStatus}<1)?'gray':'black' %>"><% $PluginTicket->{_pm_PluginName} %></font></span>
+%$number += 1;
+<tr class="<% ($number % 2 == 0)?'evenline':'oddline' %>">
+<td width="60%">
 %(my $nm = $PluginTicket->{_pm_PluginName}) =~s/-/::/ig;
 %$nm .= '::VERSION';
-		<span style="float:left; width:10%; display: inline-block; border: 1px solid gray; border-radius: 3px; margin-left: 5px; padding: 5px">ver. <%eval("\$$nm") || 'N/A'%></span>
-	        <span style="float:right; width: 30%; display: inline-block; border: 1px solid gray; border-radius: 3px; padding: 5px">
-	<i style="color:gray">On: <% $PluginTicket->{_pm_OnDate} %></i>
+<font color="<% ($PluginTicket->{_pm_PluginStatus}<1)?'gray':'black' %>"><% $PluginTicket->{_pm_PluginName} %></font> (ver. <%eval("\$$nm") || 'N/A'%>)
+</td>
+<td width="30%">
+<i style="color:gray">On: <% $PluginTicket->{_pm_OnDate} %></i>
 %if ($PluginTicket->{_pm_OffDate}) {
-	<br><i style="color:gray">Off: <% $PluginTicket->{_pm_OffDate} %></i>
+<br><i style="color:gray">Off: <% $PluginTicket->{_pm_OffDate} %></i>
 %}
 %if ($PluginTicket->{_pm_PlannedOffDate}) {
-	<br><i style="color:red">A: Off@<% $PluginTicket->{_pm_PlannedOffDate}%></i>
+<br><i style="color:red">A: Off@<% $PluginTicket->{_pm_PlannedOffDate}%></i>
 %}
 
 %if ($PluginTicket->{_pm_PlannedOnDate}) {
-	<br><i style="color:red">A: On@ <%$PluginTicket->{_pm_PlannedOnDate}  %> </i>
+<br><i style="color:red">A: On@ <%$PluginTicket->{_pm_PlannedOnDate}  %> </i>
 %}
 
-	        </span>
-
-	    </td>
-	    <td width="10%" align="center">
-	        <input type="checkbox" name="<% $PluginTicket->{_pm_PluginName} %>" value="1" 
-		<% $PluginTicket->{_pm_PluginStatus} == 1 ?"checked":"" %> 
-		<% $PluginTicket->{_pm_PluginStatus} == 2?"checked disabled":"" %>
-	        />
-	    </td>
-	    </tr>
+</td>
+<td width="10%" align="center">
+<input type="checkbox" name="<% $PluginTicket->{_pm_PluginName} %>" value="1" <% $PluginTicket->{_pm_PluginStatus} == 1 ?"checked":"" %> <% $PluginTicket->{_pm_PluginStatus} == 2?"checked disabled":"" %> />
+</td>
+</tr>
 %}
-	</tbody>
-	<tfoot>
-	    <tr>
-	    <td width="50%"><label>Process changes at
-	        <& /Elements/SelectDate, Name => 'pm_action_at' &></label>
-	    </td>
-	    <td width="40%"><& /Elements/Submit, Label => loc('Save Changes') &></td>
-	    <td width="10%"><br /></td>
-	    </tr>
-	</tfoot>
-        </table>
-        </form>
+</tbody>
+<tfoot>
+<tr>
+<td width="60%" ><label>Process changes at<& /Elements/SelectDate, Name => 'pm_action_at' &></label>
+</td>
+<td colspan="2" width="40%"><& /Elements/Submit, Label => loc('Save Changes') &></td>
 
+</tr>
+</tfoot>
+</table>
+</form>
 </&>
 
-	</td>
-
-    </tr>
+</td>
+<!-- /Right -->
+</tr>
 
 </table>
 
-
-
-<pre>
-<%Dumper(\%ARGS)%>
-</pre>
 
 <hr />
 
@@ -141,26 +134,24 @@ use File::Basename qw ( basename );
 use Data::Dumper;
 use RT::Search::FromSQL;
 
-my ( $xml, $url, $file, @catalogue, @results, @cfs );
+my ( $xml, $url, $file, @catalogue, @results, %cfs );
 
 my $path = $RT::LocalPluginPath;
 my @sub_dirs = grep { -d } map { catfile $path, $_ } read_dir ($path);
 
 my @installed = RT->Config->GetObfuscated( 'Plugins', $session{'CurrentUser'} );
 
-
-##foreach my $ext ( @installed ) {
-##    $ext =~ s/::/-/ig;
-##    push @results, $ext;
-##}
-
 # create object
 $xml = new XML::Simple;
 
-$url = 'https://servicedesk-marketplace.com/wp-content/uploads/2019/07/';
+##$url = 'https://servicedesk-marketplace.com/wp-content/uploads/2019/07/';
+$url = 'http://libuzhnu.brinkster.net/market/';
 $file = 'catalogue.xml';
 
-# getstore($url.$file, "/tmp/$file");
+if ( ($Reload==1) or (not -e -r -T "/tmp/$file") ) {
+    getstore($url.$file, "/tmp/$file");
+}
+
 
 my $ref = XMLin("/tmp/$file", ForceArray => 1);
 
@@ -178,130 +169,108 @@ my $queue_cfs = $queue->TicketCustomFields;
 $queue_cfs->LimitToQueue($queue->Id);
 
 while (my $queue_cf=$queue_cfs->Next()) {
-    push @cfs, 'CustomField-'.$queue_cf->Id. ' == '. $queue_cf->Name;
+    $cfs{$queue_cf->Name} = 'CustomField-'.$queue_cf->Id;
 }
 
 ##
-#  Script part for first run
+#   Rescan
 ##
-#foreach my $srtPN (@sub_dirs) {
-#    my $d = basename($srtPN);
-#
-#    my $p=$d;
-#    $p=~s/-/::/ig;
-#    my $l = ((( grep $_ eq $p, @installed )||0) and (not (-e -f -r "$RT::EtcPath/RT_SiteConfig.d/$d.pm")||0))||0;
-#
-#    my %args = (
-#        Queue=>"_Pluginmanager",
-#        Requestor=>$current_user->Name,
-#        Owner=>$current_user->id,
-#        Subject=>$d, 
-#        Priority=>10,
-#        InitialPriority=>0,
-#    );
-#    $args{'CustomField-12'}=$d;
-#    $args{'CustomField-11'}=( (( grep $_ eq $p, @installed )||0) && (-e -f -r "$RT::EtcPath/RT_SiteConfig.d/$d.pm") )?1:0;
-#    $args{'CustomField-11'}=$l?2:$args{'CustomField-11'};
-#
-#    my $ticket = RT::Ticket->new($current_user); # empty ticket object
-#    my ($val, $msg) = $ticket->Create(%args);
-#
-#    if ($val) {
-#        push @results, loc('Ticket: #[_1] [_2]', $ticket->EffectiveId, $args{Subject});
-#        $ticket->SetStatus("open"); 
-#        $ticket->Comment(Content => $args{Subject});
-#    } else {
-#        push @results, loc('Oops, something went wrong: [_1]', $msg);
-#    }
-#}
+if ($Rescan==1) {
+    push @results, loc("Rescan mode [_1]", $Rescan);
+    my @Tickets = ReloadTicketSet($current_user);
+    foreach my $ticketItem (@Tickets) {
+        my $TicketObj = RT::Ticket->new($current_user);
+        $TicketObj->Load($ticketItem->{id});
+        my ($status, $msg) = $TicketObj->SetStatus("resolved"); 
+    }
+    push @results, loc("Closing all tickets, if exists.");
 
-##my ($val, $msg) = $ticket->Create(%args);
+    foreach my $srtPN (@sub_dirs) {
+        my $d = basename($srtPN);
+        my @stats = stat $srtPN ;
 
-if ($Firstrun==1) {
-    push @results, loc("Firstun mode [_1]", $Firstrun);
-}
+        my $p=$d;
+        $p=~s/-/::/ig;
+        my $l = ((( grep $_ eq $p, @installed )||0) and (not (-e -f -r "$RT::EtcPath/RT_SiteConfig.d/$d.pm")||0))||0;
 
-##if ($val) {
-##    push @results, loc('Ticket: #[_1]', $ticket->EffectiveId);
-##    $ticket->Comment(Content => $textLine);
-##} else {
-##    push @results, loc('Oops, something went wrong: [_1]', $msg);
-##    $title = loc("Create test ticket");
-##}
+        my %args = (
+            Queue=>"_Pluginmanager",
+            Requestor=>$current_user->Name,
+            Owner=>$current_user->id,
+            Subject=>$d, 
+            Priority=>10,
+            InitialPriority=>0,
+        );
+        $args{ $cfs{'_pm_PluginName'} } = $d;
+        $args{ $cfs{'_pm_PluginStatus'} } = ( (( grep $_ eq $p, @installed )||0) && (-e -f -r "$RT::EtcPath/RT_SiteConfig.d/$d.pm") )?1:0;  
+        $args{ $cfs{'_pm_PluginStatus'} } = $l?2:$args{ $cfs{'_pm_PluginStatus'} };
+        my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime( $stats[9] );
+        $args{ $cfs{'_pm_OnDate'} } = sprintf ( "%04d-%02d-%02d %02d:%02d", $year+1900, $mon+1, $mday, $hour, $min);
 
+        my $ticket = RT::Ticket->new($current_user); # empty ticket object
+        my ($val, $msg) = $ticket->Create(%args);
 
-    my @PMQueueTickets;
-    @PMQueueTickets = ReloadTicketSet($current_user);
-
-    if ( $ManagerAction) {
-        if ($ARGS{pm_action_at} eq '') {
-            push @results, loc('Action date and time must be specified!');
+        if ($val) {
+            push @results, loc('Ticket: #[_1] [_2]', $ticket->EffectiveId, $args{ Subject } );
+            $ticket->SetStatus("open"); 
+            $ticket->Comment( Content => $args{Subject} );
         } else {
-            foreach my $key (keys %ARGS) {
-                foreach my $PluginTicket (@PMQueueTickets) {
-                    my $ticketObj = RT::Ticket->new($current_user);
-                    my $cfObj = RT::CustomField->new($current_user);
-                    if ($PluginTicket->{_pm_PluginName} eq $key) {
+            push @results, loc('Oops, something went wrong: [_1]', $msg);
+        }
+    }
+}
+
+
+my @PMQueueTickets;
+@PMQueueTickets = ReloadTicketSet($current_user);
+
+##
+#   Plugins
+##
+if ( $ManagerAction) {
+    if ($ARGS{pm_action_at} eq '') {
+        push @results, loc('Action date and time must be specified!');
+    } else {
+        foreach my $key (keys %ARGS) {
+            foreach my $PluginTicket (@PMQueueTickets) {
+                my $ticketObj = RT::Ticket->new($current_user);
+                my $cfObj = RT::CustomField->new($current_user);
+                if ($PluginTicket->{_pm_PluginName} eq $key) {
+                    $ticketObj->Load($PluginTicket->{id});
+                    my $flag = $ARGS{$key} || 0;
+                    if ($PluginTicket->{_pm_PluginStatus} < $flag) {
+                        $cfObj->Load('_pm_PlannedOnDate');
+                        $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $ARGS{pm_action_at});
+                        $cfObj->Load('_pm_PluginStatus');
+                        $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => 1);
+                    }
+                } elsif ($PluginTicket->{_pm_PluginStatus}==1) {
+                    my $noflag = $ARGS{$PluginTicket->{_pm_PluginName}} || 0;
+                    if ($noflag == 0) {
                         $ticketObj->Load($PluginTicket->{id});
-                        my $flag = $ARGS{$key} || 0;
-                        if ($PluginTicket->{_pm_PluginStatus} < $flag) {
-                            $cfObj->Load('_pm_PlannedOnDate');
-                            $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $ARGS{pm_action_at});
-                            $cfObj->Load('_pm_PluginStatus');
-                            $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => 1);
-                        }
-                    } elsif ($PluginTicket->{_pm_PluginStatus}==1) {
-                        my $noflag = $ARGS{$PluginTicket->{_pm_PluginName}} || 0;
-                        if ($noflag == 0) {
-                            $ticketObj->Load($PluginTicket->{id});
-                            $cfObj->Load('_pm_PlannedOffDate');
-                            $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $ARGS{pm_action_at});
-                            $cfObj->Load('_pm_PluginStatus');
-                            $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => 0);
-                        }
+                        $cfObj->Load('_pm_PlannedOffDate');
+                        $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $ARGS{pm_action_at});
+                        $cfObj->Load('_pm_PluginStatus');
+                        $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => 0);
                     }
                 }
             }
         }
-        @PMQueueTickets = ReloadTicketSet($current_user);
     }
+    @PMQueueTickets = ReloadTicketSet($current_user);
+}
 
-    if ( $MarketAction ) {
-        if ($ARGS{mp_process_at} eq '') {
-            push @results, loc('Action date and time must be specified!');
-        } else {
-            if (ref($ARGS{plugin}) eq 'ARRAY') {
-                foreach my $pl (@{$ARGS{plugin}}) {
-                    my $ticketObj = RT::Ticket->new($current_user); # empty ticket object
-                    (my $nm = $pl) =~ s/^.*\///;
-                    $nm = substr $nm, 0, index( $nm, q{.} ) ;##  =~ s/\.[^.]+$//;
-                    my %args = (
-                        Queue=>"_Pluginmanager",
-                        Requestor=>$current_user->Name,
-                        Owner=>$current_user->id,
-                        Subject => $nm,
-                        Priority=>10,
-                        InitialPriority=>0,
-                    );
-
-                    my ($val, $msg) = $ticketObj->Create(%args);
-                    if ($val) {
-                        $ticketObj->Comment(Content => $nm);
-                        my $cfObj = RT::CustomField->new($current_user);
-                        $cfObj->Load('_mp_PluginName');
-                        $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $nm);
-                        $cfObj->Load('_mp_RestartDate');
-                        $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $ARGS{mp_process_at});
-                        $cfObj->Load('_mp_LinkToDownload');
-                        $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $pl);
-                        push @results, loc('Ticket: #[_1] [_2]', $ticketObj->EffectiveId, $nm);
-                    } else {
-                        push @results, loc('Oops, something went wrong: [_1]', $msg);
-                    }
-                }
-            } else {
+##
+#   Market
+##
+if ( $MarketAction ) {
+    if ($ARGS{mp_process_at} eq '') {
+        push @results, loc('Action date and time must be specified!');
+    } else {
+        if (ref($ARGS{plugin}) eq 'ARRAY') {
+            foreach my $pl (@{$ARGS{plugin}}) {
                 my $ticketObj = RT::Ticket->new($current_user); # empty ticket object
-                (my $nm = $ARGS{plugin}) =~ s/^.*\///;
+                (my $nm = $pl) =~ s/^.*\///;
                 $nm = substr $nm, 0, index( $nm, q{.} ) ;##  =~ s/\.[^.]+$//;
                 my %args = (
                     Queue=>"_Pluginmanager",
@@ -311,6 +280,7 @@ if ($Firstrun==1) {
                     Priority=>10,
                     InitialPriority=>0,
                 );
+
                 my ($val, $msg) = $ticketObj->Create(%args);
                 if ($val) {
                     $ticketObj->SetStatus('stalled');
@@ -321,14 +291,42 @@ if ($Firstrun==1) {
                     $cfObj->Load('_mp_RestartDate');
                     $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $ARGS{mp_process_at});
                     $cfObj->Load('_mp_LinkToDownload');
-                    $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $ARGS{plugin});
+                    $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $pl);
                     push @results, loc('Ticket: #[_1] [_2]', $ticketObj->EffectiveId, $nm);
                 } else {
                     push @results, loc('Oops, something went wrong: [_1]', $msg);
                 }
             }
+        } else {
+            my $ticketObj = RT::Ticket->new($current_user); # empty ticket object
+            (my $nm = $ARGS{plugin}) =~ s/^.*\///;
+            $nm = substr $nm, 0, index( $nm, q{.} ) ;##  =~ s/\.[^.]+$//;
+            my %args = (
+                Queue=>"_Pluginmanager",
+                Requestor=>$current_user->Name,
+                Owner=>$current_user->id,
+                Subject => $nm,
+                Priority=>10,
+                InitialPriority=>0,
+            );
+            my ($val, $msg) = $ticketObj->Create(%args);
+            if ($val) {
+                $ticketObj->SetStatus('stalled');
+                $ticketObj->Comment(Content => $nm);
+                my $cfObj = RT::CustomField->new($current_user);
+                $cfObj->Load('_mp_PluginName');
+                $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $nm);
+                $cfObj->Load('_mp_RestartDate');
+                $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $ARGS{mp_process_at});
+                $cfObj->Load('_mp_LinkToDownload');
+                $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $ARGS{plugin});
+                push @results, loc('Ticket: #[_1] [_2]', $ticketObj->EffectiveId, $nm);
+            } else {
+                push @results, loc('Oops, something went wrong: [_1]', $msg);
+            }
         }
     }
+}
 
 
 sub ReloadTicketSet {
@@ -368,7 +366,7 @@ sub ReloadTicketSet {
 
 </%INIT>
 <%ARGS>
-$Firstrun => undef
+$Rescan => undef
 $Refresh => undef
 $Reload => undef
 $ManagerAction => undef

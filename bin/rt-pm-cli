@@ -76,8 +76,8 @@ $year += 1900;
 $mon+=1;
 
 foreach my $PluginTicket (@PMQueueTickets) {
-        my $user = RT::User->new($CurrentUser);
-        $user->Load('root');
+    my $user = RT::User->new($CurrentUser);
+    $user->Load('root');
     if ($PluginTicket->{_pm_PluginStatus} < 2) {
         my $config_name = "$RT::EtcPath/RT_SiteConfig.d/$PluginTicket->{_pm_PluginName}.pm";
         (my $cfg_name_off = $config_name) =~ s/pm$/off/;
@@ -87,7 +87,7 @@ foreach my $PluginTicket (@PMQueueTickets) {
             my ($_year,$_mon,$_mday,$_hour,$_min,$_sec) = split(/[\s-:]+/, $PluginTicket->{_pm_PlannedOffDate});
             if (($year == $_year) and ($mon==$_mon) and ($mday==$_mday) and ($hour==$_hour)) {
                 if (!rename ($config_name, $cfg_name_off)) {
-                    my $err = RT::Ticket->new($user);user
+                    my $err = RT::Ticket->new($user);
                     $err->Load($PluginTicket->{id});
                     $err->Comment(Content => "Could not perform this action: \'DEACTIVATE\'");
                     my $cfObj = RT::CustomField->new($user);

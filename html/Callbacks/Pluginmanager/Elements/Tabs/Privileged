@@ -24,8 +24,8 @@ $tools_menu->child( market =>
 if ($request_path =~ m{^(/Tools/Market.html)}) {
     my $tabs = PageMenu();
     $tabs->child( 
-        marketplace => title => 'First run', 
-	path => "/Tools/Market.html?".$query_string->(Firstrun => 1) 
+        marketplace => title => '(Re)Scan', 
+	path => "/Tools/Market.html?".$query_string->(Rescan => 1) 
     );
 }
 </%init>

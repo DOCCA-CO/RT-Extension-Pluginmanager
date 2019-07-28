@@ -4,7 +4,7 @@
 	<plugin>
 		<name>JuSt an Easter Egg</name>
 		<version>0.1</version>
-		<contributor>Péter Petks</contributor>
+		<contributor>Petky Péter</contributor>
 		<learnmore>https://servicedesk-marketplace.com/</learnmore>
 		<description>This is a test plug-in for market testing</description>
 		<link>http://libuzhnu.brinkster.net/market/RT-Extension-Jse.tar.gz</link>
@@ -15,7 +15,7 @@
 		<contributor>Tóth Lajos</contributor>
 		<learnmore>https://servicedesk-marketplace.com/</learnmore>
 		<description>This is a test plug-in for market testing</description>
-		<link>RT-Extension-AttachmentsColored.zip</link>
+		<link>http://libuzhnu.brinkster.net/market/RT-Extension-AttachmentsColored.tar.gz</link>
 	</plugin>
 	<plugin>
 		<name>CRMfolderQuickCreate</name>
@@ -39,7 +39,7 @@
 		<contributor>Tóth Lajos</contributor>
 		<learnmore>https://servicedesk-marketplace.com/</learnmore>
 		<description>This is a test plug-in for market testing</description>
-		<link>RT-Extension-UserList.zip</link>
+		<link>http://libuzhnu.brinkster.net/market/RT-Extension-UserList.tar.gz</link>
 	</plugin>
 	<plugin>
 		<name>QuickChild </name>
@@ -47,7 +47,7 @@
 		<contributor>Tóth Lajos</contributor>
 		<learnmore>https://servicedesk-marketplace.com/</learnmore>
 		<description>This is a test plug-in for market testing</description>
-		<link>RT-Extension-QuickChild.zip</link>
+		<link>http://libuzhnu.brinkster.net/market/RT-Extension-QuickChild.tar.gz</link>
 	</plugin>
 	<plugin>
 		<name>BigBox</name>
