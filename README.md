@@ -8,19 +8,28 @@ Also it will have a marketlace function. It means, you can download and install 
 Just simply clone this plugin to /opt/rt4/local/plugins
 
 ```bash
-https://github.com/docca/RT-Extension-Pluginmanager.git
+git clone https://github.com/docca/RT-Extension-Pluginmanager.git
 ```
 
-## Usage
+You will need to create a **Queue**: *_Pluginmanager*. Also you will need some **CustomFields**: 
+* _mp_PluginName, _mp_RestartDate, _mp_LinkToDownload
+* _pm_OffDate, _pm_OnDate, _pm_PlannedOffDate, _pm_PlannedOnDate, _pm_PluginName,  _pm_PluginStatus
 
-You will need to create two **Queues**: *_Pluginmanager* and *_Marketplace*. Also you will need some **CustomFields**: 
-* _mp_PluginName, _mp_RestartDate for *_Marketplace* 
-* _pm_OffDate, _pm_OnDate, _pm_PlannedOffDate, _pm_PlannedOnDate, _pm_PluginName,  _pm_PluginStatus for *_Pluginmanager*.
+All data placed to initial data file in 
+
+```
+/opt/rt4/local/plugins/RT-Extension-Pluginmanager/etc/mppm
+```
+
+You just need to import it :)
+
+## Usage
+You can use this plugin to install plugins from "Marketplace", activate it. Also You can activate or deactivate already installed plugins.
+Note: you cannot manage plugins, if config files for activation are not in /opt/rt4/etc/RT-SiteConfig.d and not refer to plugin filename convention.
 
 ## Warnings
 Use this plugin at Your own risk.
 
 ## TODO
 
-* Try module https://metacpan.org/release/Module-Install-RTx
-* Automate the creation of Queues and Customfields.
+* Apply JSON

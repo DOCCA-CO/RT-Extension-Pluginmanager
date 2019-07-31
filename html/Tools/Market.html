@@ -8,47 +8,47 @@
 <!-- Left -->
 <td valign="top" class="boxcontainer" width="60%">
 <&| /Widgets/TitleBox, title => loc('Marketplace'), titleright_href=>'/Tools/Market.html?Reload=1', titleright=>loc('Reload') &>
-<form method="post" name="Marketplace" enctype="multipart/form-data" action="<%RT->Config->Get('WebPath')%>/Tools/Market.html">
+<form method="post" name="Marketplace" enctype="multipart/form-data" action="<%RT->Config->Get('WebPath')%>/Tools/Market.html" style="width:100%">
 <input type="hidden" class='hidden' name="MarketAction" value='1'>
-<table width="100%">
+<table width="100%" class="collection-as-table">
 <thead>
-<tr >
-<th align="left" width="65%">Plug-in name</th>
-<th align="left" width="25%">Contributor</th>
-<th align="left" width="10%">Version</th>
+<tr class="collection-as-table">
+<th align="left" width="65%" class="collection-as-table">Plug-in name</th>
+<th align="left" width="25%" class="collection-as-table">Contributor</th>
+<th align="left" width="10%" class="collection-as-table">Version</th>
 </tr>
-<tr>
-<th align="left" width="65%">Description</th>
-<th align="left" width="25%">Learn more</th>
-<th align="left" width="10%">Mark</th>
+<tr class="collection-as-table">
+<th align="left" width="65%" class="collection-as-table">Description</th>
+<th align="left" width="25%" class="collection-as-table">Learn more</th>
+<th align="left" width="10%" class="collection-as-table">Mark</th>
 </tr>
 </thead>
-<tbody>
-
-%foreach my $element ( @catalogue ) {
-<tr  class="oddline" >
-<td align="left" width="65%"><% $element->{name}[0] %></td>
-<td width="25%"><% $element->{contributor}[0] %></td>
-<td width="10%">v. <% $element->{version}[0] %></td>
-</tr>
-<tr class="evenline" >
-<td width="65%"><% $element->{description}[0] %></td>
-<td width="25%"><a href="<% $element->{learnmore}[0] %>" target="_blank">Learn more</a></td>
-<td width="10%"><label><input type="checkbox" name="plugin" value="<%$element->{link}[0]%>" /> Get</label></td>
-</tr>
-%}
-</tbody>
 <tfoot>
-<tr>
-<td width="65%"><label>Activate at
+<tr class="collection-as-table">
+<td width="65%" class="collection-as-table"><label>Activate at
 <& /Elements/SelectDate, Name => 'mp_process_at' &></label>
 </td>
-<td colspan="2" width="35%">
+<td colspan="2" width="35%" class="collection-as-table">
 <& /Elements/Submit, Label => loc('Download and Install') &>
 </td>
 </tr>
-
 </tfoot>
+
+<tbody>
+%foreach my $element ( @catalogue ) {
+<tr  class="oddline" class="list-item">
+<td align="left" width="65%" class="collection-as-table"><% $element->{name}[0] %></td>
+<td width="25%" class="collection-as-table"><% $element->{contributor}[0] %></td>
+<td width="10%" class="collection-as-table"> v. <% $element->{version}[0] %></td>
+</tr>
+<tr class="evenline" class="collection-as-table">
+<td width="65%" class="collection-as-table"><% $element->{description}[0] %></td>
+<td width="25%" class="collection-as-table"><a href="<% $element->{learnmore}[0] %>" target="_blank">Learn more</a></td>
+<td width="10%" class="collection-as-table"><label><input type="checkbox" name="plugin" value="<%$element->{link}[0]%>" /> Get</label></td>
+</tr>
+%}
+</tbody>
+
 </table>
 </form>
 </&>
@@ -59,27 +59,35 @@
 <!-- Right -->
 <td valign="top" class="boxcontainer" width="40%" >
 <&| /Widgets/TitleBox, title => loc('Manager'), titleright_href=>'/Tools/Market.html?Refresh=1', titleright=>loc('Refresh') &>
-<form method="post" name="Manager" enctype="multipart/form-data"  action="<%RT->Config->Get('WebPath')%>/Tools/Market.html">
+<form method="post" name="Manager" enctype="multipart/form-data" action="<%RT->Config->Get('WebPath')%>/Tools/Market.html" style="width:100%">
 <input type='hidden' class='hidden' name='ManagerAction' value='1'>
-<table style="width: 100%">
+<table style="width: 100%" class="collection-as-table">
 <thead>
-<tr>
-<th align="left" width="60%">Plugin</th>
-<th align="left" width="20%">&nbsp;</th>
-<th align="left" width="10%">on/off</th>
+<tr class="collection-as-table">
+<th align="left" width="60%" class="collection-as-table">Plugin</th>
+<th align="left" width="20%" class="collection-as-table">&nbsp;</th>
+<th align="left" width="10%" class="collection-as-table">on/off</th>
 </tr>
 </thead>
+<tfoot>
+<tr class="collection-as-table">
+<td width="60%" class="collection-as-table"><label>Process changes at<& /Elements/SelectDate, Name => 'pm_action_at' &></label>
+</td>
+<td colspan="2" width="40%" class="collection-as-table"><& /Elements/Submit, Label => loc('Save Changes') &></td>
+</tr>
+</tfoot>
+
 <tbody>
 %my $number = 0;
 %foreach my $PluginTicket (@PMQueueTickets) {
 %$number += 1;
-<tr class="<% ($number % 2 == 0)?'evenline':'oddline' %>">
-<td width="60%">
+<tr class="<% ($number % 2 == 0)?'evenline':'oddline' %>" class="list-item">
+<td width="60%" class="collection-as-table">
 %(my $nm = $PluginTicket->{_pm_PluginName}) =~s/-/::/ig;
 %$nm .= '::VERSION';
 <font color="<% ($PluginTicket->{_pm_PluginStatus}<1)?'gray':'black' %>"><% $PluginTicket->{_pm_PluginName} %></font> (ver. <%eval("\$$nm") || 'N/A'%>)
 </td>
-<td width="30%">
+<td width="30%" class="collection-as-table">
 <i style="color:gray">On: <% $PluginTicket->{_pm_OnDate} %></i>
 %if ($PluginTicket->{_pm_OffDate}) {
 <br><i style="color:gray">Off: <% $PluginTicket->{_pm_OffDate} %></i>
@@ -93,20 +101,13 @@
 %}
 
 </td>
-<td width="10%" align="center">
+<td width="10%" align="center" class="collection-as-table">
 <input type="checkbox" name="<% $PluginTicket->{_pm_PluginName} %>" value="1" <% $PluginTicket->{_pm_PluginStatus} == 1 ?"checked":"" %> <% $PluginTicket->{_pm_PluginStatus} == 2?"checked disabled":"" %> />
 </td>
 </tr>
 %}
 </tbody>
-<tfoot>
-<tr>
-<td width="60%" ><label>Process changes at<& /Elements/SelectDate, Name => 'pm_action_at' &></label>
-</td>
-<td colspan="2" width="40%"><& /Elements/Submit, Label => loc('Save Changes') &></td>
 
-</tr>
-</tfoot>
 </table>
 </form>
 </&>
@@ -126,6 +127,7 @@ use strict;
 use warnings;
 use XML::Simple;
 use LWP::Simple;
+use JSON;
 
 use File::Slurp qw( read_dir );
 use File::Spec::Functions qw( catfile );
@@ -202,7 +204,7 @@ if ($Rescan==1) {
             InitialPriority=>0,
         );
         $args{ $cfs{'_pm_PluginName'} } = $d;
-        $args{ $cfs{'_pm_PluginStatus'} } = ( (( grep $_ eq $p, @installed )||0) && (-e -f -r "$RT::EtcPath/RT_SiteConfig.d/$d.pm") )?1:0;  
+        $args{ $cfs{'_pm_PluginName'} } = ( (( grep $_ eq $p, @installed )||0) && (-e -f -r "$RT::EtcPath/RT_SiteConfig.d/$d.pm") )?1:0;  
         $args{ $cfs{'_pm_PluginStatus'} } = $l?2:$args{ $cfs{'_pm_PluginStatus'} };
         my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime( $stats[9] );
         $args{ $cfs{'_pm_OnDate'} } = sprintf ( "%04d-%02d-%02d %02d:%02d", $year+1900, $mon+1, $mday, $hour, $min);
