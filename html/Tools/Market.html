@@ -146,8 +146,8 @@ my @installed = RT->Config->GetObfuscated( 'Plugins', $session{'CurrentUser'} );
 # create object
 $xml = new XML::Simple;
 
-##$url = 'https://servicedesk-marketplace.com/wp-content/uploads/2019/07/';
-$url = 'http://libuzhnu.brinkster.net/market/';
+$url = 'https://servicedesk-marketplace.com/wp-content/uploads/2019/08/';
+##$url = 'http://libuzhnu.brinkster.net/market/';
 $file = 'catalogue.xml';
 
 if ( ($Reload==1) or (not -e -r -T "/tmp/$file") ) {
