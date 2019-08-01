@@ -204,7 +204,7 @@ if ($Rescan==1) {
             InitialPriority=>0,
         );
         $args{ $cfs{'_pm_PluginName'} } = $d;
-        $args{ $cfs{'_pm_PluginName'} } = ( (( grep $_ eq $p, @installed )||0) && (-e -f -r "$RT::EtcPath/RT_SiteConfig.d/$d.pm") )?1:0;  
+        $args{ $cfs{'_pm_PluginStatus'} } = ( (( grep $_ eq $p, @installed )||0) && (-e -f -r "$RT::EtcPath/RT_SiteConfig.d/$d.pm") )?1:0;  
         $args{ $cfs{'_pm_PluginStatus'} } = $l?2:$args{ $cfs{'_pm_PluginStatus'} };
         my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime( $stats[9] );
         $args{ $cfs{'_pm_OnDate'} } = sprintf ( "%04d-%02d-%02d %02d:%02d", $year+1900, $mon+1, $mday, $hour, $min);
