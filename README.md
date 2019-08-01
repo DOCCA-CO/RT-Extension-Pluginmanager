@@ -21,11 +21,11 @@ All data placed to initial data file in
 /opt/rt4/local/plugins/RT-Extension-Pluginmanager/etc/mppm
 ```
 
-You just need to import it :)
+You just need to import it :) 
 
 ## Usage
-You can use this plugin to install plugins from "Marketplace", activate it. Also You can activate or deactivate already installed plugins.
-Note: you cannot manage plugins, if config files for activation are not in /opt/rt4/etc/RT-SiteConfig.d and not refer to plugin filename convention.
+You can use this plugin to install plugins from "Marketplace", activate it. Also You can activate or deactivate already installed plugins. After that (first run) you have to click on (Re)Scan button to make set of tickets with info of installed plugins.
+Note: you cannot manage plugins, if config files for activation are not in /opt/rt4/etc/RT-SiteConfig.d and not refer to plugin filename convention. 
 
 ## Warnings
 Use this plugin at Your own risk.
