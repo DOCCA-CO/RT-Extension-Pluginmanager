@@ -31,7 +31,7 @@
 		<contributor>Tóth Lajos</contributor>
 		<learnmore>https://servicedesk-marketplace.com/</learnmore>
 		<description>This is a test plug-in for market testing</description>
-		<link>RT-Extension-QuickSearch.zip</link>
+		<link>http://libuzhnu.brinkster.net/market/RT-Extension-QuickSearch.tar.gz</link>
 	</plugin>
 	<plugin>
 		<name>UserList</name>
@@ -55,7 +55,7 @@
 		<contributor>Tóth Lajos</contributor>
 		<learnmore>https://servicedesk-marketplace.com/</learnmore>
 		<description>This is a test plug-in for market testing</description>
-		<link>RT-Extension-BigBox.zip</link>
+		<link>http://libuzhnu.brinkster.net/market/RT-Extension-BigBox.tar.gz</link>
 	</plugin>
 	<plugin>
 		<name>RawExport</name>
@@ -63,7 +63,7 @@
 		<contributor>Tóth Lajos</contributor>
 		<learnmore>https://servicedesk-marketplace.com/</learnmore>
 		<description>This is a test plug-in for market testing</description>
-		<link>RT-Extension-RawExport.zip</link>
+		<link>http://libuzhnu.brinkster.net/market/RT-Extension-RawExport.tar.gz</link>
 	</plugin>
 	<plugin>
 		<name>rt-extension-rest2</name>

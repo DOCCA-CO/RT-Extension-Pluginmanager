@@ -36,15 +36,15 @@
 
 <tbody>
 %foreach my $element ( @catalogue ) {
-<tr  class="oddline" class="list-item">
-<td align="left" width="65%" class="collection-as-table"><% $element->{name}[0] %></td>
-<td width="25%" class="collection-as-table"><% $element->{contributor}[0] %></td>
-<td width="10%" class="collection-as-table"> v. <% $element->{version}[0] %></td>
+<tr class="oddline" class="list-item">
+<td align="left" width="65%" class="collection-as-table"><% $element->{name} %></td>
+<td width="25%" class="collection-as-table"><% $element->{contributor} %></td>
+<td width="10%" class="collection-as-table"> v. <% $element->{version} %></td>
 </tr>
 <tr class="evenline" class="collection-as-table">
-<td width="65%" class="collection-as-table"><% $element->{description}[0] %></td>
-<td width="25%" class="collection-as-table"><a href="<% $element->{learnmore}[0] %>" target="_blank">Learn more</a></td>
-<td width="10%" class="collection-as-table"><label><input type="checkbox" name="plugin" value="<%$element->{link}[0]%>" /> Get</label></td>
+<td width="65%" class="collection-as-table"><% $element->{description} %></td>
+<td width="25%" class="collection-as-table"><a href="<% $element->{learnmore} %>" target="_blank">Learn more</a></td>
+<td width="10%" class="collection-as-table"><label><input type="checkbox" name="plugin" value="<%$element->{link}%>" /> Get</label></td>
 </tr>
 %}
 </tbody>
@@ -125,7 +125,6 @@
 use utf8;
 use strict;
 use warnings;
-use XML::Simple;
 use LWP::Simple;
 use JSON;
 
@@ -136,29 +135,34 @@ use File::Basename qw ( basename );
 use Data::Dumper;
 use RT::Search::FromSQL;
 
-my ( $xml, $url, $file, @catalogue, @results, %cfs );
+my ( $url, $file, $json, @catalogue, @results, %cfs );
 
 my $path = $RT::LocalPluginPath;
 my @sub_dirs = grep { -d } map { catfile $path, $_ } read_dir ($path);
 
 my @installed = RT->Config->GetObfuscated( 'Plugins', $session{'CurrentUser'} );
 
-# create object
-$xml = new XML::Simple;
-
-$url = 'https://servicedesk-marketplace.com/wp-content/uploads/2019/08/';
+$url = 'https://servicedesk-marketplace.com/wp-content/uploads/2019/07/';
 ##$url = 'http://libuzhnu.brinkster.net/market/';
-$file = 'catalogue.xml';
+$file = 'catalogue.json';
 
 if ( ($Reload==1) or (not -e -r -T "/tmp/$file") ) {
     getstore($url.$file, "/tmp/$file");
 }
 
 
-my $ref = XMLin("/tmp/$file", ForceArray => 1);
+{
+  local $/; #Enable 'slurp' mode
+  open my $fh, "<", "/tmp/$file";
+  $json = <$fh>;
+  close $fh;
+}
 
-my %plugins = %$ref{'plugin'};
-@catalogue = @{$plugins{'plugin'}};
+my $ref = decode_json($json);
+
+### my %plugins = %$ref{'plugin'};
+
+@catalogue = @{$ref->{'plugin'}};
 
 ##
 # Tickets

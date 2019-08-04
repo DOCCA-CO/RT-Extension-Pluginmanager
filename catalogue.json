@@ -1,5 +1,5 @@
 {
-   "plugin": [
+   "plugins": [
       {
          "name": "JuSt an Easter Egg",
          "version": "0.1",
@@ -30,7 +30,7 @@
          "contributor": "Tóth Lajos",
          "learnmore": "https://servicedesk-marketplace.com/",
          "description": "This is a test plug-in for market testing",
-         "link": "RT-Extension-QuickSearch.zip"
+         "link": "http://libuzhnu.brinkster.net/market/RT-Extension-QuickSearch.tar.gz"
       },
       {
          "name": "UserList",
@@ -54,7 +54,7 @@
          "contributor": "Tóth Lajos",
          "learnmore": "https://servicedesk-marketplace.com/",
          "description": "This is a test plug-in for market testing",
-         "link": "RT-Extension-BigBox.zip"
+         "link": "http://libuzhnu.brinkster.net/market/RT-Extension-BigBox.tar.gz"
       },
       {
          "name": "RawExport",
@@ -62,7 +62,7 @@
          "contributor": "Tóth Lajos",
          "learnmore": "https://servicedesk-marketplace.com/",
          "description": "This is a test plug-in for market testing",
-         "link": "RT-Extension-RawExport.zip"
+         "link": "http://libuzhnu.brinkster.net/market/RT-Extension-RawExport.tar.gz"
       },
       {
          "name": "rt-extension-rest2",
