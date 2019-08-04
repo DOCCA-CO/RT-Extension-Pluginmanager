@@ -142,8 +142,8 @@ my @sub_dirs = grep { -d } map { catfile $path, $_ } read_dir ($path);
 
 my @installed = RT->Config->GetObfuscated( 'Plugins', $session{'CurrentUser'} );
 
-$url = 'https://servicedesk-marketplace.com/wp-content/uploads/2019/07/';
-##$url = 'http://libuzhnu.brinkster.net/market/';
+##$url = 'https://servicedesk-marketplace.com/wp-content/uploads/2019/07/';
+$url = 'http://libuzhnu.brinkster.net/market/';
 $file = 'catalogue.json';
 
 if ( ($Reload==1) or (not -e -r -T "/tmp/$file") ) {
