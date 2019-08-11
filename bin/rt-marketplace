@@ -109,7 +109,7 @@ $mon+=1;
 foreach my $PluginTicket (@MPQueueTickets) {
     my ($_year,$_mon,$_mday,$_hour,$_min,$_sec) = split(/[\s-:]+/, $PluginTicket->{_mp_RestartDate});
     if (($year == $_year) and ($mon==$_mon) and ($mday==$_mday) and ($hour==$_hour)) {
-        my $rc = DownloadZIP($PluginTicket->{_mp_LinkToDownload});
+        my $rc = (substr($PluginTicket->{_mp_LinkToDownload}, 0, 4) eq 'cpan')?undef:DownloadZIP($PluginTicket->{_mp_LinkToDownload});
         if ( $rc ) {
             my $path = $RT::LocalPluginPath;
             my $conf = "$RT::EtcPath/RT_SiteConfig.d/$PluginTicket->{_mp_PluginName}.pm";
@@ -143,6 +143,23 @@ foreach my $PluginTicket (@MPQueueTickets) {
 ##
 # Change the ticket status 
 ##            
+            WriteMessageAndCloseTicket($CurrentUser, $PluginTicket->{id}, '');
+        } else {
+##
+# Install from CPAN
+##
+            my ($_component = $PluginTicket->{_mp_LinkToDownload}) =~ s/^.{4}//s;
+            my $comm = "cpanm --installdeps $_component";
+            my $res  = `$comm`;
+            print "CLI: $comm\nRESULT: $res\n" ;
+##
+# Create config 
+##
+            (my $c = $PluginTicket->{_mp_PluginName})=~s/-/::/ig;  
+            write_file($conf, "Plugin(\"$c\");\n");
+##
+# Change the ticket status 
+## 
             WriteMessageAndCloseTicket($CurrentUser, $PluginTicket->{id}, '');
         }
     }

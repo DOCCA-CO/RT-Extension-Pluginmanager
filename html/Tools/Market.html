@@ -144,10 +144,13 @@ my @installed = RT->Config->GetObfuscated( 'Plugins', $session{'CurrentUser'} );
 
 ##$url = 'https://servicedesk-marketplace.com/wp-content/uploads/2019/07/';
 $url = 'http://libuzhnu.brinkster.net/market/';
-$file = 'catalogue.json';
+$file = 'catalogue.txt';
 
 if ( ($Reload==1) or (not -e -r -T "/tmp/$file") ) {
-    getstore($url.$file, "/tmp/$file");
+    my $rc = getstore($url.$file, "/tmp/$file");
+    if (is_error($rc)) {
+        die "cannot get $file from <$url> failed with $rc";
+    }
 }
 
 
