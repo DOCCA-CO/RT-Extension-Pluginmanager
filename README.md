@@ -27,6 +27,13 @@ You just need to import it :)
 You can use this plugin to install plugins from "Marketplace", activate it. Also You can activate or deactivate already installed plugins. After that (first run) you have to click on (Re)Scan button to make set of tickets with info of installed plugins.
 Note: you cannot manage plugins, if config files for activation are not in /opt/rt4/etc/RT-SiteConfig.d and not refer to plugin filename convention. 
 
+Also you will need to configure some tasks in cron
+```
+*/11 * * * * /opt/rt4/local/plugins/RT-Extension-Pluginmanager/bin/rt-pm-cli
+*/20 * * * * /opt/rt4/local/plugins/RT-Extension-Pluginmanager/bin/rt-marketplace
+* 23 * * * /opt/rt4/local/plugins/RT-Extension-Pluginmanager/bin/rt-restart-apache.sh
+```
+
 ## Warnings
 Use this plugin at Your own risk.
 
