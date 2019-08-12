@@ -106,6 +106,10 @@ my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime();
 $year += 1900; 
 $mon+=1;
 
+print "$RT::DatabaseUser \t $RT::DatabasePassword \n";
+my $___p = 'RT-Extension-macrorecorder';
+print "$RT::SbinPath/rt-setup-database --action insert --datafile $RT::LocalPluginPath/$___p/etc/initialdata --dba-password '$RT::DatabasePassword'\n";
+
 foreach my $PluginTicket (@MPQueueTickets) {
     my ($_year,$_mon,$_mday,$_hour,$_min,$_sec) = split(/[\s-:]+/, $PluginTicket->{_mp_RestartDate});
     if (($year == $_year) and ($mon==$_mon) and ($mday==$_mday) and ($hour==$_hour)) {
@@ -148,7 +152,7 @@ foreach my $PluginTicket (@MPQueueTickets) {
 ##
 # Install from CPAN
 ##
-            my ($_component = $PluginTicket->{_mp_LinkToDownload}) =~ s/^.{4}//s;
+            (my $_component = $PluginTicket->{_mp_LinkToDownload}) =~ s/^.{5}//s;
             my $comm = "cpanm --installdeps $_component";
             my $res  = `$comm`;
             print "CLI: $comm\nRESULT: $res\n" ;
@@ -158,10 +162,32 @@ foreach my $PluginTicket (@MPQueueTickets) {
             (my $c = $PluginTicket->{_mp_PluginName})=~s/-/::/ig;  
             write_file($conf, "Plugin(\"$c\");\n");
 ##
+# Change CFs of Queue 
+##
+            my $user = RT::User->new($CurrentUser);
+            $user->Load('root');
+            my $ticketObj = RT::Ticket->new($user); # empty ticket object
+            $ticketObj->Load($PluginTicket->{id});
+            $ticketObj->Comment(Content => $PluginTicket->{_mp_PluginName});
+            my $cfObj = RT::CustomField->new($user);
+            $cfObj->Load('_pm_PluginName');
+            $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $PluginTicket->{_mp_PluginName});
+            $cfObj->Load('_pm_OnDate');
+            $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => getTimestamp());
+            $cfObj->Load('_pm_PluginStatus');
+            $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => 1);
+##
 # Change the ticket status 
 ## 
             WriteMessageAndCloseTicket($CurrentUser, $PluginTicket->{id}, '');
         }
+##
+# If exists initaldata fine -- import it
+##
+
+## DatabaseUser
+## DatabasePassword
+
     }
 }
 
