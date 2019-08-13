@@ -106,9 +106,6 @@ my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime();
 $year += 1900; 
 $mon+=1;
 
-print "$RT::DatabaseUser \t $RT::DatabasePassword \n";
-my $___p = 'RT-Extension-macrorecorder';
-print "$RT::SbinPath/rt-setup-database --action insert --datafile $RT::LocalPluginPath/$___p/etc/initialdata --dba-password '$RT::DatabasePassword'\n";
 
 foreach my $PluginTicket (@MPQueueTickets) {
     my ($_year,$_mon,$_mday,$_hour,$_min,$_sec) = split(/[\s-:]+/, $PluginTicket->{_mp_RestartDate});
@@ -187,6 +184,11 @@ foreach my $PluginTicket (@MPQueueTickets) {
 
 ## DatabaseUser
 ## DatabasePassword
+        if (-e -r -T "$RT::LocalPluginPath/$PluginTicket->{_mp_PluginName}/etc/initialdata") {
+            my $comm = "$RT::SbinPath/rt-setup-database --action insert --datafile $RT::LocalPluginPath/$PluginTicket->{_mp_PluginName}/etc/initialdata --dba-password '$RT::DatabasePassword'";
+            my $res  = `$comm`;
+            print "CLI: $comm\nRESULT: $res\n" ;
+        }
 
     }
 }
