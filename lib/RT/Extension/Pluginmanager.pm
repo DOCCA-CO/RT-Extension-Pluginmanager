@@ -1,5 +1,5 @@
 package RT::Extension::Pluginmanager;
 
-our $VERSION = '0.2.13 b2343';
+our $VERSION = '0.2.15 b2354';
 
 1;

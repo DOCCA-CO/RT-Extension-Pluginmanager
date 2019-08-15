@@ -6,7 +6,7 @@
          "contributor": "Petky Péter",
          "learnmore": "https://servicedesk-marketplace.com/",
          "description": "This is a test plug-in for market testing",
-         "link": "http://libuzhnu.brinkster.net/market/RT-Extension-Jse.tar.gz"
+         "link": "https://servicedesk-marketplace.com/downloads/RT-Extension-Jse.tar.gz"
       },
       {
          "name": "AttachmentsColored",
@@ -14,7 +14,7 @@
          "contributor": "Tóth Lajos",
          "learnmore": "https://servicedesk-marketplace.com/",
          "description": "This is a test plug-in for market testing",
-         "link": "http://libuzhnu.brinkster.net/market/RT-Extension-AttachmentsColored.tar.gz"
+         "link": "https://servicedesk-marketplace.com/downloads/RT-Extension-AttachmentsColored.tar.gz"
       },
       {
          "name": "CRMfolderQuickCreate",
@@ -30,7 +30,7 @@
          "contributor": "Tóth Lajos",
          "learnmore": "https://servicedesk-marketplace.com/",
          "description": "This is a test plug-in for market testing",
-         "link": "http://libuzhnu.brinkster.net/market/RT-Extension-QuickSearch.tar.gz"
+         "link": "https://servicedesk-marketplace.com/downloads/RT-Extension-QuickSearch.tar.gz"
       },
       {
          "name": "UserList",
@@ -38,7 +38,7 @@
          "contributor": "Tóth Lajos",
          "learnmore": "https://servicedesk-marketplace.com/",
          "description": "This is a test plug-in for market testing",
-         "link": "http://libuzhnu.brinkster.net/market/RT-Extension-UserList.tar.gz"
+         "link": "https://servicedesk-marketplace.com/downloads/RT-Extension-UserList.tar.gz"
       },
       {
          "name": "QuickChild",
@@ -46,7 +46,7 @@
          "contributor": "Tóth Lajos",
          "learnmore": "https://servicedesk-marketplace.com/",
          "description": "This is a test plug-in for market testing",
-         "link": "http://libuzhnu.brinkster.net/market/RT-Extension-QuickChild.tar.gz"
+         "link": "https://servicedesk-marketplace.com/downloads/RT-Extension-QuickChild.tar.gz"
       },
       {
          "name": "BigBox",
@@ -54,7 +54,7 @@
          "contributor": "Tóth Lajos",
          "learnmore": "https://servicedesk-marketplace.com/",
          "description": "This is a test plug-in for market testing",
-         "link": "http://libuzhnu.brinkster.net/market/RT-Extension-BigBox.tar.gz"
+         "link": "https://servicedesk-marketplace.com/downloads/RT-Extension-BigBox.tar.gz"
       },
       {
          "name": "RawExport",
@@ -62,15 +62,7 @@
          "contributor": "Tóth Lajos",
          "learnmore": "https://servicedesk-marketplace.com/",
          "description": "This is a test plug-in for market testing",
-         "link": "http://libuzhnu.brinkster.net/market/RT-Extension-RawExport.tar.gz"
-      },
-      {
-         "name": "rt-extension-rest2",
-         "version": "1.07",
-         "contributor": "cbrandtbuffalo",
-         "learnmore": "https://servicedesk-marketplace.com/",
-         "description": "This is a test plug-in for market testing",
-         "link": "https://github.com/bestpractical/rt-extension-rest2/archive/master.zip"
+         "link": "https://servicedesk-marketplace.com/downloads/RT-Extension-RawExport.tar.gz"
       },
       {
          "name": "JSGantt",
@@ -78,7 +70,7 @@
          "contributor": "Best Practical Solutions",
          "learnmore": "https://metacpan.org/pod/RT::Extension::JSGantt",
          "description": "This extension uses the Starts and Due dates, along with ticket dependencies, to produce Gantt charts.",
-         "link": "https://cpan.metacpan.org/authors/id/B/BP/BPS/RT-Extension-JSGantt.tar.gz"
+         "link": "cpanm RT::Extension::JSGantt"
       },
       {
          "name": "Gravatar",
@@ -86,7 +78,7 @@
          "contributor": "Christian Loos",
          "learnmore": "https://metacpan.org/pod/RT::Extension::Gravatar",
          "description": "This Plugin displays Gravatar image on the following pages: More about the requestors widget. Modify user page. About me (Preferences). User Summary",
-         "link": "https://cpan.metacpan.org/authors/id/C/CL/CLOOS/RT-Extension-Gravatar.tar.gz"
+         "link": "cpanm RT::Extension::Gravatar"
       },
       {
          "name": "REST2",
@@ -94,7 +86,7 @@
          "contributor": "Best Practical Solutions",
          "learnmore": "https://metacpan.org/pod/RT::Extension::REST2",
          "description": "RT::Extension::REST2 - Adds a modern REST API to RT under /REST/2.0/",
-         "link": "https://cpan.metacpan.org/authors/id/B/BP/BPS/RT-Extension-REST2.tar.gz"
+         "link": "cpanm RT::Extension::REST2"
       },
       {
          "name": "Macro recorder",
@@ -102,7 +94,7 @@
          "contributor": "Péter Petky",
          "learnmore": "https://servicedesk-marketplace.com/",
          "description": "This is a test plug-in for market testing",
-         "link": "RT-Extension-macrorecorder.zip"
+         "link": "https://servicedesk-marketplace.com/downloads/RT-Extension-macrorecorder.tar.gz"
       }
    ]
 }

@@ -142,9 +142,9 @@ my @sub_dirs = grep { -d } map { catfile $path, $_ } read_dir ($path);
 
 my @installed = RT->Config->GetObfuscated( 'Plugins', $session{'CurrentUser'} );
 
-##$url = 'https://servicedesk-marketplace.com/wp-content/uploads/2019/07/';
-$url = 'http://libuzhnu.brinkster.net/market/';
-$file = 'catalogue.txt';
+$url = 'https://servicedesk-marketplace.com/downloads/';
+##$url = 'http://libuzhnu.brinkster.net/market/';
+$file = 'catalogue.json';
 
 if ( ($Reload==1) or (not -e -r -T "/tmp/$file") ) {
     my $rc = getstore($url.$file, "/tmp/$file");
@@ -279,8 +279,16 @@ if ( $MarketAction ) {
         if (ref($ARGS{plugin}) eq 'ARRAY') {
             foreach my $pl (@{$ARGS{plugin}}) {
                 my $ticketObj = RT::Ticket->new($current_user); # empty ticket object
-                (my $nm = $pl) =~ s/^.*\///;
-                $nm = substr $nm, 0, index( $nm, q{.} ) ;##  =~ s/\.[^.]+$//;
+                my $nm = '';
+                if (index($pl, 'cpanm') >= 0) {
+                ## In case of cpanm
+                    ($nm = $pl) =~ s/^.{6}//s;
+                    $nm =~ s/::/-/ig;
+                } else {
+                ## In case of zip, tar.gz
+                    ($nm = $pl) =~ s/^.*\///;
+                    $nm = substr $nm, 0, index( $nm, q{.} ) ;##  =~ s/\.[^.]+$//;
+                }
                 my %args = (
                     Queue=>"_Pluginmanager",
                     Requestor=>$current_user->Name,
@@ -308,8 +316,17 @@ if ( $MarketAction ) {
             }
         } else {
             my $ticketObj = RT::Ticket->new($current_user); # empty ticket object
-            (my $nm = $ARGS{plugin}) =~ s/^.*\///;
-            $nm = substr $nm, 0, index( $nm, q{.} ) ;##  =~ s/\.[^.]+$//;
+            my $nm = '';
+            ($nm = $ARGS{plugin}) =~ s/^.*\///;
+            if (index($nm, 'cpanm') >= 0) {
+            ## In case of cpanm
+                $nm =~ s/^.{6}//s;
+                $nm =~ s/::/-/ig;
+            } else {
+            ## In case of zip, tar.gz
+                $nm =~ s/^.*\///;
+                $nm = substr $nm, 0, index( $nm, q{.} ) ;##  =~ s/\.[^.]+$//;
+            }
             my %args = (
                 Queue=>"_Pluginmanager",
                 Requestor=>$current_user->Name,
