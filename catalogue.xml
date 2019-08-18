@@ -23,7 +23,7 @@
 		<contributor>Tóth Lajos</contributor>
 		<learnmore>https://servicedesk-marketplace.com/</learnmore>
 		<description>This is a test plug-in for market testing</description>
-		<link>RT-Extension-CRMfolderQuickCreate.zip</link>
+		<link>https://servicedesk-marketplace.com/downloads/RT-Extension-CRMfolderQuickCreate.zip</link>
 	</plugin>
 	<plugin>
 		<name>QuickSearch</name>

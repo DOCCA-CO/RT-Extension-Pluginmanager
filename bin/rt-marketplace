@@ -75,6 +75,19 @@ sub WriteMessageAndCloseTicket {
 }
 
 
+sub WriteMessageToTicket {
+    my ($current_user, $ticketID, $ticketMsg) = @_;
+
+    my $obj = RT::Ticket->new($current_user);
+    if ($obj->Load($ticketID)) {
+        $obj->Comment(Content => $ticketMsg);
+
+    } else {
+        print ":(\n";
+    }
+    return 1;
+}
+
 sub getTimestamp {
     my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst)=localtime(time);
     my $timestamp = sprintf ( "%04d-%02d-%02d %02d:%02d",
@@ -120,7 +133,7 @@ foreach my $PluginTicket (@MPQueueTickets) {
             my ($name,$_path,$suffix) = fileparse($rc, qw(.tar.gz .tgz .zip));
             my $comm = "$path/RT-Extension-Pluginmanager/bin/rt-plugin-extract.sh $rc $suffix $path";
             my $res  = `$comm`;
-            print "CLI: $comm\nRESULT: $res\n" ;
+##            print "CLI: $comm\nRESULT: $res\n" ;
 ##
 # Create config 
 ##
@@ -143,8 +156,10 @@ foreach my $PluginTicket (@MPQueueTickets) {
             $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => 1);
 ##
 # Change the ticket status 
-##            
-            WriteMessageAndCloseTicket($CurrentUser, $PluginTicket->{id}, '');
+##          
+            WriteMessageToTicket($CurrentUser, $PluginTicket->{id}, "$res\n");
+
+            WriteMessageAndCloseTicket($CurrentUser, $PluginTicket->{id}, "$PluginTicket->{_mp_PluginName} installed.");
         } else {
 ##
 # Install from CPAN
@@ -161,12 +176,12 @@ foreach my $PluginTicket (@MPQueueTickets) {
         ## Install plugin
             my $comm = "cpanm $_component";
             my $res  = `$comm`;
-            print "CLI: $comm\nRESULT: $res\n" ;
+##            print "CLI: $comm\nRESULT: $res\n" ;
 ##
 # Create config 
 ##
             (my $c = $PluginTicket->{_mp_PluginName})=~s/-/::/ig;  
-            print "$conf\t$c\n";
+##            print "$conf\t$c\n";
             write_file($conf, "Plugin(\"$c\");\n");
 ##
 # Change CFs of Queue 
@@ -186,7 +201,9 @@ foreach my $PluginTicket (@MPQueueTickets) {
 ##
 # Change the ticket status 
 ## 
-            WriteMessageAndCloseTicket($CurrentUser, $PluginTicket->{id}, '');
+            WriteMessageToTicket($CurrentUser, $PluginTicket->{id}, "$res\n");
+
+            WriteMessageAndCloseTicket($CurrentUser, $PluginTicket->{id}, "$PluginTicket->{_mp_PluginName} installed.");
         }
 ##
 # If exists initaldata fine -- import it
@@ -195,9 +212,9 @@ foreach my $PluginTicket (@MPQueueTickets) {
 ## DatabaseUser
 ## DatabasePassword
         if (-e -r -T "$RT::LocalPluginPath/$PluginTicket->{_mp_PluginName}/etc/initialdata") {
-            my $comm = "$RT::SbinPath/rt-setup-database --action insert --datafile $RT::LocalPluginPath/$PluginTicket->{_mp_PluginName}/etc/initialdata --dba-password '$RT::DatabasePassword'";
+            my $comm = "$RT::SbinPath/rt-setup-database --action insert --datafile $RT::LocalPluginPath/$PluginTicket->{_mp_PluginName}/etc/initialdata --dba '$RT::DatabaseUser' --dba-password '$RT::DatabasePassword'";
             my $res  = `$comm`;
-            print "CLI: $comm\nRESULT: $res\n" ;
+            WriteMessageToTicket($CurrentUser, $PluginTicket->{id}, "$res\n");
         }
 
     }
