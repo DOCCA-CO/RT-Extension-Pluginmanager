@@ -91,7 +91,7 @@
 	</plugin>
 	<plugin>
 		<name>Macro recorder</name>
-		<version>0.1 RC1</version>
+		<version>0.1.18</version>
 		<contributor>Péter Petky</contributor>
 		<learnmore>https://servicedesk-marketplace.com/</learnmore>
 		<description>This is a test plug-in for market testing</description>

@@ -10,44 +10,45 @@
 <&| /Widgets/TitleBox, title => loc('Marketplace'), titleright_href=>'/Tools/Market.html?Reload=1', titleright=>loc('Reload') &>
 <form method="post" name="Marketplace" enctype="multipart/form-data" action="<%RT->Config->Get('WebPath')%>/Tools/Market.html" style="width:100%">
 <input type="hidden" class='hidden' name="MarketAction" value='1'>
-<table width="100%" class="collection-as-table">
+
+<table id="tabMarket" class="display" style="width:100%">
 <thead>
-<tr class="collection-as-table">
-<th align="left" width="65%" class="collection-as-table">Plug-in name</th>
-<th align="left" width="25%" class="collection-as-table">Contributor</th>
-<th align="left" width="10%" class="collection-as-table">Version</th>
-</tr>
-<tr class="collection-as-table">
-<th align="left" width="65%" class="collection-as-table">Description</th>
-<th align="left" width="25%" class="collection-as-table">Learn more</th>
-<th align="left" width="10%" class="collection-as-table">Mark</th>
+<tr >
+<th>Plug-in name</th>
+<th>Version</th>
+<th>Contributor</th>
+<th>Mark</th>
+<th>Learn more</th>
+<th>Description</th>
 </tr>
 </thead>
-<tfoot>
-<tr class="collection-as-table">
-<td width="65%" class="collection-as-table"><label>Activate at
-<& /Elements/SelectDate, Name => 'mp_process_at' &></label>
-</td>
-<td colspan="2" width="35%" class="collection-as-table">
-<& /Elements/Submit, Label => loc('Download and Install') &>
-</td>
-</tr>
-</tfoot>
+
 
 <tbody>
 %foreach my $element ( @catalogue ) {
-<tr class="oddline" class="list-item">
-<td align="left" width="65%" class="collection-as-table"><% $element->{name} %></td>
-<td width="25%" class="collection-as-table"><% $element->{contributor} %></td>
-<td width="10%" class="collection-as-table"> v. <% $element->{version} %></td>
-</tr>
-<tr class="evenline" class="collection-as-table">
-<td width="65%" class="collection-as-table"><% $element->{description} %></td>
-<td width="25%" class="collection-as-table"><a href="<% $element->{learnmore} %>" target="_blank">Learn more</a></td>
-<td width="10%" class="collection-as-table"><label><input type="checkbox" name="plugin" value="<%$element->{link}%>" /> Get</label></td>
+<tr>
+<td><% $element->{name} %></td>
+<td> v. <% $element->{version} %></td>
+<td><% $element->{contributor} %></td>
+<td><label><input type="checkbox" name="plugin" value="<%$element->{link}%>" /> Get</label></td>
+<td><a href="<% $element->{learnmore} %>" target="_blank">Learn more</a></td>
+<td><% $element->{description} %></td>
 </tr>
 %}
 </tbody>
+
+<tfoot>
+<tr>
+<td colspan="2"><label>Activate at
+<& /Elements/SelectDate, Name => 'mp_process_at' &></label>
+</td>
+<td colspan="2">
+<& /Elements/Submit, Label => loc('Download and Install') &>
+</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+</tfoot>
 
 </table>
 </form>
@@ -61,33 +62,26 @@
 <&| /Widgets/TitleBox, title => loc('Manager'), titleright_href=>'/Tools/Market.html?Refresh=1', titleright=>loc('Refresh') &>
 <form method="post" name="Manager" enctype="multipart/form-data" action="<%RT->Config->Get('WebPath')%>/Tools/Market.html" style="width:100%">
 <input type='hidden' class='hidden' name='ManagerAction' value='1'>
-<table style="width: 100%" class="collection-as-table">
+<table class="display" style="width:100%" id="tabManager">
 <thead>
-<tr class="collection-as-table">
-<th align="left" width="60%" class="collection-as-table">Plugin</th>
-<th align="left" width="20%" class="collection-as-table">&nbsp;</th>
-<th align="left" width="10%" class="collection-as-table">on/off</th>
+<tr>
+<th>Plugin</th>
+<th>On/off date</th>
+<th>on/off</th>
 </tr>
 </thead>
-<tfoot>
-<tr class="collection-as-table">
-<td width="60%" class="collection-as-table"><label>Process changes at<& /Elements/SelectDate, Name => 'pm_action_at' &></label>
-</td>
-<td colspan="2" width="40%" class="collection-as-table"><& /Elements/Submit, Label => loc('Save Changes') &></td>
-</tr>
-</tfoot>
 
 <tbody>
 %my $number = 0;
 %foreach my $PluginTicket (@PMQueueTickets) {
 %$number += 1;
-<tr class="<% ($number % 2 == 0)?'evenline':'oddline' %>" class="list-item">
-<td width="60%" class="collection-as-table">
+<tr>
+<td width="60%" >
 %(my $nm = $PluginTicket->{_pm_PluginName}) =~s/-/::/ig;
 %$nm .= '::VERSION';
-<font color="<% ($PluginTicket->{_pm_PluginStatus}<1)?'gray':'black' %>"><% $PluginTicket->{_pm_PluginName} %></font> (ver. <%eval("\$$nm") || 'N/A'%>)
+<font color="<% ($PluginTicket->{_pm_PluginStatus}>1)?'gray':'black' %>"><% $PluginTicket->{_pm_PluginName} %></font> (ver. <%eval("\$$nm") || 'N/A'%>)
 </td>
-<td width="30%" class="collection-as-table">
+<td>
 <i style="color:gray">On: <% $PluginTicket->{_pm_OnDate} %></i>
 %if ($PluginTicket->{_pm_OffDate}) {
 <br><i style="color:gray">Off: <% $PluginTicket->{_pm_OffDate} %></i>
@@ -97,16 +91,24 @@
 %}
 
 %if ($PluginTicket->{_pm_PlannedOnDate}) {
-<br><i style="color:red">A: On@ <%$PluginTicket->{_pm_PlannedOnDate}  %> </i>
+<br><i style="color:red">A: On@ <%$PluginTicket->{_pm_PlannedOnDate}%> </i>
 %}
 
 </td>
-<td width="10%" align="center" class="collection-as-table">
+<td>
 <input type="checkbox" name="<% $PluginTicket->{_pm_PluginName} %>" value="1" <% $PluginTicket->{_pm_PluginStatus} == 1 ?"checked":"" %> <% $PluginTicket->{_pm_PluginStatus} == 2?"checked disabled":"" %> />
 </td>
 </tr>
 %}
 </tbody>
+
+<tfoot>
+<tr>
+<td><label>Process changes at<& /Elements/SelectDate, Name => 'pm_action_at' &></label>
+</td>
+<td colspan="2"><& /Elements/Submit, Label => loc('Save Changes') &></td>
+</tr>
+</tfoot>
 
 </table>
 </form>
@@ -118,8 +120,36 @@
 
 </table>
 
-
 <hr />
+
+<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/dataTables.responsive.min.js"></script>
+<script type="text/javascript">
+    
+jQuery(function ($) {
+    $(document).ready(function() {
+    $('#tabMarket')
+        .addClass( 'nowrap' )
+        .DataTable({
+                    responsive: true,
+                    columnDefs: [
+                        { targets: [-1, -3], className: 'dt-body-right' }
+                    ]
+                });
+    $('#tabManager')
+        .addClass( 'nowrap' )
+        .DataTable({
+                    responsive: true,
+                    columnDefs: [
+                        { targets: [-1, -2], className: 'dt-body-center' }
+                    ]
+                });
+    }) 
+});
+
+
+</script>
+
 
 <%INIT>
 use utf8;
@@ -132,7 +162,6 @@ use File::Slurp qw( read_dir );
 use File::Spec::Functions qw( catfile );
 use File::Basename qw ( basename );
 
-use Data::Dumper;
 use RT::Search::FromSQL;
 
 my ( $url, $file, $json, @catalogue, @results, %cfs );
@@ -143,7 +172,6 @@ my @sub_dirs = grep { -d } map { catfile $path, $_ } read_dir ($path);
 my @installed = RT->Config->GetObfuscated( 'Plugins', $session{'CurrentUser'} );
 
 $url = 'https://servicedesk-marketplace.com/downloads/';
-##$url = 'http://libuzhnu.brinkster.net/market/';
 $file = 'catalogue.json';
 
 if ( ($Reload==1) or (not -e -r -T "/tmp/$file") ) {
@@ -162,9 +190,6 @@ if ( ($Reload==1) or (not -e -r -T "/tmp/$file") ) {
 }
 
 my $ref = decode_json($json);
-
-### my %plugins = %$ref{'plugin'};
-
 @catalogue = @{$ref->{'plugin'}};
 
 ##
