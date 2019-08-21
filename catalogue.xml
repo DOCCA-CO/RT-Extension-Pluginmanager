@@ -2,7 +2,7 @@
 <plugins>
 
 	<plugin>
-		<name>JuSt an Easter Egg</name>
+		<name>Jse</name>
 		<version>0.1</version>
 		<contributor>Petky Péter</contributor>
 		<learnmore>https://servicedesk-marketplace.com/</learnmore>
@@ -90,7 +90,7 @@
 		<link>cpanm RT::Extension::REST2</link>
 	</plugin>
 	<plugin>
-		<name>Macro recorder</name>
+		<name>Macrorecorder</name>
 		<version>0.1.18</version>
 		<contributor>Péter Petky</contributor>
 		<learnmore>https://servicedesk-marketplace.com/</learnmore>

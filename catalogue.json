@@ -1,7 +1,7 @@
 {
    "plugin": [
       {
-         "name": "JuSt an Easter Egg",
+         "name": "Jse",
          "version": "0.1",
          "contributor": "Petky Péter",
          "learnmore": "https://servicedesk-marketplace.com/",
@@ -89,12 +89,36 @@
          "link": "cpanm RT::Extension::REST2"
       },
       {
-         "name": "Macro recorder",
+         "name": "macrorecorder",
          "version": "0.1.18",
          "contributor": "Péter Petky",
          "learnmore": "https://servicedesk-marketplace.com/",
          "description": "This is a test plug-in for market testing",
          "link": "https://servicedesk-marketplace.com/downloads/RT-Extension-macrorecorder.tar.gz"
-      }
+      },
+      {
+         "name": "RTx-Calendar",
+         "version": "1.01",
+         "contributor": "Best Practical Solutions, LLC",
+         "learnmore": "https://metacpan.org/pod/RTx::Calendar",
+         "description": "This RT extension provides a calendar view for your tickets and your reminders so you see when is your next due ticket.\nYou can find it in the menu Search->Calendar.",
+         "link": "cpanm RTx::Calendar"
+      },
+      {
+         "name": "ExcelFeed",
+         "version": "0.05",
+         "contributor": "Best Practical Solutions, LLC",
+         "learnmore": "https://metacpan.org/pod/RT::Extension::ExcelFeed",
+         "description": "This extenstion allows you to generate RT reports in MS Excel XSLX format. It provides two ways to do this.\nFirst, it adds a new MS Excel option to the 'Feeds' menu on the Query Builder search results page.\nIt also adds an option to the Dashboard subscription page that allows you to have scheduled dashboards emailed to recipients\nas attached MS Excel files rather than inline HTML reports.",
+         "link": "cpanm RT::Extension::ExcelFeed"
+      },
+      {
+         "name": "ExampleTheme",
+         "version": "0.01",
+         "contributor": "Best Practical Solutions, LLC",
+         "learnmore": "https://metacpan.org/pod/RT::Extension::ExampleTheme",
+         "description": "RT::Extension::ExampleTheme is a small example of the customizations users can make to change the look and feel of RT.\nThese changes are saved as a theme for others to use.",
+         "link": "cpanm RT::Extension::ExampleTheme"
+      }      
    ]
 }
