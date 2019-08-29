@@ -75,6 +75,8 @@ my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime();
 $year += 1900; 
 $mon+=1;
 
+my $isSomeReasonToRestartApache = 0;
+
 foreach my $PluginTicket (@PMQueueTickets) {
     my $user = RT::User->new($CurrentUser);
     $user->Load('root');
@@ -112,6 +114,8 @@ foreach my $PluginTicket (@PMQueueTickets) {
                     $ok->AddCustomFieldValue(Field => $cfObj->id, Value => strftime("%Y-%m-%d %T", localtime) );
                     $cfObj->Load('_pm_PluginStatus');
                     $ok->AddCustomFieldValue(Field => $cfObj->id, Value => 0);
+
+                    $isSomeReasonToRestartApache += 1;
                 }
             } else {
                 print "\tPlugin \'$PluginTicket->{_pm_PluginName}\' will be deactivated after $PluginTicket->{_pm_PlannedOffDate}\n";
@@ -147,12 +151,27 @@ foreach my $PluginTicket (@PMQueueTickets) {
                     $ok->AddCustomFieldValue(Field => $cfObj->id, Value => strftime("%Y-%m-%d %T", localtime) );
                     $cfObj->Load('_pm_PluginStatus');
                     $ok->AddCustomFieldValue(Field => $cfObj, Value => 1);
+
+                    $isSomeReasonToRestartApache += 1;
                 }
             } else {
                 print "\tPlugin \'$PluginTicket->{_pm_PluginName}\' will be activated after $PluginTicket->{_pm_PlannedOnDate}\n";
             }
         }
     }
+}
+
+##
+#  If there were some installations, then we gonna restart apache web server.
+##
+if ( $isSomeReasonToRestartApache > 0 ) {
+    print "Now we gonna restart your Apache\n";
+    my $path = $RT::LocalPluginPath;
+    my $comm = "$path/RT-Extension-Pluginmanager/bin/rt-restart-apache.sh";
+    my $res  = `$comm`;
+    print "CLI: $comm\nRESULT: $res\n" ;
+} else {
+    print "Nothing to do.\n";
 }
 
 1;

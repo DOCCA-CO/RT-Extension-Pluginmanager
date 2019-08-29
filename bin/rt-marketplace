@@ -119,6 +119,7 @@ my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime();
 $year += 1900; 
 $mon+=1;
 
+my $isSomeReasonToRestartApache = 0;
 
 foreach my $PluginTicket (@MPQueueTickets) {
     my ($_year,$_mon,$_mday,$_hour,$_min,$_sec) = split(/[\s-:]+/, $PluginTicket->{_mp_RestartDate});
@@ -133,7 +134,7 @@ foreach my $PluginTicket (@MPQueueTickets) {
             my ($name,$_path,$suffix) = fileparse($rc, qw(.tar.gz .tgz .zip));
             my $comm = "$path/RT-Extension-Pluginmanager/bin/rt-plugin-extract.sh $rc $suffix $path";
             my $res  = `$comm`;
-##            print "CLI: $comm\nRESULT: $res\n" ;
+            print "CLI: $comm\nRESULT: $res\n" ;
 ##
 # Create config 
 ##
@@ -160,6 +161,8 @@ foreach my $PluginTicket (@MPQueueTickets) {
             WriteMessageToTicket($CurrentUser, $PluginTicket->{id}, "$res\n");
 
             WriteMessageAndCloseTicket($CurrentUser, $PluginTicket->{id}, "$PluginTicket->{_mp_PluginName} installed.");
+
+            $isSomeReasonToRestartApache += 1;
         } else {
 ##
 # Install from CPAN
@@ -176,7 +179,7 @@ foreach my $PluginTicket (@MPQueueTickets) {
         ## Install plugin
             my $comm = "cpanm $_component";
             my $res  = `$comm`;
-##            print "CLI: $comm\nRESULT: $res\n" ;
+            print "CLI: $comm\nRESULT: $res\n" ;
 ##
 # Create config 
 ##
@@ -204,13 +207,12 @@ foreach my $PluginTicket (@MPQueueTickets) {
             WriteMessageToTicket($CurrentUser, $PluginTicket->{id}, "$res\n");
 
             WriteMessageAndCloseTicket($CurrentUser, $PluginTicket->{id}, "$PluginTicket->{_mp_PluginName} installed.");
+
+            $isSomeReasonToRestartApache += 1;
         }
 ##
 # If exists initaldata fine -- import it
 ##
-
-## DatabaseUser
-## DatabasePassword
         if (-e -r -T "$RT::LocalPluginPath/$PluginTicket->{_mp_PluginName}/etc/initialdata") {
             my $comm = "$RT::SbinPath/rt-setup-database --action insert --datafile $RT::LocalPluginPath/$PluginTicket->{_mp_PluginName}/etc/initialdata --dba '$RT::DatabaseUser' --dba-password '$RT::DatabasePassword'";
             my $res  = `$comm`;
@@ -218,6 +220,19 @@ foreach my $PluginTicket (@MPQueueTickets) {
         }
 
     }
+}
+
+##
+#  If there were some installations, then we gonna restart apache web server.
+##
+if ( $isSomeReasonToRestartApache > 0 ) {
+    print "Now we gonna restart your Apache\n";
+    my $path = $RT::LocalPluginPath;
+    my $comm = "$path/RT-Extension-Pluginmanager/bin/rt-restart-apache.sh";
+    my $res  = `$comm`;
+    print "CLI: $comm\nRESULT: $res\n" ;
+} else {
+    print "Nothing to do.\n";
 }
 
 1;
