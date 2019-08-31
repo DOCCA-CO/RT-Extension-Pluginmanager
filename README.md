@@ -5,11 +5,11 @@ Also it will have a marketlace function. It means, you can download and install 
 
 ## Features
 
-* Activate/deactivate installed plugins
-* Installing plugins from DOCCA's marketlace
-* Installing plugins from www.cpan.org
-* Using JSON catalogue
-* Interface powered with jQuery and DataTables
+- [x] Activate/deactivate installed plugins
+- [x] Installing plugins from DOCCA's marketlace
+- [x] Installing plugins from www.cpan.org
+- [x] Using JSON catalogue
+- [x] Interface powered with jQuery and DataTables
 
 ## Installation
 
@@ -42,3 +42,6 @@ Also you will need to configure some tasks in cron
 Use this plugin at Your own risk.
 
 
+## TODO
+
+- [x] manage installed plugins configs, if any exist.

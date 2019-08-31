@@ -14,10 +14,10 @@
 <table id="tabMarket" class="display" style="width:100%">
 <thead>
 <tr >
+<th>&nbsp;</th>
 <th>Plug-in name</th>
 <th>Version</th>
 <th>Contributor</th>
-<th>Mark</th>
 <th>Learn more</th>
 <th>Description</th>
 </tr>
@@ -27,32 +27,34 @@
 <tbody>
 %foreach my $element ( @catalogue ) {
 <tr>
+<td><input type="checkbox" name="plugin" value="<%$element->{link}%>" /></td>
 <td
-%if (grep { $_ eq "RT-Extension-$element->{name}" } @PluginNames) { print "class='highlight'"}
+%if (grep { $_ eq "RT-Extension-$element->{name}" || "RTx-$element->{name}" } @PluginNames) { print "class='highlight'"}
 ><% $element->{name} %></td>
 <td> v. <% $element->{version} %></td>
 <td><% $element->{contributor} %></td>
-<td><label><input type="checkbox" name="plugin" value="<%$element->{link}%>" /> Get</label></td>
+
 <td><a href="<% $element->{learnmore} %>" target="_blank">Learn more</a></td>
 <td><% $element->{description} %></td>
 </tr>
 %}
 </tbody>
 
-<tfoot>
+</table>
+
+<table style="width:100%;">
 <tr>
-<td colspan="2"><label>Activate at
+<td><label>Activate at
 <& /Elements/SelectDate, Name => 'mp_process_at' &></label>
 </td>
-<td colspan="2">
+<td>
 <& /Elements/Submit, Label => loc('Download and Install') &>
 </td>
 <td>&nbsp;</td>
 <td>&nbsp;</td>
 </tr>
-</tfoot>
-
 </table>
+
 </form>
 </&>
 </td>
@@ -67,9 +69,9 @@
 <table class="display" style="width:100%" id="tabManager">
 <thead>
 <tr>
+<th>&nbsp;</th>
 <th>Plugin</th>
 <th>On/off date</th>
-<th>on/off</th>
 </tr>
 </thead>
 
@@ -78,7 +80,11 @@
 %foreach my $PluginTicket (@PMQueueTickets) {
 %$number += 1;
 <tr>
-<td width="60%" >
+<td>
+<input type="checkbox" class="editor-active" name="<% $PluginTicket->{_pm_PluginName} %>" value="1" <% $PluginTicket->{_pm_PluginStatus} == 1 ?"checked":"" %> <% $PluginTicket->{_pm_PluginStatus} == 2?"checked disabled":"" %> />
+</td>
+
+<td>
 %(my $nm = $PluginTicket->{_pm_PluginName}) =~s/-/::/ig;
 %$nm .= '::VERSION';
 <font color="<% ($PluginTicket->{_pm_PluginStatus}>1)?'gray':'black' %>"><% $PluginTicket->{_pm_PluginName} %></font> (ver. <%eval("\$$nm") || 'N/A'%>)
@@ -97,22 +103,20 @@
 %}
 
 </td>
-<td>
-<input type="checkbox" name="<% $PluginTicket->{_pm_PluginName} %>" value="1" <% $PluginTicket->{_pm_PluginStatus} == 1 ?"checked":"" %> <% $PluginTicket->{_pm_PluginStatus} == 2?"checked disabled":"" %> />
-</td>
 </tr>
 %}
 </tbody>
 
-<tfoot>
-<tr>
-<td><label>Process changes at<& /Elements/SelectDate, Name => 'pm_action_at' &></label>
-</td>
-<td colspan="2"><& /Elements/Submit, Label => loc('Save Changes') &></td>
-</tr>
-</tfoot>
-
 </table>
+
+<table style="width: 100%;">
+<tr>
+<td><label>Process changes at <& /Elements/SelectDate, Name => 'pm_action_at' &></label>
+</td>
+<td><& /Elements/Submit, Label => loc('Save Changes') &></td>
+</tr>
+</table>
+
 </form>
 </&>
 
@@ -124,6 +128,10 @@
 
 <hr />
 
+<&| /Widgets/TitleBox, title => loc('Configurator (future project)') &>
+<p>Here will come the plugin configuration</p>
+</&>
+
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/dataTables.responsive.min.js"></script>
 <script type="text/javascript">
@@ -134,7 +142,14 @@ jQuery(function ($) {
         .addClass( 'nowrap' )
         .DataTable({
                     responsive: true,
-                    columnDefs: [ { targets: [-1, -3], className: 'dt-body-right' } ],
+                    scrollY: 400,
+                    scrollX: false,
+                    paging: false,
+                    columnDefs: [ 
+                        { targets: 0, orderable: false  },
+                        { targets: 4, className: 'dt-body-right' } 
+                    ],
+                    order: [[ 1, "asc" ]],
                     columns: [
                         null,
                         null,
@@ -147,12 +162,24 @@ jQuery(function ($) {
                         }
                     ]
                 });
+
     $('#tabManager')
         .addClass( 'nowrap' )
         .DataTable({
                     responsive: true,
-                    columnDefs: [ { targets: [-1, -2], className: 'dt-body-center' } ]
+                    scrollY: 400,
+                    scrollX: false,
+                    paging: false,
+                    order: [[ 1, "asc" ]],
+                    columnDefs: [ { targets: 0, orderable: false  }, 
+                                  { targets: 1, className: 'dt-body-left' } ],
+//                    aLengthMenu: [
+//                        [25, 50, 100, 200, -1],
+//                        [25, 50, 100, 200, "All"]
+//                    ],
+                    iDisplayLength: -1
                 });
+
     }) 
 });
 
@@ -172,6 +199,8 @@ use File::Spec::Functions qw( catfile );
 use File::Basename qw ( basename );
 
 use RT::Search::FromSQL;
+
+use Data::Dumper;
 
 my ( $url, $file, $json, @catalogue, @results, %cfs );
 

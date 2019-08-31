@@ -175,11 +175,13 @@ foreach my $PluginTicket (@MPQueueTickets) {
             my $comm = "cpanm --installdeps $_component";
             my $res  = `$comm`;
             print "CLI: $comm\nRESULT: $res\n" ;
+            WriteMessageToTicket($CurrentUser, $PluginTicket->{id}, "$res\n");
 
         ## Install plugin
             my $comm = "cpanm $_component";
             my $res  = `$comm`;
             print "CLI: $comm\nRESULT: $res\n" ;
+            WriteMessageToTicket($CurrentUser, $PluginTicket->{id}, "$res\n");
 ##
 # Create config 
 ##
@@ -204,8 +206,6 @@ foreach my $PluginTicket (@MPQueueTickets) {
 ##
 # Change the ticket status 
 ## 
-            WriteMessageToTicket($CurrentUser, $PluginTicket->{id}, "$res\n");
-
             WriteMessageAndCloseTicket($CurrentUser, $PluginTicket->{id}, "$PluginTicket->{_mp_PluginName} installed.");
 
             $isSomeReasonToRestartApache += 1;
