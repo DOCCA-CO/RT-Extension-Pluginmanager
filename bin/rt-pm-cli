@@ -87,7 +87,7 @@ foreach my $PluginTicket (@PMQueueTickets) {
         if ($PluginTicket->{_pm_PlannedOffDate} ne "") {
             print "\t*A: Off = $PluginTicket->{_pm_PlannedOffDate}\n";
             my ($_year,$_mon,$_mday,$_hour,$_min,$_sec) = split(/[\s-:]+/, $PluginTicket->{_pm_PlannedOffDate});
-            if (($year == $_year) and ($mon==$_mon) and ($mday==$_mday) and ($hour==$_hour)) {
+            if ( ($year == $_year) && ($mon==$_mon) && ($mday==$_mday) && ($hour==$_hour) && ( ($_min >= $min)  &&  ($_min <= $min+2) ) ) {
                 if (!rename ($config_name, $cfg_name_off)) {
                     my $err = RT::Ticket->new($user);
                     $err->Load($PluginTicket->{id});
@@ -124,7 +124,7 @@ foreach my $PluginTicket (@PMQueueTickets) {
         if ($PluginTicket->{_pm_PlannedOnDate} ne "") {
             print "\t*A: On  = $PluginTicket->{_pm_PlannedOnDate}\n";
             my ($_year,$_mon,$_mday,$_hour,$_min,$_sec) = split(/[\s-:]+/, $PluginTicket->{_pm_PlannedOnDate});
-            if (($year == $_year) and ($mon==$_mon) and ($mday==$_mday) and ($hour==$_hour)) {
+            if ( ($year == $_year) && ($mon==$_mon) && ($mday==$_mday) && ($hour==$_hour) && ($hour==$_hour) && ( ($_min >= $min)  &&  ($_min <= $min+2) ) ) {
                 if (!rename($cfg_name_off, $config_name)) {
                     my $err = RT::Ticket->new($user);
                     $err->Load($PluginTicket->{id});

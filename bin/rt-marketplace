@@ -122,8 +122,8 @@ $mon+=1;
 my $isSomeReasonToRestartApache = 0;
 
 foreach my $PluginTicket (@MPQueueTickets) {
-    my ($_year,$_mon,$_mday,$_hour,$_min,$_sec) = split(/[\s-:]+/, $PluginTicket->{_mp_RestartDate});
-    if (($year == $_year) and ($mon==$_mon) and ($mday==$_mday) and ($hour==$_hour)) {
+    my ( $_year,$_mon,$_mday,$_hour,$_min,$_sec ) = split(/[\s-:]+/, $PluginTicket->{_mp_RestartDate});
+    if ( ($year == $_year) && ($mon==$_mon) && ($mday==$_mday) && ($hour==$_hour) && ( ($_min >= $min)  &&  ($_min <= $min+5) ) ) {
         my $rc = (substr($PluginTicket->{_mp_LinkToDownload}, 0, 5) eq 'cpanm')?undef:DownloadZIP($PluginTicket->{_mp_LinkToDownload});
         if ( $rc ) {
             my $path = $RT::LocalPluginPath;

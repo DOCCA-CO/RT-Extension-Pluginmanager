@@ -77,7 +77,7 @@
          "version": "2.01",
          "contributor": "Christian Loos",
          "learnmore": "https://metacpan.org/pod/RT::Extension::Gravatar",
-         "description": "This Plugin displays Gravatar image on the following pages: More about the requestors widget. Modify user page. About me (Preferences). User Summary",
+         "description": "This Plugin displays Gravatar image on the following pages: More about the requestors widget.\n Modify user page. About me (Preferences). User Summary",
          "link": "cpanm RT::Extension::Gravatar"
       },
       {
@@ -119,6 +119,14 @@
          "learnmore": "https://metacpan.org/pod/RT::Extension::ExampleTheme",
          "description": "RT::Extension::ExampleTheme is a small example of the customizations users can make to change the look and feel of RT.\nThese changes are saved as a theme for others to use.",
          "link": "cpanm RT::Extension::ExampleTheme"
-      }      
+      },
+      {
+         "name": "GroupsByQueue",
+         "version": "0.1.8",
+         "contributor": "Péter Petky",
+         "learnmore": "https://servicedesk-marketplace.com/",
+         "description": "Create new queue with two different user groups:\n one with _R suffix for read-only access to tickets, and another \n with _RW for read-write access.",
+         "link": "https://servicedesk-marketplace.com/downloads/RT-Extension-GroupsByQueue.tar.gz"
+      }            
    ]
 }
