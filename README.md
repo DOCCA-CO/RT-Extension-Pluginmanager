@@ -1,3 +1,4 @@
+
 # RT-Extension-Pluginmanager
 
 RT-Extension-Pluginmanager is a RT plugin for managing - activate/deactivate plugins.
@@ -33,16 +34,9 @@ You can use this plugin to install plugins from "Marketplace", activate it. Also
 Note: you cannot manage plugins, if config files for activation are not in `/opt/rt4/etc/RT-SiteConfig.d` and not refer to plugin filename convention. 
 
 Also you will need to configure some tasks in cron
-```
+```crontab
 */2 * * * * /opt/rt4/local/plugins/RT-Extension-Pluginmanager/bin/rt-pm-cli
 */11 * * * * /opt/rt4/local/plugins/RT-Extension-Pluginmanager/bin/rt-marketplace
-```
-
-Also you will need to configure some tasks in cron
-```
-*/11 * * * * /opt/rt4/local/plugins/RT-Extension-Pluginmanager/bin/rt-pm-cli
-*/20 * * * * /opt/rt4/local/plugins/RT-Extension-Pluginmanager/bin/rt-marketplace
-* 23 * * * /opt/rt4/local/plugins/RT-Extension-Pluginmanager/bin/rt-restart-apache.sh
 ```
 
 ## Warnings
