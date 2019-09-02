@@ -1,12 +1,12 @@
 {
    "plugin": [
       {
-         "name": "JuSt an Easter Egg",
+         "name": "Jse",
          "version": "0.1",
          "contributor": "Petky Péter",
          "learnmore": "https://servicedesk-marketplace.com/",
          "description": "This is a test plug-in for market testing",
-         "link": "http://libuzhnu.brinkster.net/market/RT-Extension-Jse.tar.gz"
+         "link": "https://servicedesk-marketplace.com/downloads/RT-Extension-Jse.tar.gz"
       },
       {
          "name": "AttachmentsColored",
@@ -14,7 +14,7 @@
          "contributor": "Tóth Lajos",
          "learnmore": "https://servicedesk-marketplace.com/",
          "description": "This is a test plug-in for market testing",
-         "link": "http://libuzhnu.brinkster.net/market/RT-Extension-AttachmentsColored.tar.gz"
+         "link": "https://servicedesk-marketplace.com/downloads/RT-Extension-AttachmentsColored.tar.gz"
       },
       {
          "name": "CRMfolderQuickCreate",
@@ -22,7 +22,7 @@
          "contributor": "Tóth Lajos",
          "learnmore": "https://servicedesk-marketplace.com/",
          "description": "This is a test plug-in for market testing",
-         "link": "RT-Extension-CRMfolderQuickCreate.zip"
+         "link": "https://servicedesk-marketplace.com/downloads/RT-Extension-CRMfolderQuickCreate.zip"
       },
       {
          "name": "QuickSearch",
@@ -30,7 +30,7 @@
          "contributor": "Tóth Lajos",
          "learnmore": "https://servicedesk-marketplace.com/",
          "description": "This is a test plug-in for market testing",
-         "link": "RT-Extension-QuickSearch.zip"
+         "link": "https://servicedesk-marketplace.com/downloads/RT-Extension-QuickSearch.tar.gz"
       },
       {
          "name": "UserList",
@@ -38,7 +38,7 @@
          "contributor": "Tóth Lajos",
          "learnmore": "https://servicedesk-marketplace.com/",
          "description": "This is a test plug-in for market testing",
-         "link": "http://libuzhnu.brinkster.net/market/RT-Extension-UserList.tar.gz"
+         "link": "https://servicedesk-marketplace.com/downloads/RT-Extension-UserList.tar.gz"
       },
       {
          "name": "QuickChild",
@@ -46,7 +46,7 @@
          "contributor": "Tóth Lajos",
          "learnmore": "https://servicedesk-marketplace.com/",
          "description": "This is a test plug-in for market testing",
-         "link": "http://libuzhnu.brinkster.net/market/RT-Extension-QuickChild.tar.gz"
+         "link": "https://servicedesk-marketplace.com/downloads/RT-Extension-QuickChild.tar.gz"
       },
       {
          "name": "BigBox",
@@ -54,7 +54,7 @@
          "contributor": "Tóth Lajos",
          "learnmore": "https://servicedesk-marketplace.com/",
          "description": "This is a test plug-in for market testing",
-         "link": "RT-Extension-BigBox.zip"
+         "link": "https://servicedesk-marketplace.com/downloads/RT-Extension-BigBox.tar.gz"
       },
       {
          "name": "RawExport",
@@ -62,15 +62,7 @@
          "contributor": "Tóth Lajos",
          "learnmore": "https://servicedesk-marketplace.com/",
          "description": "This is a test plug-in for market testing",
-         "link": "RT-Extension-RawExport.zip"
-      },
-      {
-         "name": "rt-extension-rest2",
-         "version": "1.07",
-         "contributor": "cbrandtbuffalo",
-         "learnmore": "https://servicedesk-marketplace.com/",
-         "description": "This is a test plug-in for market testing",
-         "link": "https://github.com/bestpractical/rt-extension-rest2/archive/master.zip"
+         "link": "https://servicedesk-marketplace.com/downloads/RT-Extension-RawExport.tar.gz"
       },
       {
          "name": "JSGantt",
@@ -78,15 +70,15 @@
          "contributor": "Best Practical Solutions",
          "learnmore": "https://metacpan.org/pod/RT::Extension::JSGantt",
          "description": "This extension uses the Starts and Due dates, along with ticket dependencies, to produce Gantt charts.",
-         "link": "https://cpan.metacpan.org/authors/id/B/BP/BPS/RT-Extension-JSGantt.tar.gz"
+         "link": "cpanm RT::Extension::JSGantt"
       },
       {
          "name": "Gravatar",
          "version": "2.01",
          "contributor": "Christian Loos",
          "learnmore": "https://metacpan.org/pod/RT::Extension::Gravatar",
-         "description": "This Plugin displays Gravatar image on the following pages: More about the requestors widget. Modify user page. About me (Preferences). User Summary",
-         "link": "https://cpan.metacpan.org/authors/id/C/CL/CLOOS/RT-Extension-Gravatar.tar.gz"
+         "description": "This Plugin displays Gravatar image on the following pages: More about the requestors widget.\n Modify user page. About me (Preferences). User Summary",
+         "link": "cpanm RT::Extension::Gravatar"
       },
       {
          "name": "REST2",
@@ -94,15 +86,47 @@
          "contributor": "Best Practical Solutions",
          "learnmore": "https://metacpan.org/pod/RT::Extension::REST2",
          "description": "RT::Extension::REST2 - Adds a modern REST API to RT under /REST/2.0/",
-         "link": "https://cpan.metacpan.org/authors/id/B/BP/BPS/RT-Extension-REST2.tar.gz"
+         "link": "cpanm RT::Extension::REST2"
       },
       {
-         "name": "Macro recorder",
-         "version": "0.1 RC1",
+         "name": "macrorecorder",
+         "version": "0.1.18",
          "contributor": "Péter Petky",
          "learnmore": "https://servicedesk-marketplace.com/",
          "description": "This is a test plug-in for market testing",
-         "link": "RT-Extension-macrorecorder.zip"
-      }
+         "link": "https://servicedesk-marketplace.com/downloads/RT-Extension-macrorecorder.tar.gz"
+      },
+      {
+         "name": "RTx-Calendar",
+         "version": "1.01",
+         "contributor": "Best Practical Solutions, LLC",
+         "learnmore": "https://metacpan.org/pod/RTx::Calendar",
+         "description": "This RT extension provides a calendar view for your tickets and your reminders so you see when is your next due ticket.\nYou can find it in the menu Search->Calendar.",
+         "link": "cpanm RTx::Calendar"
+      },
+      {
+         "name": "ExcelFeed",
+         "version": "0.05",
+         "contributor": "Best Practical Solutions, LLC",
+         "learnmore": "https://metacpan.org/pod/RT::Extension::ExcelFeed",
+         "description": "This extenstion allows you to generate RT reports in MS Excel XSLX format. It provides two ways to do this.\nFirst, it adds a new MS Excel option to the 'Feeds' menu on the Query Builder search results page.\nIt also adds an option to the Dashboard subscription page that allows you to have scheduled dashboards emailed to recipients\nas attached MS Excel files rather than inline HTML reports.",
+         "link": "cpanm RT::Extension::ExcelFeed"
+      },
+      {
+         "name": "ExampleTheme",
+         "version": "0.01",
+         "contributor": "Best Practical Solutions, LLC",
+         "learnmore": "https://metacpan.org/pod/RT::Extension::ExampleTheme",
+         "description": "RT::Extension::ExampleTheme is a small example of the customizations users can make to change the look and feel of RT.\nThese changes are saved as a theme for others to use.",
+         "link": "cpanm RT::Extension::ExampleTheme"
+      },
+      {
+         "name": "GroupsByQueue",
+         "version": "0.1.8",
+         "contributor": "Péter Petky",
+         "learnmore": "https://servicedesk-marketplace.com/",
+         "description": "Create new queue with two different user groups:\n one with _R suffix for read-only access to tickets, and another \n with _RW for read-write access.",
+         "link": "https://servicedesk-marketplace.com/downloads/RT-Extension-GroupsByQueue.tar.gz"
+      }            
    ]
 }

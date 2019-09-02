@@ -10,46 +10,51 @@
 <&| /Widgets/TitleBox, title => loc('Marketplace'), titleright_href=>'/Tools/Market.html?Reload=1', titleright=>loc('Reload') &>
 <form method="post" name="Marketplace" enctype="multipart/form-data" action="<%RT->Config->Get('WebPath')%>/Tools/Market.html" style="width:100%">
 <input type="hidden" class='hidden' name="MarketAction" value='1'>
-<table width="100%" class="collection-as-table">
+
+<table id="tabMarket" class="display" style="width:100%">
 <thead>
-<tr class="collection-as-table">
-<th align="left" width="65%" class="collection-as-table">Plug-in name</th>
-<th align="left" width="25%" class="collection-as-table">Contributor</th>
-<th align="left" width="10%" class="collection-as-table">Version</th>
-</tr>
-<tr class="collection-as-table">
-<th align="left" width="65%" class="collection-as-table">Description</th>
-<th align="left" width="25%" class="collection-as-table">Learn more</th>
-<th align="left" width="10%" class="collection-as-table">Mark</th>
+<tr >
+<th>&nbsp;</th>
+<th>Plug-in name</th>
+<th>Version</th>
+<th>Contributor</th>
+<th>Learn more</th>
+<th>Description</th>
 </tr>
 </thead>
-<tfoot>
-<tr class="collection-as-table">
-<td width="65%" class="collection-as-table"><label>Activate at
-<& /Elements/SelectDate, Name => 'mp_process_at' &></label>
-</td>
-<td colspan="2" width="35%" class="collection-as-table">
-<& /Elements/Submit, Label => loc('Download and Install') &>
-</td>
-</tr>
-</tfoot>
+
 
 <tbody>
 %foreach my $element ( @catalogue ) {
-<tr  class="oddline" class="list-item">
-<td align="left" width="65%" class="collection-as-table"><% $element->{name}[0] %></td>
-<td width="25%" class="collection-as-table"><% $element->{contributor}[0] %></td>
-<td width="10%" class="collection-as-table"> v. <% $element->{version}[0] %></td>
-</tr>
-<tr class="evenline" class="collection-as-table">
-<td width="65%" class="collection-as-table"><% $element->{description}[0] %></td>
-<td width="25%" class="collection-as-table"><a href="<% $element->{learnmore}[0] %>" target="_blank">Learn more</a></td>
-<td width="10%" class="collection-as-table"><label><input type="checkbox" name="plugin" value="<%$element->{link}[0]%>" /> Get</label></td>
+<tr>
+<td><input type="checkbox" name="plugin" value="<%$element->{link}%>" /></td>
+<td
+%if (grep { $_ eq "RT-Extension-$element->{name}" || "RTx-$element->{name}" } @PluginNames) { print "class='highlight'"}
+><% $element->{name} %></td>
+<td> v. <% $element->{version} %></td>
+<td><% $element->{contributor} %></td>
+
+<td><a href="<% $element->{learnmore} %>" target="_blank">Learn more</a></td>
+<td><% $element->{description} %></td>
 </tr>
 %}
 </tbody>
 
 </table>
+
+<table style="width:100%;">
+<tr>
+<td><label>Activate at
+<& /Elements/SelectDate, Name => 'mp_process_at' &></label>
+</td>
+<td>
+<& /Elements/Submit, Label => loc('Download and Install') &>
+</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+</table>
+
 </form>
 </&>
 </td>
@@ -61,33 +66,30 @@
 <&| /Widgets/TitleBox, title => loc('Manager'), titleright_href=>'/Tools/Market.html?Refresh=1', titleright=>loc('Refresh') &>
 <form method="post" name="Manager" enctype="multipart/form-data" action="<%RT->Config->Get('WebPath')%>/Tools/Market.html" style="width:100%">
 <input type='hidden' class='hidden' name='ManagerAction' value='1'>
-<table style="width: 100%" class="collection-as-table">
+<table class="display" style="width:100%" id="tabManager">
 <thead>
-<tr class="collection-as-table">
-<th align="left" width="60%" class="collection-as-table">Plugin</th>
-<th align="left" width="20%" class="collection-as-table">&nbsp;</th>
-<th align="left" width="10%" class="collection-as-table">on/off</th>
+<tr>
+<th>&nbsp;</th>
+<th>Plugin</th>
+<th>On/off date</th>
 </tr>
 </thead>
-<tfoot>
-<tr class="collection-as-table">
-<td width="60%" class="collection-as-table"><label>Process changes at<& /Elements/SelectDate, Name => 'pm_action_at' &></label>
-</td>
-<td colspan="2" width="40%" class="collection-as-table"><& /Elements/Submit, Label => loc('Save Changes') &></td>
-</tr>
-</tfoot>
 
 <tbody>
 %my $number = 0;
 %foreach my $PluginTicket (@PMQueueTickets) {
 %$number += 1;
-<tr class="<% ($number % 2 == 0)?'evenline':'oddline' %>" class="list-item">
-<td width="60%" class="collection-as-table">
+<tr>
+<td>
+<input type="checkbox" class="editor-active" name="<% $PluginTicket->{_pm_PluginName} %>" value="1" <% $PluginTicket->{_pm_PluginStatus} == 1 ?"checked":"" %> <% $PluginTicket->{_pm_PluginStatus} == 2?"checked disabled":"" %> />
+</td>
+
+<td>
 %(my $nm = $PluginTicket->{_pm_PluginName}) =~s/-/::/ig;
 %$nm .= '::VERSION';
-<font color="<% ($PluginTicket->{_pm_PluginStatus}<1)?'gray':'black' %>"><% $PluginTicket->{_pm_PluginName} %></font> (ver. <%eval("\$$nm") || 'N/A'%>)
+<font color="<% ($PluginTicket->{_pm_PluginStatus}>1)?'gray':'black' %>"><% $PluginTicket->{_pm_PluginName} %></font> (ver. <%eval("\$$nm") || 'N/A'%>)
 </td>
-<td width="30%" class="collection-as-table">
+<td>
 <i style="color:gray">On: <% $PluginTicket->{_pm_OnDate} %></i>
 %if ($PluginTicket->{_pm_OffDate}) {
 <br><i style="color:gray">Off: <% $PluginTicket->{_pm_OffDate} %></i>
@@ -97,18 +99,24 @@
 %}
 
 %if ($PluginTicket->{_pm_PlannedOnDate}) {
-<br><i style="color:red">A: On@ <%$PluginTicket->{_pm_PlannedOnDate}  %> </i>
+<br><i style="color:red">A: On@ <%$PluginTicket->{_pm_PlannedOnDate}%> </i>
 %}
 
-</td>
-<td width="10%" align="center" class="collection-as-table">
-<input type="checkbox" name="<% $PluginTicket->{_pm_PluginName} %>" value="1" <% $PluginTicket->{_pm_PluginStatus} == 1 ?"checked":"" %> <% $PluginTicket->{_pm_PluginStatus} == 2?"checked disabled":"" %> />
 </td>
 </tr>
 %}
 </tbody>
 
 </table>
+
+<table style="width: 100%;">
+<tr>
+<td><label>Process changes at <& /Elements/SelectDate, Name => 'pm_action_at' &></label>
+</td>
+<td><& /Elements/Submit, Label => loc('Save Changes') &></td>
+</tr>
+</table>
+
 </form>
 </&>
 
@@ -118,14 +126,67 @@
 
 </table>
 
-
 <hr />
+
+<&| /Widgets/TitleBox, title => loc('Configurator (future project)') &>
+<p>Here will come the plugin configuration</p>
+</&>
+
+<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/dataTables.responsive.min.js"></script>
+<script type="text/javascript">
+    
+jQuery(function ($) {
+    $(document).ready(function() {
+    $('#tabMarket')
+        .addClass( 'nowrap' )
+        .DataTable({
+                    responsive: true,
+                    scrollY: 400,
+                    scrollX: false,
+                    paging: false,
+                    columnDefs: [ 
+                        { targets: 0, orderable: false  },
+                        { targets: 4, className: 'dt-body-right' } 
+                    ],
+                    order: [[ 1, "asc" ]],
+                    columns: [
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        {
+                            "render": function(data, type, row){ return data.split("\n").join("<br/>");
+                            }
+                        }
+                    ]
+                });
+
+    $('#tabManager')
+        .addClass( 'nowrap' )
+        .DataTable({
+                    responsive: true,
+                    scrollY: 400,
+                    scrollX: false,
+                    paging: false,
+                    order: [[ 1, "asc" ]],
+                    columnDefs: [ { targets: 0, orderable: false  }, 
+                                  { targets: 1, className: 'dt-body-left' } ],
+                    iDisplayLength: -1
+                });
+
+    }) 
+});
+
+
+</script>
+
 
 <%INIT>
 use utf8;
 use strict;
 use warnings;
-use XML::Simple;
 use LWP::Simple;
 use JSON;
 
@@ -133,32 +194,37 @@ use File::Slurp qw( read_dir );
 use File::Spec::Functions qw( catfile );
 use File::Basename qw ( basename );
 
-use Data::Dumper;
 use RT::Search::FromSQL;
 
-my ( $xml, $url, $file, @catalogue, @results, %cfs );
+use Data::Dumper;
+
+my ( $url, $file, $json, @catalogue, @results, %cfs );
 
 my $path = $RT::LocalPluginPath;
 my @sub_dirs = grep { -d } map { catfile $path, $_ } read_dir ($path);
 
 my @installed = RT->Config->GetObfuscated( 'Plugins', $session{'CurrentUser'} );
 
-# create object
-$xml = new XML::Simple;
-
-$url = 'https://servicedesk-marketplace.com/wp-content/uploads/2019/08/';
-##$url = 'http://libuzhnu.brinkster.net/market/';
-$file = 'catalogue.xml';
+$url = 'https://servicedesk-marketplace.com/downloads/';
+$file = 'catalogue.json';
 
 if ( ($Reload==1) or (not -e -r -T "/tmp/$file") ) {
-    getstore($url.$file, "/tmp/$file");
+    my $rc = getstore($url.$file, "/tmp/$file");
+    if (is_error($rc)) {
+        die "cannot get $file from <$url> failed with $rc";
+    }
 }
 
 
-my $ref = XMLin("/tmp/$file", ForceArray => 1);
+{
+  local $/; #Enable 'slurp' mode
+  open my $fh, "<", "/tmp/$file";
+  $json = <$fh>;
+  close $fh;
+}
 
-my %plugins = %$ref{'plugin'};
-@catalogue = @{$plugins{'plugin'}};
+my $ref = decode_json($json);
+@catalogue = @{$ref->{'plugin'}};
 
 ##
 # Tickets
@@ -223,8 +289,10 @@ if ($Rescan==1) {
 }
 
 
-my @PMQueueTickets;
+my (@PMQueueTickets, @PluginNames);
 @PMQueueTickets = ReloadTicketSet($current_user);
+
+foreach my $pname (@PMQueueTickets) { push @PluginNames, $pname->{_pm_PluginName} }
 
 ##
 #   Plugins
@@ -272,8 +340,16 @@ if ( $MarketAction ) {
         if (ref($ARGS{plugin}) eq 'ARRAY') {
             foreach my $pl (@{$ARGS{plugin}}) {
                 my $ticketObj = RT::Ticket->new($current_user); # empty ticket object
-                (my $nm = $pl) =~ s/^.*\///;
-                $nm = substr $nm, 0, index( $nm, q{.} ) ;##  =~ s/\.[^.]+$//;
+                my $nm = '';
+                if (index($pl, 'cpanm') >= 0) {
+                ## In case of cpanm
+                    ($nm = $pl) =~ s/^.{6}//s;
+                    $nm =~ s/::/-/ig;
+                } else {
+                ## In case of zip, tar.gz
+                    ($nm = $pl) =~ s/^.*\///;
+                    $nm = substr $nm, 0, index( $nm, q{.} ) ;##  =~ s/\.[^.]+$//;
+                }
                 my %args = (
                     Queue=>"_Pluginmanager",
                     Requestor=>$current_user->Name,
@@ -301,8 +377,17 @@ if ( $MarketAction ) {
             }
         } else {
             my $ticketObj = RT::Ticket->new($current_user); # empty ticket object
-            (my $nm = $ARGS{plugin}) =~ s/^.*\///;
-            $nm = substr $nm, 0, index( $nm, q{.} ) ;##  =~ s/\.[^.]+$//;
+            my $nm = '';
+            ($nm = $ARGS{plugin}) =~ s/^.*\///;
+            if (index($nm, 'cpanm') >= 0) {
+            ## In case of cpanm
+                $nm =~ s/^.{6}//s;
+                $nm =~ s/::/-/ig;
+            } else {
+            ## In case of zip, tar.gz
+                $nm =~ s/^.*\///;
+                $nm = substr $nm, 0, index( $nm, q{.} ) ;##  =~ s/\.[^.]+$//;
+            }
             my %args = (
                 Queue=>"_Pluginmanager",
                 Requestor=>$current_user->Name,
@@ -338,8 +423,7 @@ sub ReloadTicketSet {
     $queue->Load("_Pluginmanager");
 
     my $tickets = RT::Tickets->new($current_user);
-    my $foo = RT::Search::FromSQL->new(Argument => "Queue='_Pluginmanager' AND Status='open'",
-                              TicketsObj => $tickets);
+    my $foo = RT::Search::FromSQL->new(Argument => "Queue='_Pluginmanager' AND Status='open'", TicketsObj => $tickets);
     $foo->Prepare();
     while ( my $ticket = $tickets->Next() ) {
         # Do something with each ticket we've found

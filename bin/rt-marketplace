@@ -75,6 +75,19 @@ sub WriteMessageAndCloseTicket {
 }
 
 
+sub WriteMessageToTicket {
+    my ($current_user, $ticketID, $ticketMsg) = @_;
+
+    my $obj = RT::Ticket->new($current_user);
+    if ($obj->Load($ticketID)) {
+        $obj->Comment(Content => $ticketMsg);
+
+    } else {
+        print ":(\n";
+    }
+    return 1;
+}
+
 sub getTimestamp {
     my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst)=localtime(time);
     my $timestamp = sprintf ( "%04d-%02d-%02d %02d:%02d",
@@ -106,10 +119,12 @@ my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime();
 $year += 1900; 
 $mon+=1;
 
+my $isSomeReasonToRestartApache = 0;
+
 foreach my $PluginTicket (@MPQueueTickets) {
-    my ($_year,$_mon,$_mday,$_hour,$_min,$_sec) = split(/[\s-:]+/, $PluginTicket->{_mp_RestartDate});
-    if (($year == $_year) and ($mon==$_mon) and ($mday==$_mday) and ($hour==$_hour)) {
-        my $rc = DownloadZIP($PluginTicket->{_mp_LinkToDownload});
+    my ( $_year,$_mon,$_mday,$_hour,$_min,$_sec ) = split(/[\s-:]+/, $PluginTicket->{_mp_RestartDate});
+    if ( ($year == $_year) && ($mon==$_mon) && ($mday==$_mday) && ($hour==$_hour) && ( ($_min >= $min)  &&  ($_min <= $min+5) ) ) {
+        my $rc = (substr($PluginTicket->{_mp_LinkToDownload}, 0, 5) eq 'cpanm')?undef:DownloadZIP($PluginTicket->{_mp_LinkToDownload});
         if ( $rc ) {
             my $path = $RT::LocalPluginPath;
             my $conf = "$RT::EtcPath/RT_SiteConfig.d/$PluginTicket->{_mp_PluginName}.pm";
@@ -142,10 +157,82 @@ foreach my $PluginTicket (@MPQueueTickets) {
             $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => 1);
 ##
 # Change the ticket status 
-##            
-            WriteMessageAndCloseTicket($CurrentUser, $PluginTicket->{id}, '');
+##          
+            WriteMessageToTicket($CurrentUser, $PluginTicket->{id}, "$res\n");
+
+            WriteMessageAndCloseTicket($CurrentUser, $PluginTicket->{id}, "$PluginTicket->{_mp_PluginName} installed.");
+
+            $isSomeReasonToRestartApache += 1;
+        } else {
+##
+# Install from CPAN
+##
+            my $path = $RT::LocalPluginPath;
+            my $conf = "$RT::EtcPath/RT_SiteConfig.d/$PluginTicket->{_mp_PluginName}.pm";
+            (my $_component = $PluginTicket->{_mp_LinkToDownload}) =~ s/^.{6}//s;
+
+        ## Install dependencies
+            my $comm = "cpanm --installdeps $_component";
+            my $res  = `$comm`;
+            print "CLI: $comm\nRESULT: $res\n" ;
+            WriteMessageToTicket($CurrentUser, $PluginTicket->{id}, "$res\n");
+
+        ## Install plugin
+            my $comm = "cpanm $_component";
+            my $res  = `$comm`;
+            print "CLI: $comm\nRESULT: $res\n" ;
+            WriteMessageToTicket($CurrentUser, $PluginTicket->{id}, "$res\n");
+##
+# Create config 
+##
+            (my $c = $PluginTicket->{_mp_PluginName})=~s/-/::/ig;  
+##            print "$conf\t$c\n";
+            write_file($conf, "Plugin(\"$c\");\n");
+##
+# Change CFs of Queue 
+##
+            my $user = RT::User->new($CurrentUser);
+            $user->Load('root');
+            my $ticketObj = RT::Ticket->new($user); # empty ticket object
+            $ticketObj->Load($PluginTicket->{id});
+            $ticketObj->Comment(Content => $PluginTicket->{_mp_PluginName});
+            my $cfObj = RT::CustomField->new($user);
+            $cfObj->Load('_pm_PluginName');
+            $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $PluginTicket->{_mp_PluginName});
+            $cfObj->Load('_pm_OnDate');
+            $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => getTimestamp());
+            $cfObj->Load('_pm_PluginStatus');
+            $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => 1);
+##
+# Change the ticket status 
+## 
+            WriteMessageAndCloseTicket($CurrentUser, $PluginTicket->{id}, "$PluginTicket->{_mp_PluginName} installed.");
+
+            $isSomeReasonToRestartApache += 1;
         }
+##
+# If exists initaldata fine -- import it
+##
+        if (-e -r -T "$RT::LocalPluginPath/$PluginTicket->{_mp_PluginName}/etc/initialdata") {
+            my $comm = "$RT::SbinPath/rt-setup-database --action insert --datafile $RT::LocalPluginPath/$PluginTicket->{_mp_PluginName}/etc/initialdata --dba '$RT::DatabaseUser' --dba-password '$RT::DatabasePassword'";
+            my $res  = `$comm`;
+            WriteMessageToTicket($CurrentUser, $PluginTicket->{id}, "$res\n");
+        }
+
     }
+}
+
+##
+#  If there were some installations, then we gonna restart apache web server.
+##
+if ( $isSomeReasonToRestartApache > 0 ) {
+    print "Now we gonna restart your Apache\n";
+    my $path = $RT::LocalPluginPath;
+    my $comm = "$path/RT-Extension-Pluginmanager/bin/rt-restart-apache.sh";
+    my $res  = `$comm`;
+    print "CLI: $comm\nRESULT: $res\n" ;
+} else {
+    print "Nothing to do.\n";
 }
 
 1;
