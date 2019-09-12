@@ -7,7 +7,7 @@
 <tr>
 <!-- Left -->
 <td valign="top" class="boxcontainer" width="60%">
-<&| /Widgets/TitleBox, title => loc('Marketplace'), titleright_href=>'/Tools/Market.html?Reload=1', titleright=>loc('Reload') &>
+<&| /Widgets/TitleBox, title => loc('Marketplace'), titleright_href=>RT->Config->Get('WebPath').'/Tools/Market.html?Reload=1', titleright=>loc('Reload') &>
 <form method="post" name="Marketplace" enctype="multipart/form-data" action="<%RT->Config->Get('WebPath')%>/Tools/Market.html" style="width:100%">
 <input type="hidden" class='hidden' name="MarketAction" value='1'>
 
@@ -63,7 +63,7 @@
 
 <!-- Right -->
 <td valign="top" class="boxcontainer" width="40%" >
-<&| /Widgets/TitleBox, title => loc('Manager'), titleright_href=>'/Tools/Market.html?Refresh=1', titleright=>loc('Refresh') &>
+<&| /Widgets/TitleBox, title => loc('Manager'), titleright_href=>RT->Config->Get('WebPath').'/Tools/Market.html?Refresh=1', titleright=>loc('Refresh') &>
 <form method="post" name="Manager" enctype="multipart/form-data" action="<%RT->Config->Get('WebPath')%>/Tools/Market.html" style="width:100%">
 <input type='hidden' class='hidden' name='ManagerAction' value='1'>
 <table class="display" style="width:100%" id="tabManager">
@@ -88,6 +88,7 @@
 %(my $nm = $PluginTicket->{_pm_PluginName}) =~s/-/::/ig;
 %$nm .= '::VERSION';
 <font color="<% ($PluginTicket->{_pm_PluginStatus}>1)?'gray':'black' %>"><% $PluginTicket->{_pm_PluginName} %></font> (ver. <%eval("\$$nm") || 'N/A'%>)
+    <a href="#" style="float:right; background-color:#36A; padding: 7px; color:#FFF;">Config</a>
 </td>
 <td>
 <i style="color:gray">On: <% $PluginTicket->{_pm_OnDate} %></i>
