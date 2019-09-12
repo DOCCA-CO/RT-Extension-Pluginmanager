@@ -18,14 +18,14 @@ my $tools_menu = Menu->child('tools');
 $tools_menu->child( market =>
         title       => loc('DOX Market'),
         description => loc('Install Plug-Ins from marketplace'),
-        path        => RT->Config->Get('WebPath')."/Tools/Market.html",
+        path        => "/Tools/Market.html",
     );
 
 if ($request_path =~ m{^(/Tools/Market.html)}) {
     my $tabs = PageMenu();
     $tabs->child( 
         marketplace => title => '(Re)Scan', 
-	path => RT->Config->Get('WebPath')."/Tools/Market.html?".$query_string->(Rescan => 1) 
+	path => "/Tools/Market.html?".$query_string->(Rescan => 1) 
     );
 }
 </%init>
