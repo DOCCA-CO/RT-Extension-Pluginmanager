@@ -88,7 +88,7 @@
 %(my $nm = $PluginTicket->{_pm_PluginName}) =~s/-/::/ig;
 %$nm .= '::VERSION';
 <font color="<% ($PluginTicket->{_pm_PluginStatus}>1)?'gray':'black' %>"><% $PluginTicket->{_pm_PluginName} %></font> (ver. <%eval("\$$nm") || 'N/A'%>)
-    <a href="#" style="float:right; background-color:#36A; padding: 7px; color:#FFF;">Config</a>
+	<button id="ticket-<% $PluginTicket->{id} %>" class="button" style="float: right;" onclick="loadConfig(<% $PluginTicket->{id} %>); return false;"><&|/l&>Config</&></button>
 </td>
 <td>
 <i style="color:gray">On: <% $PluginTicket->{_pm_OnDate} %></i>
@@ -130,59 +130,85 @@
 <hr />
 
 <&| /Widgets/TitleBox, title => loc('Configurator (future project)') &>
-<p>Here will come the plugin configuration</p>
+
+<form method="post" name="Config" enctype="multipart/form-data" action="<%RT->Config->Get('WebPath')%>/Tools/Market.html" style="width:100%">
+	<input type="hidden" class="hidden" name="ConfigAction" value="1">
+	<input type="hidden" name="conf_id" id="conf_id" value="">
+	<div style="width:100%">
+		<button id="conig_cancel" name="conig_cancel" value="1" type="reset" style="float:right;"><&|/l&>Cancel</&></button>
+		<button id="conig_submit" name="conig_submit" value="1" type="submit" style="float:right;"><&|/l&>Save</&></button>
+		<label style="float:right; line-height:32px; padding-right: 24px;">
+			<input type="checkbox" id="conig_save" name="conig_save" value="1">
+			<&|/l&>Are you sure you want to edit the configuration</&>
+		</label>
+	</div>
+	<textarea id="conf_pm" name="conf_pm" style="width:100%; height:256px"></textarea>
+</form>
 </&>
 
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/dataTables.responsive.min.js"></script>
 <script type="text/javascript">
-    
+
+% print "var PluginTickets = " . to_json(\@PMQueueTickets, { pretty => 1 }) . ";\n";
+
+function loadConfig(id) {
+	var arr1 = PluginTickets.filter(d => d.id == id);
+	jQuery('#conf_pm').val(arr1[0]._pm_Config);
+	jQuery('#conf_id').val(id);
+	return true;
+}
+
+	
 jQuery(function ($) {
-    $(document).ready(function() {
-    $('#tabMarket')
-        .addClass( 'nowrap' )
-        .DataTable({
-                    responsive: true,
-                    scrollY: 400,
-                    scrollX: false,
-                    paging: false,
-                    columnDefs: [ 
-                        { targets: 0, orderable: false  },
-                        { targets: 4, className: 'dt-body-right' } 
-                    ],
-                    order: [[ 1, "asc" ]],
-                    columns: [
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        {
-                            "render": function(data, type, row){ return data.split("\n").join("<br/>");
-                            }
-                        }
-                    ]
-                });
+	$(document).ready(function() {
+	$('#tabMarket')
+		.addClass( 'nowrap' )
+		.DataTable({
+					responsive: true,
+					scrollY: 400,
+					scrollX: false,
+					paging: false,
+					columnDefs: [ 
+						{ targets: 0, orderable: false  },
+						{ targets: 4, className: 'dt-body-right' } 
+					],
+					order: [[ 1, "asc" ]],
+					columns: [
+						null,
+						null,
+						null,
+						null,
+						null,
+						{
+							"render": function(data, type, row){ return data.split("\n").join("<br/>");
+							}
+						}
+					]
+				});
 
-    $('#tabManager')
-        .addClass( 'nowrap' )
-        .DataTable({
-                    responsive: true,
-                    scrollY: 400,
-                    scrollX: false,
-                    paging: false,
-                    order: [[ 1, "asc" ]],
-                    columnDefs: [ { targets: 0, orderable: false  }, 
-                                  { targets: 1, className: 'dt-body-left' } ],
-                    iDisplayLength: -1
-                });
+	$('#tabManager')
+		.addClass( 'nowrap' )
+		.DataTable({
+					responsive: true,
+					scrollY: 400,
+					scrollX: false,
+					paging: false,
+					order: [[ 1, "asc" ]],
+					columnDefs: [ { targets: 0, orderable: false  }, 
+								  { targets: 1, className: 'dt-body-left' } ],
+					iDisplayLength: -1
+				});
 
-    }) 
+	}) 
 });
 
 
 </script>
 
+<!--// PALACSINTA
+% print to_json(\%cfs, {utf8 => 1, pretty => 1});
+//-->
 
 <%INIT>
 use utf8;
@@ -191,7 +217,7 @@ use warnings;
 use LWP::Simple;
 use JSON;
 
-use File::Slurp qw( read_dir );
+use File::Slurp qw( read_dir read_file );
 use File::Spec::Functions qw( catfile );
 use File::Basename qw ( basename );
 
@@ -204,16 +230,16 @@ my ( $url, $file, $json, @catalogue, @results, %cfs );
 my $path = $RT::LocalPluginPath;
 my @sub_dirs = grep { -d } map { catfile $path, $_ } read_dir ($path);
 
-my @installed = RT->Config->GetObfuscated( 'Plugins', $session{'CurrentUser'} );
+my @installed = RT->Config->GetObfuscated( 'Plugins', $RT::SystemUser );
 
 $url = 'https://servicedesk-marketplace.com/downloads/';
 $file = 'catalogue.json';
 
 if ( ($Reload==1) or (not -e -r -T "/tmp/$file") ) {
-    my $rc = getstore($url.$file, "/tmp/$file");
-    if (is_error($rc)) {
-        die "cannot get $file from <$url> failed with $rc";
-    }
+	my $rc = getstore($url.$file, "/tmp/$file");
+	if (is_error($rc)) {
+		die "cannot get $file from <$url> failed with $rc";
+	}
 }
 
 
@@ -238,55 +264,58 @@ my $queue_cfs = $queue->TicketCustomFields;
 $queue_cfs->LimitToQueue($queue->Id);
 
 while (my $queue_cf=$queue_cfs->Next()) {
-    $cfs{$queue_cf->Name} = 'CustomField-'.$queue_cf->Id;
+	$cfs{$queue_cf->Name} = 'CustomField-'.$queue_cf->Id;
 }
 
 ##
 #   Rescan
 ##
 if ($Rescan==1) {
-    push @results, loc("Rescan mode [_1]", $Rescan);
-    my @Tickets = ReloadTicketSet($current_user);
-    foreach my $ticketItem (@Tickets) {
-        my $TicketObj = RT::Ticket->new($current_user);
-        $TicketObj->Load($ticketItem->{id});
-        my ($status, $msg) = $TicketObj->SetStatus("resolved"); 
-    }
-    push @results, loc("Closing all tickets, if exists.");
+	push @results, loc("Rescan mode [_1]", $Rescan);
+	my @Tickets = ReloadTicketSet($current_user);
+	foreach my $ticketItem (@Tickets) {
+		my $TicketObj = RT::Ticket->new($current_user);
+		$TicketObj->Load($ticketItem->{id});
+		my ($status, $msg) = $TicketObj->SetStatus("resolved"); 
+	}
+	push @results, loc("Closing all tickets, if exists.");
 
-    foreach my $srtPN (@sub_dirs) {
-        my $d = basename($srtPN);
-        my @stats = stat $srtPN ;
+	foreach my $srtPN (@sub_dirs) {
+		my $d = basename($srtPN);
+		my @stats = stat $srtPN ;
 
-        my $p=$d;
-        $p=~s/-/::/ig;
-        my $l = ((( grep $_ eq $p, @installed )||0) and (not (-e -f -r "$RT::EtcPath/RT_SiteConfig.d/$d.pm")||0))||0;
+		my $p=$d;
+		$p=~s/-/::/ig;
+		my $l = ((( grep $_ eq $p, @installed )||0) and (not (-e -f -r "$RT::EtcPath/RT_SiteConfig.d/$d.pm")||0))||0;
 
-        my %args = (
-            Queue=>"_Pluginmanager",
-            Requestor=>$current_user->Name,
-            Owner=>$current_user->id,
-            Subject=>$d, 
-            Priority=>10,
-            InitialPriority=>0,
-        );
-        $args{ $cfs{'_pm_PluginName'} } = $d;
-        $args{ $cfs{'_pm_PluginStatus'} } = ( (( grep $_ eq $p, @installed )||0) && (-e -f -r "$RT::EtcPath/RT_SiteConfig.d/$d.pm") )?1:0;  
-        $args{ $cfs{'_pm_PluginStatus'} } = $l?2:$args{ $cfs{'_pm_PluginStatus'} };
-        my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime( $stats[9] );
-        $args{ $cfs{'_pm_OnDate'} } = sprintf ( "%04d-%02d-%02d %02d:%02d", $year+1900, $mon+1, $mday, $hour, $min);
+		my %args = (
+			Queue=>"_Pluginmanager",
+			Requestor=>$current_user->Name,
+			Owner=>$current_user->id,
+			Subject=>$d, 
+			Priority=>10,
+			InitialPriority=>0,
+		);
+		$args{ $cfs{'_pm_PluginName'} } = $d;
+		$args{ $cfs{'_pm_PluginStatus'} } = ( (( grep $_ eq $p, @installed )||0) && (-e -f -r "$RT::EtcPath/RT_SiteConfig.d/$d.pm") )?1:0;  
+		$args{ $cfs{'_pm_PluginStatus'} } = $l?2:$args{ $cfs{'_pm_PluginStatus'} };
+		## Load config file into CF
+		my $fn = (sort glob $srtPN.'/etc/*_Config.pm')[0];
+		$args{ $cfs{'_pm_Config'} } = read_file($fn) if ($fn);
+		my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime( $stats[9] );
+		$args{ $cfs{'_pm_OnDate'} } = sprintf ( "%04d-%02d-%02d %02d:%02d", $year+1900, $mon+1, $mday, $hour, $min);
 
-        my $ticket = RT::Ticket->new($current_user); # empty ticket object
-        my ($val, $msg) = $ticket->Create(%args);
+		my $ticket = RT::Ticket->new($current_user); # empty ticket object
+		my ($val, $msg) = $ticket->Create(%args);
 
-        if ($val) {
-            push @results, loc('Ticket: #[_1] [_2]', $ticket->EffectiveId, $args{ Subject } );
-            $ticket->SetStatus("open"); 
-            $ticket->Comment( Content => $args{Subject} );
-        } else {
-            push @results, loc('Oops, something went wrong: [_1]', $msg);
-        }
-    }
+		if ($val) {
+			push @results, loc('Ticket: #[_1] [_2]', $ticket->EffectiveId, $args{ Subject } );
+			$ticket->SetStatus("open"); 
+			$ticket->Comment( Content => $args{Subject} );
+		} else {
+			push @results, loc('Oops, something went wrong: [_1]', $msg);
+		}
+	}
 }
 
 
@@ -299,155 +328,173 @@ foreach my $pname (@PMQueueTickets) { push @PluginNames, $pname->{_pm_PluginName
 #   Plugins
 ##
 if ( $ManagerAction) {
-    if ($ARGS{pm_action_at} eq '') {
-        push @results, loc('Action date and time must be specified!');
-    } else {
-        foreach my $key (keys %ARGS) {
-            foreach my $PluginTicket (@PMQueueTickets) {
-                my $ticketObj = RT::Ticket->new($current_user);
-                my $cfObj = RT::CustomField->new($current_user);
-                if ($PluginTicket->{_pm_PluginName} eq $key) {
-                    $ticketObj->Load($PluginTicket->{id});
-                    my $flag = $ARGS{$key} || 0;
-                    if ($PluginTicket->{_pm_PluginStatus} < $flag) {
-                        $cfObj->Load('_pm_PlannedOnDate');
-                        $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $ARGS{pm_action_at});
-                        $cfObj->Load('_pm_PluginStatus');
-                        $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => 1);
-                    }
-                } elsif ($PluginTicket->{_pm_PluginStatus}==1) {
-                    my $noflag = $ARGS{$PluginTicket->{_pm_PluginName}} || 0;
-                    if ($noflag == 0) {
-                        $ticketObj->Load($PluginTicket->{id});
-                        $cfObj->Load('_pm_PlannedOffDate');
-                        $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $ARGS{pm_action_at});
-                        $cfObj->Load('_pm_PluginStatus');
-                        $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => 0);
-                    }
-                }
-            }
-        }
-    }
-    @PMQueueTickets = ReloadTicketSet($current_user);
+	if ($ARGS{pm_action_at} eq '') {
+		push @results, loc('Action date and time must be specified!');
+	} else {
+		foreach my $key (keys %ARGS) {
+			foreach my $PluginTicket (@PMQueueTickets) {
+				my $ticketObj = RT::Ticket->new($current_user);
+				my $cfObj = RT::CustomField->new($current_user);
+				if ($PluginTicket->{_pm_PluginName} eq $key) {
+					$ticketObj->Load($PluginTicket->{id});
+					my $flag = $ARGS{$key} || 0;
+					if ($PluginTicket->{_pm_PluginStatus} < $flag) {
+						$cfObj->Load('_pm_PlannedOnDate');
+						$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $ARGS{pm_action_at});
+						$cfObj->Load('_pm_PluginStatus');
+						$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => 1);
+					}
+				} elsif ($PluginTicket->{_pm_PluginStatus}==1) {
+					my $noflag = $ARGS{$PluginTicket->{_pm_PluginName}} || 0;
+					if ($noflag == 0) {
+						$ticketObj->Load($PluginTicket->{id});
+						$cfObj->Load('_pm_PlannedOffDate');
+						$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $ARGS{pm_action_at});
+						$cfObj->Load('_pm_PluginStatus');
+						$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => 0);
+					}
+				}
+			}
+		}
+	}
+	@PMQueueTickets = ReloadTicketSet($current_user);
+}
+
+
+##
+#   Config
+##
+if ( $ConfigAction ) {
+	if ($ARGS{conig_save} eq '1') {
+		my $ticketObj = RT::Ticket->new($current_user);
+		my $cfObj = RT::CustomField->new($current_user);
+		$ticketObj->Load( $ARGS{conf_id} );
+		$cfObj->Load('_pm_Config');
+		$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $ARGS{conf_pm});
+		$cfObj->Load('_pm_ConfigChanged');
+		$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $ARGS{conig_save});
+	}
+	@PMQueueTickets = ReloadTicketSet($current_user);
 }
 
 ##
 #   Market
 ##
 if ( $MarketAction ) {
-    if ($ARGS{mp_process_at} eq '') {
-        push @results, loc('Action date and time must be specified!');
-    } else {
-        if (ref($ARGS{plugin}) eq 'ARRAY') {
-            foreach my $pl (@{$ARGS{plugin}}) {
-                my $ticketObj = RT::Ticket->new($current_user); # empty ticket object
-                my $nm = '';
-                if (index($pl, 'cpanm') >= 0) {
-                ## In case of cpanm
-                    ($nm = $pl) =~ s/^.{6}//s;
-                    $nm =~ s/::/-/ig;
-                } else {
-                ## In case of zip, tar.gz
-                    ($nm = $pl) =~ s/^.*\///;
-                    $nm = substr $nm, 0, index( $nm, q{.} ) ;##  =~ s/\.[^.]+$//;
-                }
-                my %args = (
-                    Queue=>"_Pluginmanager",
-                    Requestor=>$current_user->Name,
-                    Owner=>$current_user->id,
-                    Subject => $nm,
-                    Priority=>10,
-                    InitialPriority=>0,
-                );
+	if ($ARGS{mp_process_at} eq '') {
+		push @results, loc('Action date and time must be specified!');
+	} else {
+		if (ref($ARGS{plugin}) eq 'ARRAY') {
+			foreach my $pl (@{$ARGS{plugin}}) {
+				my $ticketObj = RT::Ticket->new($current_user); # empty ticket object
+				my $nm = '';
+				if (index($pl, 'cpanm') >= 0) {
+				## In case of cpanm
+					($nm = $pl) =~ s/^.{6}//s;
+					$nm =~ s/::/-/ig;
+				} else {
+				## In case of zip, tar.gz
+					($nm = $pl) =~ s/^.*\///;
+					$nm = substr $nm, 0, index( $nm, q{.} ) ;##  =~ s/\.[^.]+$//;
+				}
+				my %args = (
+					Queue=>"_Pluginmanager",
+					Requestor=>$current_user->Name,
+					Owner=>$current_user->id,
+					Subject => $nm,
+					Priority=>10,
+					InitialPriority=>0,
+				);
 
-                my ($val, $msg) = $ticketObj->Create(%args);
-                if ($val) {
-                    $ticketObj->SetStatus('stalled');
-                    $ticketObj->Comment(Content => $nm);
-                    my $cfObj = RT::CustomField->new($current_user);
-                    $cfObj->Load('_mp_PluginName');
-                    $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $nm);
-                    $cfObj->Load('_mp_RestartDate');
-                    $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $ARGS{mp_process_at});
-                    $cfObj->Load('_mp_LinkToDownload');
-                    $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $pl);
-                    push @results, loc('Ticket: #[_1] [_2]', $ticketObj->EffectiveId, $nm);
-                } else {
-                    push @results, loc('Oops, something went wrong: [_1]', $msg);
-                }
-            }
-        } else {
-            my $ticketObj = RT::Ticket->new($current_user); # empty ticket object
-            my $nm = '';
-            ($nm = $ARGS{plugin}) =~ s/^.*\///;
-            if (index($nm, 'cpanm') >= 0) {
-            ## In case of cpanm
-                $nm =~ s/^.{6}//s;
-                $nm =~ s/::/-/ig;
-            } else {
-            ## In case of zip, tar.gz
-                $nm =~ s/^.*\///;
-                $nm = substr $nm, 0, index( $nm, q{.} ) ;##  =~ s/\.[^.]+$//;
-            }
-            my %args = (
-                Queue=>"_Pluginmanager",
-                Requestor=>$current_user->Name,
-                Owner=>$current_user->id,
-                Subject => $nm,
-                Priority=>10,
-                InitialPriority=>0,
-            );
-            my ($val, $msg) = $ticketObj->Create(%args);
-            if ($val) {
-                $ticketObj->SetStatus('stalled');
-                $ticketObj->Comment(Content => $nm);
-                my $cfObj = RT::CustomField->new($current_user);
-                $cfObj->Load('_mp_PluginName');
-                $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $nm);
-                $cfObj->Load('_mp_RestartDate');
-                $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $ARGS{mp_process_at});
-                $cfObj->Load('_mp_LinkToDownload');
-                $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $ARGS{plugin});
-                push @results, loc('Ticket: #[_1] [_2]', $ticketObj->EffectiveId, $nm);
-            } else {
-                push @results, loc('Oops, something went wrong: [_1]', $msg);
-            }
-        }
-    }
+				my ($val, $msg) = $ticketObj->Create(%args);
+				if ($val) {
+					$ticketObj->SetStatus('stalled');
+					$ticketObj->Comment(Content => $nm);
+					my $cfObj = RT::CustomField->new($current_user);
+					$cfObj->Load('_mp_PluginName');
+					$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $nm);
+					$cfObj->Load('_mp_RestartDate');
+					$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $ARGS{mp_process_at});
+					$cfObj->Load('_mp_LinkToDownload');
+					$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $pl);
+					push @results, loc('Ticket: #[_1] [_2]', $ticketObj->EffectiveId, $nm);
+				} else {
+					push @results, loc('Oops, something went wrong: [_1]', $msg);
+				}
+			}
+		} else {
+			my $ticketObj = RT::Ticket->new($current_user); # empty ticket object
+			my $nm = '';
+			($nm = $ARGS{plugin}) =~ s/^.*\///;
+			if (index($nm, 'cpanm') >= 0) {
+			## In case of cpanm
+				$nm =~ s/^.{6}//s;
+				$nm =~ s/::/-/ig;
+			} else {
+			## In case of zip, tar.gz
+				$nm =~ s/^.*\///;
+				$nm = substr $nm, 0, index( $nm, q{.} ) ;##  =~ s/\.[^.]+$//;
+			}
+			my %args = (
+				Queue=>"_Pluginmanager",
+				Requestor=>$current_user->Name,
+				Owner=>$current_user->id,
+				Subject => $nm,
+				Priority=>10,
+				InitialPriority=>0,
+			);
+			my ($val, $msg) = $ticketObj->Create(%args);
+			if ($val) {
+				$ticketObj->SetStatus('stalled');
+				$ticketObj->Comment(Content => $nm);
+				my $cfObj = RT::CustomField->new($current_user);
+				$cfObj->Load('_mp_PluginName');
+				$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $nm);
+				$cfObj->Load('_mp_RestartDate');
+				$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $ARGS{mp_process_at});
+				$cfObj->Load('_mp_LinkToDownload');
+				$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $ARGS{plugin});
+				push @results, loc('Ticket: #[_1] [_2]', $ticketObj->EffectiveId, $nm);
+			} else {
+				push @results, loc('Oops, something went wrong: [_1]', $msg);
+			}
+		}
+	}
 }
 
 
 sub ReloadTicketSet {
-    my $current_user = shift;
-    my @PMQueueTickets;
-    my $queue = RT::Queue->new($current_user);
-    $queue->Load("_Pluginmanager");
+	my $current_user = shift;
+	my @PMQueueTickets;
+	my $queue = RT::Queue->new($current_user);
+	$queue->Load("_Pluginmanager");
 
-    my $tickets = RT::Tickets->new($current_user);
-    my $foo = RT::Search::FromSQL->new(Argument => "Queue='_Pluginmanager' AND Status='open'", TicketsObj => $tickets);
-    $foo->Prepare();
-    while ( my $ticket = $tickets->Next() ) {
-        # Do something with each ticket we've found
-    my $QueueObj = $ticket->QueueObj;
-    my $queue_cfs = $queue->TicketCustomFields;
-    $queue_cfs->LimitToQueue($queue->Id);
-    my %cf;
-    while (my $queue_cf=$queue_cfs->Next()) {
-        $cf{$queue_cf->Name} = $ticket->FirstCustomFieldValue($queue_cf->Name);
-    }
-    
-    push @PMQueueTickets, {
-        id=>$ticket->Id, 
-        subject=>$ticket->Subject,
-        _pm_OffDate => $cf{'_pm_OffDate'},
-        _pm_OnDate => $cf{'_pm_OnDate'},
-        _pm_PlannedOffDate => $cf{'_pm_PlannedOffDate'},
-        _pm_PlannedOnDate => $cf{'_pm_PlannedOnDate'},
-        _pm_PluginName => $cf{'_pm_PluginName'},
-        _pm_PluginStatus => $cf{'_pm_PluginStatus'},
-    };
-    }
-    return @PMQueueTickets;
+	my $tickets = RT::Tickets->new($current_user);
+	my $foo = RT::Search::FromSQL->new(Argument => "Queue='_Pluginmanager' AND Status='open'", TicketsObj => $tickets);
+	$foo->Prepare();
+	while ( my $ticket = $tickets->Next() ) {
+		# Do something with each ticket we've found
+		my $QueueObj = $ticket->QueueObj;
+		my $queue_cfs = $queue->TicketCustomFields;
+		$queue_cfs->LimitToQueue($queue->Id);
+		my %cf;
+		while (my $queue_cf=$queue_cfs->Next()) {
+			$cf{$queue_cf->Name} = $ticket->FirstCustomFieldValue($queue_cf->Name);
+		}
+	
+		push @PMQueueTickets, {
+			id=>$ticket->Id, 
+			subject=>$ticket->Subject,
+			_pm_OffDate => $cf{'_pm_OffDate'},
+			_pm_OnDate => $cf{'_pm_OnDate'},
+			_pm_PlannedOffDate => $cf{'_pm_PlannedOffDate'},
+			_pm_PlannedOnDate => $cf{'_pm_PlannedOnDate'},
+			_pm_PluginName => $cf{'_pm_PluginName'},
+			_pm_PluginStatus => $cf{'_pm_PluginStatus'},
+			_pm_Config => $cf{'_pm_Config'},
+		};
+	}
+	return @PMQueueTickets;
 }
 
 
@@ -457,5 +504,6 @@ $Rescan => undef
 $Refresh => undef
 $Reload => undef
 $ManagerAction => undef
+$ConfigAction => undef
 $MarketAction => undef
 </%ARGS>
