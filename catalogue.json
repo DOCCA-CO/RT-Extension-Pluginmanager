@@ -7,7 +7,7 @@
 			"learnmore": "https://servicedesk-marketplace.com/",
 			"description": "This is a test plug-in for market testing",
 			"link": "https://servicedesk-marketplace.com/downloads/RT-Extension-Jse.tar.gz",
-			"config": "### This is a test config file\nSet( %hash, ( 'first' => 1,'secont' => 2,'third' => 3,'fourth' => 4,'fifth' => 5 ) );\nSet( $variable_1, 1 );\nSet( $variable_2, 2 );\n1;\n"
+			"config": "### This is a test config fileSet( %hash, ( 'first' => 1,'secont' => 2,'third' => 3,'fourth' => 4,'fifth' => 5 ) );Set( $variable_1, 1 );Set( $variable_2, 2 );1;"
 		},
 		{
 			"name": "AttachmentsColored",
@@ -16,7 +16,7 @@
 			"learnmore": "https://servicedesk-marketplace.com/",
 			"description": "This is a test plug-in for market testing",
 			"link": "https://servicedesk-marketplace.com/downloads/RT-Extension-AttachmentsColored.tar.gz",
-			"config": "Set( %AttachmentCategories, ( 'A' => '#FF6347','B' => '#90EE90','C' => '#87CEFA','D' => '#fCDC8C','hidden' => '#DCDCDC' ) );\nSet( $ConfigTicketID, 2 );\nSet( $DefaultFolderStructureTicketID, 2 );\n1;\n"
+			"config": "Set( %AttachmentCategories, ( 'A' => '#FF6347','B' => '#90EE90','C' => '#87CEFA','D' => '#fCDC8C','hidden' => '#DCDCDC' ) );Set( $ConfigTicketID, 2 );Set( $DefaultFolderStructureTicketID, 2 );1;"
 		},
 		{
 			"name": "CloudAttachment",
@@ -25,7 +25,7 @@
 			"learnmore": "https://servicedesk-marketplace.com/",
 			"description": "This is a test plug-in for market testing",
 			"link": "https://servicedesk-marketplace.com/downloads/RT-Extension-CloudAttachment.tar.gz",
-			"config": "Set( %DavParams, ( 'enabled' => 1, 'drive' => 'W:', 'proto' => 'https:', 'host' => '192.168.1.250', 'root' => 'webdav' ) );\n1;\n"
+			"config": "Set( %DavParams, ( 'enabled' => 1, 'drive' => 'W:', 'proto' => 'https:', 'host' => '192.168.1.250', 'root' => 'webdav' ) );1;"
 		},
 		{
 			"name": "CRMfolderQuickCreate",
@@ -58,7 +58,7 @@
 			"learnmore": "https://servicedesk-marketplace.com/",
 			"description": "This is a test plug-in for market testing",
 			"link": "https://servicedesk-marketplace.com/downloads/RT-Extension-QuickChild.tar.gz",
-			"config": "Set( $QuickChildPrefix, '' );\nSet( @QuickChildCFs, () );\nSet( $QuickChildRedirect, 1 );\n1;"
+			"config": "Set( $QuickChildPrefix, '' );Set( @QuickChildCFs, () );Set( $QuickChildRedirect, 1 );1;"
 		},
 		{
 			"name": "BigBox",
@@ -89,7 +89,7 @@
 			"version": "2.01",
 			"contributor": "Christian Loos",
 			"learnmore": "https://metacpan.org/pod/RT::Extension::Gravatar",
-			"description": "This Plugin displays Gravatar image on the following pages: More about the requestors widget.\n Modify user page. About me (Preferences). User Summary",
+			"description": "This Plugin displays Gravatar image on the following pages: More about the requestors widget. Modify user page. About me (Preferences). User Summary",
 			"link": "cpanm RT::Extension::Gravatar"
 		},
 		{
@@ -113,7 +113,7 @@
 			"version": "1.01",
 			"contributor": "Best Practical Solutions, LLC",
 			"learnmore": "https://metacpan.org/pod/RTx::Calendar",
-			"description": "This RT extension provides a calendar view for your tickets and your reminders so you see when is your next due ticket.\nYou can find it in the menu Search->Calendar.",
+			"description": "This RT extension provides a calendar view for your tickets and your reminders so you see when is your next due ticket.You can find it in the menu Search->Calendar.",
 			"link": "cpanm RTx::Calendar"
 		},
 		{
@@ -121,7 +121,7 @@
 			"version": "0.05",
 			"contributor": "Best Practical Solutions, LLC",
 			"learnmore": "https://metacpan.org/pod/RT::Extension::ExcelFeed",
-			"description": "This extenstion allows you to generate RT reports in MS Excel XSLX format. It provides two ways to do this.\nFirst, it adds a new MS Excel option to the 'Feeds' menu on the Query Builder search results page.\nIt also adds an option to the Dashboard subscription page that allows you to have scheduled dashboards emailed to recipients\nas attached MS Excel files rather than inline HTML reports.",
+			"description": "This extenstion allows you to generate RT reports in MS Excel XSLX format. It provides two ways to do this.First, it adds a new MS Excel option to the 'Feeds' menu on the Query Builder search results page.It also adds an option to the Dashboard subscription page that allows you to have scheduled dashboards emailed to recipientsas attached MS Excel files rather than inline HTML reports.",
 			"link": "cpanm RT::Extension::ExcelFeed"
 		},
 		{
@@ -129,7 +129,7 @@
 			"version": "0.01",
 			"contributor": "Best Practical Solutions, LLC",
 			"learnmore": "https://metacpan.org/pod/RT::Extension::ExampleTheme",
-			"description": "RT::Extension::ExampleTheme is a small example of the customizations users can make to change the look and feel of RT.\nThese changes are saved as a theme for others to use.",
+			"description": "RT::Extension::ExampleTheme is a small example of the customizations users can make to change the look and feel of RT.These changes are saved as a theme for others to use.",
 			"link": "cpanm RT::Extension::ExampleTheme"
 		},
 		{
@@ -137,9 +137,9 @@
 			"version": "0.1.8",
 			"contributor": "DOCCA OutSource IT Kft.",
 			"learnmore": "https://servicedesk-marketplace.com/",
-			"description": "Create new queue with two different user groups:\n one with _R suffix for read-only access to tickets, and another \n with _RW for read-write access.",
+			"description": "Create new queue with two different user groups: one with _R suffix for read-only access to tickets, and another  with _RW for read-write access.",
 			"link": "https://servicedesk-marketplace.com/downloads/RT-Extension-GroupsByQueue.tar.gz",
-			"config": "Set (@RO, ('SeeQueue', 'ShowTicket', 'SeeCustomField', 'ShowOutgoingEmail', 'ShowTicketComments') );\nSet (@RW, ('CommentOnTicket', 'Watch', 'SeeQueue', 'ShowTicket', 'SeeCustomField', 'ReplyToTicket', 'CreateTicket', 'SetInitialCustomField', 'ModifyCustomField', 'WatchAsAdminCc', 'ShowOutgoingEmail', 'ShowTicketComments', 'ReassignTicket', 'ModifyTicket', 'OwnTicket', 'StealTicket', 'TakeTicket') );\n1;"
+			"config": "Set (@RO, ('SeeQueue', 'ShowTicket', 'SeeCustomField', 'ShowOutgoingEmail', 'ShowTicketComments') );Set (@RW, ('CommentOnTicket', 'Watch', 'SeeQueue', 'ShowTicket', 'SeeCustomField', 'ReplyToTicket', 'CreateTicket', 'SetInitialCustomField', 'ModifyCustomField', 'WatchAsAdminCc', 'ShowOutgoingEmail', 'ShowTicketComments', 'ReassignTicket', 'ModifyTicket', 'OwnTicket', 'StealTicket', 'TakeTicket') );1;"
 		}            
 	]
 }

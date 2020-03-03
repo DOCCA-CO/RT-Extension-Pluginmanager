@@ -181,8 +181,7 @@ jQuery(function ($) {
 						null,
 						null,
 						{
-							"render": function(data, type, row){ return data.split("\n").join("<br/>");
-							}
+							"render": function(data, type, row){ return "<span style='white-space:normal;'>" + data.split("\n").join("<br/>") + "</span>"; }
 						}
 					]
 				});
@@ -207,7 +206,7 @@ jQuery(function ($) {
 </script>
 
 <!--// PALACSINTA
-% print to_json(\%cfs, {utf8 => 1, pretty => 1});
+% print Dumper($ref);
 //-->
 
 <%INIT>
@@ -417,6 +416,14 @@ if ( $MarketAction ) {
 					$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $ARGS{mp_process_at});
 					$cfObj->Load('_mp_LinkToDownload');
 					$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $pl);
+					$cfObj->Load('_pm_Config');
+					foreach my $element ( @catalogue ) {
+						if (grep { $_ eq $element->{name} ) {
+							$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $element->{config});
+						}
+					}
+					$cfObj->Load('_pm_ConfigChanged');
+					$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => '1');
 					push @results, loc('Ticket: #[_1] [_2]', $ticketObj->EffectiveId, $nm);
 				} else {
 					push @results, loc('Oops, something went wrong: [_1]', $msg);
@@ -454,6 +461,14 @@ if ( $MarketAction ) {
 				$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $ARGS{mp_process_at});
 				$cfObj->Load('_mp_LinkToDownload');
 				$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $ARGS{plugin});
+				$cfObj->Load('_pm_Config');
+				foreach my $element ( @catalogue ) {
+					if (grep { $_ eq $element->{name} ) {
+						$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $element->{config});
+					}
+				}
+				$cfObj->Load('_pm_ConfigChanged');
+				$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => '1');
 				push @results, loc('Ticket: #[_1] [_2]', $ticketObj->EffectiveId, $nm);
 			} else {
 				push @results, loc('Oops, something went wrong: [_1]', $msg);
