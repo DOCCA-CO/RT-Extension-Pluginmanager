@@ -17,6 +17,7 @@ use RT::Search::FromSQL;
 use XML::Simple;
 use LWP::Simple;
 
+## use File::Path;
 use File::Slurp qw( read_dir overwrite_file );
 use File::Spec::Functions qw( catfile );
 use File::Basename qw ( basename );
@@ -163,6 +164,9 @@ foreach my $PluginTicket (@PMQueueTickets) {
 	}
 	if ( $PluginTicket->{_pm_ConfigChanged} eq '1' ) {
 		my $config_path = "$RT::LocalPluginPath/$PluginTicket->{_pm_PluginName}/etc";
+		if ( not (-d "$config_path") ) {
+			mkdir $config_path;
+		}
 		my $config_name = substr( $PluginTicket->{_pm_PluginName}, rindex($PluginTicket->{_pm_PluginName}, '-') + 1 ) . '_Config.pm';
 		print "$config_path/$config_name\n";
 		print "$PluginTicket->{_pm_PluginName}\n";
