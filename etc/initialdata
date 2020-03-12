@@ -98,4 +98,30 @@ push @CustomFields, {
 	ApplyTo => qw / _Pluginmanager  /,
 };
 
+push @CustomFields, {
+	Description  => 'Plugin config;BigBox',
+	UniqueValues  => '0',
+	Name  => '_pm_Config',
+	Disabled  => '0',
+	EntryHint  => 'Egy szöveges mező kitöltése',
+	Pattern  => '',
+	MaxValues  => '1',
+	LookupType  => 'RT::Queue-RT::Ticket',
+	Type  => 'Text',
+	ApplyTo => [ qw / _Pluginmanager  /  ] ,
+};
+
+push @CustomFields, {
+	Pattern  => '',
+	MaxValues  => '1',
+	LookupType  => 'RT::Queue-RT::Ticket',
+	Type  => 'Freeform',
+	Description  => 'is config has been changed',
+	Disabled  => '0',
+	Name  => '_pm_ConfigChanged',
+	UniqueValues  => '0',
+	EntryHint  => 'Szabad értékmegadás (egy)',
+	ApplyTo => [ qw / _Pluginmanager  /  ] ,
+};
+
 1;

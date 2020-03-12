@@ -2,3 +2,12 @@ td.highlight {
 	font-weight: bold;
 	color: blue;
 }
+
+td.pluginame span {
+	display:none;
+}
+
+td.pluginame:hover span {
+	display:inline;
+	position:absolute;
+}

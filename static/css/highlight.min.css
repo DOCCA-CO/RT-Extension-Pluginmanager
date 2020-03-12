@@ -1,1 +1,1 @@
-td.highlight{font-weight:bold;color:blue;}
+td.highlight{font-weight:bold;color:blue;}td.pluginame span{display:none;position:absolute;background-color:#fff;max-width:480px;box-shadow:0px8px16px0pxrgba(0,0,0,0.2);z-index:1000;}td.pluginame:hover span{display:block;}

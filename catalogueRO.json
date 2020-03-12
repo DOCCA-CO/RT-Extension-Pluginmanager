@@ -1,14 +1,11 @@
 {
-	"plugin": [
-		{
+	"plugin": [{
 			"name": "Jse",
 			"version": "0.1",
 			"contributor": "DOCCA OutSource IT Kft.",
 			"learnmore": "https://servicedesk-marketplace.com/",
 			"description": "This is a test plug-in for market testing",
-			"link": "https://servicedesk-marketplace.com/downloads/RT-Extension-Jse.tar.gz",
-			"screenshot":"https://dummyimage.com/480x200/368/fff.jpg&text=Jse+plugin+screenshot",
-			"config": "### This is a test config fileSet( %hash, ( 'first' => 1,'secont' => 2,'third' => 3,'fourth' => 4,'fifth' => 5 ) );Set( $variable_1, 1 );Set( $variable_2, 2 );1;"
+			"screenshot": "https://dummyimage.com/480x200/368/fff.jpg&text=Jse+plugin+screenshot"
 		},
 		{
 			"name": "AttachmentsColored",
@@ -16,9 +13,7 @@
 			"contributor": "DOCCA OutSource IT Kft.",
 			"learnmore": "https://servicedesk-marketplace.com/",
 			"description": "This is a test plug-in for market testing",
-			"link": "https://servicedesk-marketplace.com/downloads/RT-Extension-AttachmentsColored.tar.gz",
-			"screenshot":"https://dummyimage.com/480x200/368/fff.jpg&text=AttachmentsColored+plugin+screenshot",
-			"config": "Set( %AttachmentCategories, ( 'A' => '#FF6347','B' => '#90EE90','C' => '#87CEFA','D' => '#fCDC8C','hidden' => '#DCDCDC' ) );Set( $ConfigTicketID, 2 );Set( $DefaultFolderStructureTicketID, 2 );1;"
+			"screenshot": "https://dummyimage.com/480x200/368/fff.jpg&text=AttachmentsColored+plugin+screenshot"
 		},
 		{
 			"name": "CloudAttachment",
@@ -26,8 +21,7 @@
 			"contributor": "DOCCA OutSource IT Kft.",
 			"learnmore": "https://servicedesk-marketplace.com/",
 			"description": "This is a test plug-in for market testing",
-			"link": "https://servicedesk-marketplace.com/downloads/RT-Extension-CloudAttachment.tar.gz",
-			"screenshot":"https://dummyimage.com/480x200/368/fff.jpg&text=CloudAttachment+plugin+screenshot",
+			"screenshot": "https://dummyimage.com/480x200/368/fff.jpg&text=CloudAttachment+plugin+screenshot",
 			"config": "Set( %DavParams, ( 'enabled' => 1, 'drive' => 'W:', 'proto' => 'https:', 'host' => '192.168.1.250', 'root' => 'webdav' ) );1;"
 		},
 		{
@@ -36,8 +30,7 @@
 			"contributor": "DOCCA OutSource IT Kft.",
 			"learnmore": "https://servicedesk-marketplace.com/",
 			"description": "This is a test plug-in for market testing",
-			"screenshot":"https://dummyimage.com/480x200/368/fff.jpg&text=CRMfolderQuickCreate+plugin+screenshot",
-			"link": "https://servicedesk-marketplace.com/downloads/RT-Extension-CRMfolderQuickCreate.zip"
+			"screenshot": "https://dummyimage.com/480x200/368/fff.jpg&text=CRMfolderQuickCreate+plugin+screenshot"
 		},
 		{
 			"name": "QuickSearch",
@@ -45,8 +38,7 @@
 			"contributor": "DOCCA OutSource IT Kft.",
 			"learnmore": "https://servicedesk-marketplace.com/",
 			"description": "This is a test plug-in for market testing",
-			"screenshot":"https://dummyimage.com/480x200/368/fff.jpg&text=QuickSearch+plugin+screenshot",
-			"link": "https://servicedesk-marketplace.com/downloads/RT-Extension-QuickSearch.tar.gz"
+			"screenshot": "https://dummyimage.com/480x200/368/fff.jpg&text=QuickSearch+plugin+screenshot"
 		},
 		{
 			"name": "UserList",
@@ -54,8 +46,7 @@
 			"contributor": "DOCCA OutSource IT Kft.",
 			"learnmore": "https://servicedesk-marketplace.com/",
 			"description": "This is a test plug-in for market testing",
-			"screenshot":"https://dummyimage.com/480x200/368/fff.jpg&text=QuickSearch+plugin+screenshot",
-			"link": "https://servicedesk-marketplace.com/downloads/RT-Extension-UserList.tar.gz"
+			"screenshot": "https://dummyimage.com/480x200/368/fff.jpg&text=QuickSearch+plugin+screenshot"
 		},
 		{
 			"name": "QuickChild",
@@ -63,8 +54,7 @@
 			"contributor": "DOCCA OutSource IT Kft.",
 			"learnmore": "https://servicedesk-marketplace.com/",
 			"description": "This is a test plug-in for market testing",
-			"link": "https://servicedesk-marketplace.com/downloads/RT-Extension-QuickChild.tar.gz",
-			"screenshot":"https://dummyimage.com/480x200/368/fff.jpg&text=QuickSearch+plugin+screenshot",
+			"screenshot": "https://dummyimage.com/480x200/368/fff.jpg&text=QuickSearch+plugin+screenshot",
 			"config": "Set( $QuickChildPrefix, '' );Set( @QuickChildCFs, () );Set( $QuickChildRedirect, 1 );1;"
 		},
 		{
@@ -73,8 +63,7 @@
 			"contributor": "DOCCA OutSource IT Kft.",
 			"learnmore": "https://servicedesk-marketplace.com/",
 			"description": "This is a test plug-in for market testing",
-			"screenshot":"https://dummyimage.com/480x200/368/fff.jpg&text=BigBox+plugin+screenshot",
-			"link": "https://servicedesk-marketplace.com/downloads/RT-Extension-BigBox.tar.gz"
+			"screenshot": "https://dummyimage.com/480x200/368/fff.jpg&text=BigBox+plugin+screenshot"
 		},
 		{
 			"name": "RawExport",
@@ -82,8 +71,7 @@
 			"contributor": "DOCCA OutSource IT Kft.",
 			"learnmore": "https://servicedesk-marketplace.com/",
 			"description": "This is a test plug-in for market testing",
-			"screenshot":"https://dummyimage.com/480x200/368/fff.jpg&text=RawExport+plugin+screenshot",
-			"link": "https://servicedesk-marketplace.com/downloads/RT-Extension-RawExport.tar.gz"
+			"screenshot": "https://dummyimage.com/480x200/368/fff.jpg&text=RawExport+plugin+screenshot"
 		},
 		{
 			"name": "JSGantt",
@@ -91,8 +79,7 @@
 			"contributor": "Best Practical Solutions",
 			"learnmore": "https://metacpan.org/pod/RT::Extension::JSGantt",
 			"description": "This extension uses the Starts and Due dates, along with ticket dependencies, to produce Gantt charts.",
-			"screenshot":"https://dummyimage.com/480x200/368/fff.jpg&text=JSGantt+plugin+screenshot",
-			"link": "cpanm RT::Extension::JSGantt"
+			"screenshot": "https://dummyimage.com/480x200/368/fff.jpg&text=JSGantt+plugin+screenshot"
 		},
 		{
 			"name": "Gravatar",
@@ -100,8 +87,7 @@
 			"contributor": "Christian Loos",
 			"learnmore": "https://metacpan.org/pod/RT::Extension::Gravatar",
 			"description": "This Plugin displays Gravatar image on the following pages: More about the requestors widget. Modify user page. About me (Preferences). User Summary",
-			"screenshot":"https://dummyimage.com/480x200/368/fff.jpg&text=Gravatar+plugin+screenshot",
-			"link": "cpanm RT::Extension::Gravatar"
+			"screenshot": "https://dummyimage.com/480x200/368/fff.jpg&text=Gravatar+plugin+screenshot"
 		},
 		{
 			"name": "REST2",
@@ -109,8 +95,7 @@
 			"contributor": "Best Practical Solutions",
 			"learnmore": "https://metacpan.org/pod/RT::Extension::REST2",
 			"description": "RT::Extension::REST2 - Adds a modern REST API to RT under /REST/2.0/",
-			"screenshot":"https://dummyimage.com/480x200/368/fff.jpg&text=REST2+plugin+screenshot",
-			"link": "cpanm RT::Extension::REST2"
+			"screenshot": "https://dummyimage.com/480x200/368/fff.jpg&text=REST2+plugin+screenshot"
 		},
 		{
 			"name": "macrorecorder",
@@ -118,8 +103,7 @@
 			"contributor": "DOCCA OutSource IT Kft.",
 			"learnmore": "https://servicedesk-marketplace.com/",
 			"description": "This is a test plug-in for market testing",
-			"screenshot":"https://dummyimage.com/480x200/368/fff.jpg&text=macrorecorder+plugin+screenshot",
-			"link": "https://servicedesk-marketplace.com/downloads/RT-Extension-macrorecorder.tar.gz"
+			"screenshot": "https://dummyimage.com/480x200/368/fff.jpg&text=macrorecorder+plugin+screenshot"
 		},
 		{
 			"name": "RTx-Calendar",
@@ -127,8 +111,7 @@
 			"contributor": "Best Practical Solutions, LLC",
 			"learnmore": "https://metacpan.org/pod/RTx::Calendar",
 			"description": "This RT extension provides a calendar view for your tickets and your reminders so you see when is your next due ticket.You can find it in the menu Search->Calendar.",
-			"screenshot":"https://dummyimage.com/480x200/368/fff.jpg&text=Calendar+plugin+screenshot",
-			"link": "cpanm RTx::Calendar"
+			"screenshot": "https://dummyimage.com/480x200/368/fff.jpg&text=Calendar+plugin+screenshot"
 		},
 		{
 			"name": "ExcelFeed",
@@ -136,8 +119,7 @@
 			"contributor": "Best Practical Solutions, LLC",
 			"learnmore": "https://metacpan.org/pod/RT::Extension::ExcelFeed",
 			"description": "This extenstion allows you to generate RT reports in MS Excel XSLX format. It provides two ways to do this.First, it adds a new MS Excel option to the 'Feeds' menu on the Query Builder search results page.It also adds an option to the Dashboard subscription page that allows you to have scheduled dashboards emailed to recipientsas attached MS Excel files rather than inline HTML reports.",
-			"screenshot":"https://dummyimage.com/480x200/368/fff.jpg&text=ExcelFeed+plugin+screenshot",
-			"link": "cpanm RT::Extension::ExcelFeed"
+			"screenshot": "https://dummyimage.com/480x200/368/fff.jpg&text=ExcelFeed+plugin+screenshot"
 		},
 		{
 			"name": "ExampleTheme",
@@ -145,8 +127,7 @@
 			"contributor": "Best Practical Solutions, LLC",
 			"learnmore": "https://metacpan.org/pod/RT::Extension::ExampleTheme",
 			"description": "RT::Extension::ExampleTheme is a small example of the customizations users can make to change the look and feel of RT.These changes are saved as a theme for others to use.",
-			"screenshot":"https://dummyimage.com/480x200/368/fff.jpg&text=ExampleTheme+plugin+screenshot",
-			"link": "cpanm RT::Extension::ExampleTheme"
+			"screenshot": "https://dummyimage.com/480x200/368/fff.jpg&text=ExampleTheme+plugin+screenshot"
 		},
 		{
 			"name": "GroupsByQueue",
@@ -154,9 +135,7 @@
 			"contributor": "DOCCA OutSource IT Kft.",
 			"learnmore": "https://servicedesk-marketplace.com/",
 			"description": "Create new queue with two different user groups: one with _R suffix for read-only access to tickets, and another  with _RW for read-write access.",
-			"link": "https://servicedesk-marketplace.com/downloads/RT-Extension-GroupsByQueue.tar.gz",
-			"screenshot":"https://dummyimage.com/480x200/368/fff.jpg&text=GroupsByQueue+plugin+screenshot",
-			"config": "Set (@RO, ('SeeQueue', 'ShowTicket', 'SeeCustomField', 'ShowOutgoingEmail', 'ShowTicketComments') );Set (@RW, ('CommentOnTicket', 'Watch', 'SeeQueue', 'ShowTicket', 'SeeCustomField', 'ReplyToTicket', 'CreateTicket', 'SetInitialCustomField', 'ModifyCustomField', 'WatchAsAdminCc', 'ShowOutgoingEmail', 'ShowTicketComments', 'ReassignTicket', 'ModifyTicket', 'OwnTicket', 'StealTicket', 'TakeTicket') );1;"
-		}            
+			"screenshot": "https://dummyimage.com/480x200/368/fff.jpg&text=GroupsByQueue+plugin+screenshot"
+		}
 	]
 }

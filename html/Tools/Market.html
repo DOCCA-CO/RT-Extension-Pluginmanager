@@ -25,23 +25,27 @@
 
 
 <tbody>
-%foreach my $element ( @catalogue ) {
+% foreach my $element ( @catalogue ) {
 <tr>
-<td><input type="checkbox" name="plugin" value="<%$element->{link}%>" /></td>
-<td
-%if (grep { $_ eq "RT-Extension-$element->{name}" || "RTx-$element->{name}" } @PluginNames) { print "class='highlight'"}
-><% $element->{name} %></td>
+<td>
+% if($element->{link}) {
+<input type="checkbox" name="plugin" value="<%$element->{link}%>" />
+% } 
+</td>
+% print "<td class='pluginame ";
+% if (grep { $_ eq "RT-Extension-$element->{name}" || "RTx-$element->{name}" } @PluginNames) { print "highlight"} 
+% print  "'>".$element->{name}."</td>";
 <td> v. <% $element->{version} %></td>
 <td><% $element->{contributor} %></td>
 
 <td><a href="<% $element->{learnmore} %>" target="_blank">Learn more</a></td>
-<td><% $element->{description} %></td>
+<td><div><img src="<% $element->{screenshot} %>"><br /><% $element->{description} %></div></td>
 </tr>
-%}
+% }
 </tbody>
 
 </table>
-
+% if ( $AdminGroup->HasMemberRecursively($session{'CurrentUser'}->PrincipalObj) ) {
 <table style="width:100%;">
 <tr>
 <td><label>Activate at
@@ -54,7 +58,7 @@
 <td>&nbsp;</td>
 </tr>
 </table>
-
+% }
 </form>
 </&>
 </td>
@@ -109,7 +113,7 @@
 </tbody>
 
 </table>
-
+% if ( $AdminGroup->HasMemberRecursively($session{'CurrentUser'}->PrincipalObj) ) {
 <table style="width: 100%;">
 <tr>
 <td><label>Process changes at <& /Elements/SelectDate, Name => 'pm_action_at' &></label>
@@ -117,7 +121,7 @@
 <td><& /Elements/Submit, Label => loc('Save Changes') &></td>
 </tr>
 </table>
-
+% }
 </form>
 </&>
 
@@ -135,12 +139,14 @@
 	<input type="hidden" class="hidden" name="ConfigAction" value="1">
 	<input type="hidden" name="conf_id" id="conf_id" value="">
 	<div style="width:100%">
+% if ( $AdminGroup->HasMemberRecursively($session{'CurrentUser'}->PrincipalObj) ) {
 		<button id="conig_cancel" name="conig_cancel" value="1" type="reset" style="float:right;"><&|/l&>Cancel</&></button>
 		<button id="conig_submit" name="conig_submit" value="1" type="submit" style="float:right;"><&|/l&>Save</&></button>
 		<label style="float:right; line-height:32px; padding-right: 24px;">
 			<input type="checkbox" id="conig_save" name="conig_save" value="1">
 			<&|/l&>Are you sure you want to edit the configuration</&>
 		</label>
+% }
 	</div>
 	<textarea id="conf_pm" name="conf_pm" style="width:100%; height:256px"></textarea>
 </form>
@@ -230,6 +236,9 @@ my $path = $RT::LocalPluginPath;
 my @sub_dirs = grep { -d } map { catfile $path, $_ } read_dir ($path);
 
 my @installed = RT->Config->GetObfuscated( 'Plugins', $RT::SystemUser );
+
+my $AdminGroup = RT::Group->new($session{'CurrentUser'});
+$AdminGroup->Load(RT->Config->Get('AdminGroupId'));
 
 $url = 'https://servicedesk-marketplace.com/downloads/';
 $file = 'catalogue.json';
