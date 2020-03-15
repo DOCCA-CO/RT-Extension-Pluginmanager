@@ -427,10 +427,9 @@ if ( $MarketAction ) {
 					$cfObj->Load('_pm_Config');
 					for(my $index=0; $index < scalar(@catalogue); $index++) {
 						if ($nm eq "RT-Extension-$catalogue[$index]{name}") {
-							print "<!-- PALACSINTA " . $element->{name} . " -- " . $element->{config} . " -->\n";
-							$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $element->{config});
+							print "<!-- PALACSINTA " . $catalogue[$index]{name} . " -- " . $catalogue[$index]{config} . " -->\n";
+							$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $catalogue[$index]{config});
 						}
-						$index += 1;
 					}
 					$cfObj->Load('_pm_ConfigChanged');
 					$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => '1');
@@ -472,13 +471,11 @@ if ( $MarketAction ) {
 				$cfObj->Load('_mp_LinkToDownload');
 				$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $ARGS{plugin});
 				$cfObj->Load('_pm_Config');
-				my $index = 0;
 				for(my $index=0; $index < scalar(@catalogue); $index++) {
 					if ($nm eq "RT-Extension-$catalogue[$index]{name}") {
-						print "<!-- PALACSINTA " . $element->{name} . " -- " . $element->{config} . " -->\n";
-						$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $element->{config});
+						print "<!-- PALACSINTA " . $catalogue[$index]{name} . " -- " . $catalogue[$index]{config} . " -->\n";
+						$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $catalogue[$index]{config});
 					}
-					$index += 1;
 				}
 				$cfObj->Load('_pm_ConfigChanged');
 				$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => '1');
