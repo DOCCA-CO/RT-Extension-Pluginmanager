@@ -211,9 +211,6 @@ jQuery(function ($) {
 
 </script>
 
-<!--// PALACSINTA
-% print Dumper($ref);
-//-->
 
 <%INIT>
 use utf8;
@@ -428,6 +425,7 @@ if ( $MarketAction ) {
 					$cfObj->Load('_pm_Config');
 					foreach my $element ( @catalogue ) {
 						if (grep { $_ eq "$element->{name}" } @catalogue) {
+							print "<!-- PALACSINTA " . $element->{name} . " -- " . $element->{config} . " -->\n";
 							$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $element->{config});
 						}
 					}
