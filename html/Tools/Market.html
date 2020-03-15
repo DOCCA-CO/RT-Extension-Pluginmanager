@@ -426,7 +426,7 @@ if ( $MarketAction ) {
 					$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $pl);
 					$cfObj->Load('_pm_Config');
 					for(my $index=0; $index < scalar(@catalogue); $index++) {
-						if ($element->{name} eq $catalogue[$index]->{name}) {
+						if ($nm eq "RT-Extension-$catalogue[$index]{name}") {
 							print "<!-- PALACSINTA " . $element->{name} . " -- " . $element->{config} . " -->\n";
 							$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $element->{config});
 						}
@@ -474,7 +474,7 @@ if ( $MarketAction ) {
 				$cfObj->Load('_pm_Config');
 				my $index = 0;
 				for(my $index=0; $index < scalar(@catalogue); $index++) {
-					if ($element->{name} eq $catalogue[$index]->{name}) {
+					if ($nm eq "RT-Extension-$catalogue[$index]{name}") {
 						print "<!-- PALACSINTA " . $element->{name} . " -- " . $element->{config} . " -->\n";
 						$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $element->{config});
 					}
