@@ -8,7 +8,7 @@
 			"description": "This is a test plug-in for market testing",
 			"link": "https://servicedesk-marketplace.com/downloads/RT-Extension-Jse.tar.gz",
 			"screenshot":"https://dummyimage.com/480x200/368/fff.jpg&text=Jse+plugin+screenshot",
-			"config": "### This is a test config fileSet( %hash, ( 'first' => 1,'secont' => 2,'third' => 3,'fourth' => 4,'fifth' => 5 ) );Set( $variable_1, 1 );Set( $variable_2, 2 );1;"
+			"config": "### This is a test config file\n Set( %hash, ( 'first' => 1,'secont' => 2,'third' => 3,'fourth' => 4,'fifth' => 5 ) );\nSet( $variable_1, 1 );\nSet( $variable_2, 2 );\n1;"
 		},
 		{
 			"name": "AttachmentsColored",
@@ -18,7 +18,7 @@
 			"description": "This is a test plug-in for market testing",
 			"link": "https://servicedesk-marketplace.com/downloads/RT-Extension-AttachmentsColored.tar.gz",
 			"screenshot":"https://dummyimage.com/480x200/368/fff.jpg&text=AttachmentsColored+plugin+screenshot",
-			"config": "Set( %AttachmentCategories, ( 'A' => '#FF6347','B' => '#90EE90','C' => '#87CEFA','D' => '#fCDC8C','hidden' => '#DCDCDC' ) );Set( $ConfigTicketID, 2 );Set( $DefaultFolderStructureTicketID, 2 );1;"
+			"config": "Set( %AttachmentCategories, ( 'A' => '#FF6347','B' => '#90EE90','C' => '#87CEFA','D' => '#fCDC8C','hidden' => '#DCDCDC' ) );\nSet( $ConfigTicketID, 2 );\nSet( $DefaultFolderStructureTicketID, 2 );\n1;"
 		},
 		{
 			"name": "CloudAttachment",
@@ -28,7 +28,7 @@
 			"description": "This is a test plug-in for market testing",
 			"link": "https://servicedesk-marketplace.com/downloads/RT-Extension-CloudAttachment.tar.gz",
 			"screenshot":"https://dummyimage.com/480x200/368/fff.jpg&text=CloudAttachment+plugin+screenshot",
-			"config": "Set( %DavParams, ( 'enabled' => 1, 'drive' => 'W:', 'proto' => 'https:', 'host' => '192.168.1.250', 'root' => 'webdav' ) );1;"
+			"config": "Set( %DavParams, ( 'enabled' => 1, 'drive' => 'W:', 'proto' => 'https:', 'host' => '192.168.1.250', 'root' => 'webdav' ) );\n1;"
 		},
 		{
 			"name": "CRMfolderQuickCreate",
@@ -65,7 +65,7 @@
 			"description": "This is a test plug-in for market testing",
 			"link": "https://servicedesk-marketplace.com/downloads/RT-Extension-QuickChild.tar.gz",
 			"screenshot":"https://dummyimage.com/480x200/368/fff.jpg&text=QuickSearch+plugin+screenshot",
-			"config": "Set( $QuickChildPrefix, '' );Set( @QuickChildCFs, () );Set( $QuickChildRedirect, 1 );1;"
+			"config": "Set( $QuickChildPrefix, '' );\nSet( @QuickChildCFs, () );\nSet( $QuickChildRedirect, 1 );\n1;"
 		},
 		{
 			"name": "BigBox",
@@ -156,7 +156,7 @@
 			"description": "Create new queue with two different user groups: one with _R suffix for read-only access to tickets, and another  with _RW for read-write access.",
 			"link": "https://servicedesk-marketplace.com/downloads/RT-Extension-GroupsByQueue.tar.gz",
 			"screenshot":"https://dummyimage.com/480x200/368/fff.jpg&text=GroupsByQueue+plugin+screenshot",
-			"config": "Set (@RO, ('SeeQueue', 'ShowTicket', 'SeeCustomField', 'ShowOutgoingEmail', 'ShowTicketComments') );Set (@RW, ('CommentOnTicket', 'Watch', 'SeeQueue', 'ShowTicket', 'SeeCustomField', 'ReplyToTicket', 'CreateTicket', 'SetInitialCustomField', 'ModifyCustomField', 'WatchAsAdminCc', 'ShowOutgoingEmail', 'ShowTicketComments', 'ReassignTicket', 'ModifyTicket', 'OwnTicket', 'StealTicket', 'TakeTicket') );1;"
+			"config": "Set (@RO, ('SeeQueue', 'ShowTicket', 'SeeCustomField', 'ShowOutgoingEmail', 'ShowTicketComments') );\nSet (@RW, ('CommentOnTicket', 'Watch', 'SeeQueue', 'ShowTicket', 'SeeCustomField', 'ReplyToTicket', 'CreateTicket', 'SetInitialCustomField', 'ModifyCustomField', 'WatchAsAdminCc', 'ShowOutgoingEmail', 'ShowTicketComments', 'ReassignTicket', 'ModifyTicket', 'OwnTicket', 'StealTicket', 'TakeTicket') );\n1;"
 		}            
 	]
 }
