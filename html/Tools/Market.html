@@ -425,9 +425,8 @@ if ( $MarketAction ) {
 					$cfObj->Load('_mp_LinkToDownload');
 					$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $pl);
 					$cfObj->Load('_pm_Config');
-					my $index = 0;
-					foreach my $element ( @catalogue ) {
-						if ($element->{name} eq $catalogue[$index]{name}) {
+					for(my $index=0; $index < scalar(@catalogue); $index++) {
+						if ($element->{name} eq $catalogue[$index]->{name}) {
 							print "<!-- PALACSINTA " . $element->{name} . " -- " . $element->{config} . " -->\n";
 							$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $element->{config});
 						}
@@ -474,8 +473,8 @@ if ( $MarketAction ) {
 				$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $ARGS{plugin});
 				$cfObj->Load('_pm_Config');
 				my $index = 0;
-				foreach my $element ( @catalogue ) {
-					if ($element->{name} eq $catalogue[$index]{name}) {
+				for(my $index=0; $index < scalar(@catalogue); $index++) {
+					if ($element->{name} eq $catalogue[$index]->{name}) {
 						print "<!-- PALACSINTA " . $element->{name} . " -- " . $element->{config} . " -->\n";
 						$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $element->{config});
 					}
