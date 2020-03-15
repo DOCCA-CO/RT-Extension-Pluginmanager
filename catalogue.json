@@ -157,6 +157,16 @@
 			"link": "https://servicedesk-marketplace.com/downloads/RT-Extension-GroupsByQueue.tar.gz",
 			"screenshot":"https://dummyimage.com/480x200/368/fff.jpg&text=GroupsByQueue+plugin+screenshot",
 			"config": "Set (@RO, ('SeeQueue', 'ShowTicket', 'SeeCustomField', 'ShowOutgoingEmail', 'ShowTicketComments') );\nSet (@RW, ('CommentOnTicket', 'Watch', 'SeeQueue', 'ShowTicket', 'SeeCustomField', 'ReplyToTicket', 'CreateTicket', 'SetInitialCustomField', 'ModifyCustomField', 'WatchAsAdminCc', 'ShowOutgoingEmail', 'ShowTicketComments', 'ReassignTicket', 'ModifyTicket', 'OwnTicket', 'StealTicket', 'TakeTicket') );\n1;"
-		}            
+		},
+		{
+			"name": "QueueBrowser",
+			"version": "0.1.8",
+			"contributor": "DOCCA OutSource IT Kft.",
+			"learnmore": "https://servicedesk-marketplace.com/",
+			"description": "Browse your tickets with a look and feel as a mail client.",
+			"link": "https://servicedesk-marketplace.com/downloads/RT-Extension-QueueBrowser.tar.gz",
+			"screenshot":"https://dummyimage.com/480x200/368/fff.jpg&text=QueueBrowser+plugin+screenshot",
+			"config": "Set($qbParentCfId, \"Q-ParentQueue\");\nSet($qbDescCfId, 13);\n1;"
+		}
 	]
 }

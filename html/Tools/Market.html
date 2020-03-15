@@ -472,7 +472,8 @@ if ( $MarketAction ) {
 				$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $ARGS{plugin});
 				$cfObj->Load('_pm_Config');
 				foreach my $element ( @catalogue ) {
-					if (grep { $_ eq "$element->{name}" } @catalogue) {
+					if (grep { $_ eq $element->{name} } @catalogue) {
+						print "<!-- PALACSINTA " . $element->{name} . " -- " . $element->{config} . " -->\n";
 						$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $element->{config});
 					}
 				}
