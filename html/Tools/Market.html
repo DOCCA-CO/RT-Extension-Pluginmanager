@@ -47,7 +47,7 @@
 
 </table>
 
-%# if ( $AdminGroup->HasMemberRecursively($session{'CurrentUser'}->PrincipalObj) ) {
+% if ( $AdminGroup->HasMemberRecursively($session{'CurrentUser'}->PrincipalObj) ) {
 <fieldset style="margin:10px 0 10px 0;">
 	<legend><label><input type="checkbox" name="MarketAction" value="1" />&nbsp;Download and Install</label></legend>
 	<p>
@@ -61,7 +61,7 @@
 </fieldset>
 <& /Elements/Submit, Label => loc('Apply'), SubmitId=>"ApplySubmit" &>
 
-%# }
+% }
 
 </form>
 </&>
@@ -118,7 +118,7 @@
 
 </table>
 
-%# if ( $AdminGroup->HasMemberRecursively($session{'CurrentUser'}->PrincipalObj) ) {
+% if ( $AdminGroup->HasMemberRecursively($session{'CurrentUser'}->PrincipalObj) ) {
 
 <fieldset style="margin:10px 0 10px 0;">
 	<legend><label><input type='checkbox' name='ManagerAction' value='1'>&nbsp;Applying changes</label></legend>
@@ -132,7 +132,7 @@
 	</p>
 </fieldset>
 <& /Elements/Submit, Label => loc('Apply'), SubmitId=>"ManagerSubmit" &>
-%# }
+% }
 </form>
 </&>
 
@@ -150,14 +150,14 @@
 	<input type="hidden" class="hidden" name="ConfigAction" value="1">
 	<input type="hidden" name="conf_id" id="conf_id" value="">
 	<div style="width:100%">
-%# if ( $AdminGroup->HasMemberRecursively($session{'CurrentUser'}->PrincipalObj) ) {
+% if ( $AdminGroup->HasMemberRecursively($session{'CurrentUser'}->PrincipalObj) ) {
 		<button id="conig_cancel" name="conig_cancel" value="1" type="reset" style="float:right;"><&|/l&>Cancel</&></button>
 		<button id="conig_submit" name="conig_submit" value="1" type="submit" style="float:right;"><&|/l&>Save</&></button>
 		<label style="float:right; line-height:32px; padding-right: 24px;">
 			<input type="checkbox" id="conig_save" name="conig_save" value="1">
 			<&|/l&>Are you sure you want to edit the configuration</&>
 		</label>
-%# }
+% }
 	</div>
 	<textarea id="conf_pm" name="conf_pm" style="width:100%; height:256px"></textarea>
 </form>
