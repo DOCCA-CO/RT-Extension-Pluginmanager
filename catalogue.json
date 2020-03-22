@@ -37,7 +37,7 @@
 			"learnmore": "https://servicedesk-marketplace.com/",
 			"description": "This is a test plug-in for market testing",
 			"screenshot":"https://dummyimage.com/480x200/368/fff.jpg&text=CRMfolderQuickCreate+plugin+screenshot",
-			"link": "https://servicedesk-marketplace.com/downloads/RT-Extension-CRMfolderQuickCreate.zip"
+			"link": "https://servicedesk-marketplace.com/downloads/RT-Extension-CRMfolderQuickCreate.tar.gz"
 		},
 		{
 			"name": "QuickSearch",

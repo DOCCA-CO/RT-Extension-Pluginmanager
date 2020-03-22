@@ -9,11 +9,11 @@
 <td valign="top" class="boxcontainer" width="60%">
 <&| /Widgets/TitleBox, title => loc('Marketplace'), titleright_href=>RT->Config->Get('WebPath').'/Tools/Market.html?Reload=1', titleright=>loc('Reload') &>
 <form method="post" name="Marketplace" enctype="multipart/form-data" action="<%RT->Config->Get('WebPath')%>/Tools/Market.html" style="width:100%">
-<input type="hidden" class='hidden' name="MarketAction" value='1'>
 
 <table id="tabMarket" class="display" style="width:100%">
 <thead>
 <tr >
+<th>&nbsp;</th>
 <th>&nbsp;</th>
 <th>Plug-in name</th>
 <th>Version</th>
@@ -27,6 +27,7 @@
 <tbody>
 % foreach my $element ( @catalogue ) {
 <tr>
+<td></td>
 <td>
 % if($element->{link}) {
 <input type="checkbox" name="plugin" value="<%$element->{link}%>" />
@@ -45,20 +46,23 @@
 </tbody>
 
 </table>
-% if ( $AdminGroup->HasMemberRecursively($session{'CurrentUser'}->PrincipalObj) ) {
-<table style="width:100%;">
-<tr>
-<td><label>Activate at
-<& /Elements/SelectDate, Name => 'mp_process_at' &></label>
-</td>
-<td>
-<& /Elements/Submit, Label => loc('Download and Install') &>
-</td>
-<td>&nbsp;</td>
-<td>&nbsp;</td>
-</tr>
-</table>
-% }
+
+%# if ( $AdminGroup->HasMemberRecursively($session{'CurrentUser'}->PrincipalObj) ) {
+<fieldset style="margin:10px 0 10px 0;">
+	<legend><label><input type="checkbox" name="MarketAction" value="1" />&nbsp;Download and Install</label></legend>
+	<p>
+		<input type="radio" name="install" value="1" id="instnow" />
+		<label for="instnow">Install immediately</label>
+	</p><p>
+		<input type="radio" name="install" value="0" id="install" onclick="jQuery('#mp_process_at').focus();"/>
+		<label for="install">Schedule install</label>
+		<& /Elements/SelectDate, Name => 'mp_process_at' &>
+	</p>
+</fieldset>
+<& /Elements/Submit, Label => loc('Apply'), SubmitId=>"ApplySubmit" &>
+
+%# }
+
 </form>
 </&>
 </td>
@@ -69,7 +73,7 @@
 <td valign="top" class="boxcontainer" width="40%" >
 <&| /Widgets/TitleBox, title => loc('Manager'), titleright_href=>RT->Config->Get('WebPath').'/Tools/Market.html?Refresh=1', titleright=>loc('Refresh') &>
 <form method="post" name="Manager" enctype="multipart/form-data" action="<%RT->Config->Get('WebPath')%>/Tools/Market.html" style="width:100%">
-<input type='hidden' class='hidden' name='ManagerAction' value='1'>
+
 <table class="display" style="width:100%" id="tabManager">
 <thead>
 <tr>
@@ -113,15 +117,22 @@
 </tbody>
 
 </table>
-% if ( $AdminGroup->HasMemberRecursively($session{'CurrentUser'}->PrincipalObj) ) {
-<table style="width: 100%;">
-<tr>
-<td><label>Process changes at <& /Elements/SelectDate, Name => 'pm_action_at' &></label>
-</td>
-<td><& /Elements/Submit, Label => loc('Save Changes') &></td>
-</tr>
-</table>
-% }
+
+%# if ( $AdminGroup->HasMemberRecursively($session{'CurrentUser'}->PrincipalObj) ) {
+
+<fieldset style="margin:10px 0 10px 0;">
+	<legend><label><input type='checkbox' name='ManagerAction' value='1'>&nbsp;Applying changes</label></legend>
+	<p>
+		<input type="radio" name="makechange" value="1" id="immediately" />
+		<label for="immediately">Make changes immediately</label>
+	</p><p>
+		<input type="radio" name="makechange" value="0" id="schedule" onclick="jQuery('#pm_action_at').focus();"/>
+		<label for="schedule">Schedule changes</label>
+		<& /Elements/SelectDate, Name => 'pm_action_at' &>
+	</p>
+</fieldset>
+<& /Elements/Submit, Label => loc('Apply'), SubmitId=>"ManagerSubmit" &>
+%# }
 </form>
 </&>
 
@@ -133,20 +144,20 @@
 
 <hr />
 
-<&| /Widgets/TitleBox, title => loc('Configurator (future project)') &>
+<&| /Widgets/TitleBox, title => loc('Plugin Configurator') &>
 
 <form method="post" name="Config" enctype="multipart/form-data" action="<%RT->Config->Get('WebPath')%>/Tools/Market.html" style="width:100%">
 	<input type="hidden" class="hidden" name="ConfigAction" value="1">
 	<input type="hidden" name="conf_id" id="conf_id" value="">
 	<div style="width:100%">
-% if ( $AdminGroup->HasMemberRecursively($session{'CurrentUser'}->PrincipalObj) ) {
+%# if ( $AdminGroup->HasMemberRecursively($session{'CurrentUser'}->PrincipalObj) ) {
 		<button id="conig_cancel" name="conig_cancel" value="1" type="reset" style="float:right;"><&|/l&>Cancel</&></button>
 		<button id="conig_submit" name="conig_submit" value="1" type="submit" style="float:right;"><&|/l&>Save</&></button>
 		<label style="float:right; line-height:32px; padding-right: 24px;">
 			<input type="checkbox" id="conig_save" name="conig_save" value="1">
 			<&|/l&>Are you sure you want to edit the configuration</&>
 		</label>
-% }
+%# }
 	</div>
 	<textarea id="conf_pm" name="conf_pm" style="width:100%; height:256px"></textarea>
 </form>
@@ -176,11 +187,12 @@ jQuery(function ($) {
 					scrollX: false,
 					paging: false,
 					columnDefs: [ 
-						{ targets: 0, orderable: false  },
-						{ targets: 4, className: 'dt-body-right' } 
+						{ targets: [0,1], orderable: false  },
+						{ targets: 5, className: 'dt-body-right' } 
 					],
-					order: [[ 1, "asc" ]],
+					order: [[ 2, "asc" ]],
 					columns: [
+						null,
 						null,
 						null,
 						null,
@@ -335,7 +347,7 @@ foreach my $pname (@PMQueueTickets) { push @PluginNames, $pname->{_pm_PluginName
 #   Plugins
 ##
 if ( $ManagerAction) {
-	if ($ARGS{pm_action_at} eq '') {
+	if (($ARGS{pm_action_at} eq '') && (($ARGS{makechange} eq '0') || ($ARGS{makechange} eq '')) ) {
 		push @results, loc('Action date and time must be specified!');
 	} else {
 		foreach my $key (keys %ARGS) {
@@ -350,6 +362,8 @@ if ( $ManagerAction) {
 						$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $ARGS{pm_action_at});
 						$cfObj->Load('_pm_PluginStatus');
 						$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => 1);
+						$cfObj->Load('_pm_ImmidiateApply');
+						$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $ARGS{makechange});
 					}
 				} elsif ($PluginTicket->{_pm_PluginStatus}==1) {
 					my $noflag = $ARGS{$PluginTicket->{_pm_PluginName}} || 0;
@@ -359,6 +373,8 @@ if ( $ManagerAction) {
 						$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $ARGS{pm_action_at});
 						$cfObj->Load('_pm_PluginStatus');
 						$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => 0);
+						$cfObj->Load('_pm_ImmidiateApply');
+						$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $ARGS{makechange});
 					}
 				}
 			}
@@ -388,8 +404,9 @@ if ( $ConfigAction ) {
 #   Market
 ##
 if ( $MarketAction ) {
-	if ($ARGS{mp_process_at} eq '') {
-		push @results, loc('Action date and time must be specified!');
+	if (($ARGS{mp_process_at} eq '') && (($ARGS{install} eq '') || ($ARGS{install} eq '0'))) {
+		push @results, $ARGS{mp_process_at} . ' -- ' .  $ARGS{install};
+##		push @results, loc('Action date and time must be specified!');
 	} else {
 		if (ref($ARGS{plugin}) eq 'ARRAY') {
 			foreach my $pl (@{$ARGS{plugin}}) {
@@ -422,6 +439,8 @@ if ( $MarketAction ) {
 					$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $nm);
 					$cfObj->Load('_mp_RestartDate');
 					$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $ARGS{mp_process_at});
+					$cfObj->Load('_mp_ImmidiateInstall');
+					$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $ARGS{install});
 					$cfObj->Load('_mp_LinkToDownload');
 					$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $pl);
 					$cfObj->Load('_pm_Config');
@@ -468,6 +487,8 @@ if ( $MarketAction ) {
 				$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $nm);
 				$cfObj->Load('_mp_RestartDate');
 				$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $ARGS{mp_process_at});
+				$cfObj->Load('_mp_ImmidiateInstall');
+				$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $ARGS{install});
 				$cfObj->Load('_mp_LinkToDownload');
 				$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $ARGS{plugin});
 				$cfObj->Load('_pm_Config');

@@ -30,81 +30,82 @@ use RT::CustomField;
 # resolved
 
 sub ReloadTicketSet {
-    my $current_user = shift;
-    my @PMQueueTickets;
-    my $queue = RT::Queue->new($current_user);
-    $queue->Load("_Pluginmanager");
+	my $current_user = shift;
+	my @PMQueueTickets;
+	my $queue = RT::Queue->new($current_user);
+	$queue->Load("_Pluginmanager");
 
-    my $tickets = RT::Tickets->new($current_user);
-    my $foo = RT::Search::FromSQL->new(Argument => "Queue='_Pluginmanager' AND Status='stalled'", TicketsObj => $tickets);
-    $foo->Prepare();
-    while ( my $ticket = $tickets->Next() ) {
-        # Do something with each ticket we've found
-        my $QueueObj = $ticket->QueueObj;
-        my $queue_cfs = $queue->TicketCustomFields;
-        $queue_cfs->LimitToQueue($queue->Id);
-        my %cf;
-        while (my $queue_cf=$queue_cfs->Next()) {
-            $cf{$queue_cf->Name} = $ticket->FirstCustomFieldValue($queue_cf->Name);
-        }
+	my $tickets = RT::Tickets->new($current_user);
+	my $foo = RT::Search::FromSQL->new(Argument => "Queue='_Pluginmanager' AND Status='stalled'", TicketsObj => $tickets);
+	$foo->Prepare();
+	while ( my $ticket = $tickets->Next() ) {
+		# Do something with each ticket we've found
+		my $QueueObj = $ticket->QueueObj;
+		my $queue_cfs = $queue->TicketCustomFields;
+		$queue_cfs->LimitToQueue($queue->Id);
+		my %cf;
+		while (my $queue_cf=$queue_cfs->Next()) {
+			$cf{$queue_cf->Name} = $ticket->FirstCustomFieldValue($queue_cf->Name);
+		}
 
-        push @PMQueueTickets, {
-            id=>$ticket->Id, 
-            subject=>$ticket->Subject,
-            _mp_PluginName => $cf{'_mp_PluginName'} || "",
-            _mp_RestartDate => $cf{'_mp_RestartDate'} || "",
-            _mp_LinkToDownload => $cf{'_mp_LinkToDownload'} || "",
-        }
-    }
-    return @PMQueueTickets;
+		push @PMQueueTickets, {
+			id=>$ticket->Id, 
+			subject=>$ticket->Subject,
+			_mp_PluginName => $cf{'_mp_PluginName'} || "",
+			_mp_RestartDate => $cf{'_mp_RestartDate'} || "",
+			_mp_LinkToDownload => $cf{'_mp_LinkToDownload'} || "",
+			_mp_ImmidiateInstall => $cf{'_mp_ImmidiateInstall'} || "",
+		}
+	}
+	return @PMQueueTickets;
 }
 
 sub WriteMessageAndCloseTicket {
-    my ($current_user, $ticketID, $ticketMsg) = @_;
-    print "Processing ticket #$ticketID\t$ticketMsg\n";
+	my ($current_user, $ticketID, $ticketMsg) = @_;
+	print "Processing ticket #$ticketID\t$ticketMsg\n";
 
-    my $obj = RT::Ticket->new($current_user);
-    if ($obj->Load($ticketID)) {
-        $obj->Comment(Content => $ticketMsg);
+	my $obj = RT::Ticket->new($current_user);
+	if ($obj->Load($ticketID)) {
+		$obj->Comment(Content => $ticketMsg);
 
-    } else {
-        print ":(\n";
-    }
-    my ($status, $msg) = $obj->SetStatus("open"); 
-    return ($status, $msg);
+	} else {
+		print ":(\n";
+	}
+	my ($status, $msg) = $obj->SetStatus("open"); 
+	return ($status, $msg);
 }
 
 
 sub WriteMessageToTicket {
-    my ($current_user, $ticketID, $ticketMsg) = @_;
+	my ($current_user, $ticketID, $ticketMsg) = @_;
 
-    my $obj = RT::Ticket->new($current_user);
-    if ($obj->Load($ticketID)) {
-        $obj->Comment(Content => $ticketMsg);
+	my $obj = RT::Ticket->new($current_user);
+	if ($obj->Load($ticketID)) {
+		$obj->Comment(Content => $ticketMsg);
 
-    } else {
-        print ":(\n";
-    }
-    return 1;
+	} else {
+		print ":(\n";
+	}
+	return 1;
 }
 
 sub getTimestamp {
-    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst)=localtime(time);
-    my $timestamp = sprintf ( "%04d-%02d-%02d %02d:%02d",
-                                   $year+1900,$mon+1,$mday,$hour,$min);
-    return $timestamp;
+	my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst)=localtime(time);
+	my $timestamp = sprintf ( "%04d-%02d-%02d %02d:%02d",
+								   $year+1900,$mon+1,$mday,$hour,$min);
+	return $timestamp;
 }
 
 
 sub DownloadZIP {
-    my $url      = shift;
-    (my $filename = $url) =~ s/^.*\///;
+	my $url      = shift;
+	(my $filename = $url) =~ s/^.*\///;
 
-    my $rc = getstore($url, "/tmp/$filename");
-    if (is_error($rc)) {
-        return undef;
-    }
-    return "/tmp/$filename";
+	my $rc = getstore($url, "/tmp/$filename");
+	if (is_error($rc)) {
+		return undef;
+	}
+	return "/tmp/$filename";
 }
 
 my $CurrentUser = $RT::SystemUser;
@@ -122,117 +123,130 @@ $mon+=1;
 my $isSomeReasonToRestartApache = 0;
 
 foreach my $PluginTicket (@MPQueueTickets) {
-    my ( $_year,$_mon,$_mday,$_hour,$_min,$_sec ) = split(/[\s-:]+/, $PluginTicket->{_mp_RestartDate});
-    if ( ($year == $_year) && ($mon==$_mon) && ($mday==$_mday) && ($hour==$_hour) && ( ($_min >= $min)  &&  ($_min <= $min+5) ) ) {
-        my $rc = (substr($PluginTicket->{_mp_LinkToDownload}, 0, 5) eq 'cpanm')?undef:DownloadZIP($PluginTicket->{_mp_LinkToDownload});
-        if ( $rc ) {
-            my $path = $RT::LocalPluginPath;
-            my $conf = "$RT::EtcPath/RT_SiteConfig.d/$PluginTicket->{_mp_PluginName}.pm";
+	my ( $_year,$_mon,$_mday,$_hour,$_min,$_sec ) = split(/[\s-:]+/, $PluginTicket->{_mp_RestartDate});
+	if ( (($year == $_year) && ($mon==$_mon) && ($mday==$_mday) && ($hour==$_hour) && ( ($_min >= $min)  &&  ($_min <= $min+5) )) || ($PluginTicket->{_mp_ImmidiateInstall} eq '1') ) {
+		my $rc = (substr($PluginTicket->{_mp_LinkToDownload}, 0, 5) eq 'cpanm')?undef:DownloadZIP($PluginTicket->{_mp_LinkToDownload});
+		if ( $rc ) {
+			my $path = $RT::LocalPluginPath;
+			my $conf = "$RT::EtcPath/RT_SiteConfig.d/$PluginTicket->{_mp_PluginName}.pm";
 ##
 # Extract from archive
 ##
-            my ($name,$_path,$suffix) = fileparse($rc, qw(.tar.gz .tgz .zip));
-            my $comm = "$path/RT-Extension-Pluginmanager/bin/rt-plugin-extract.sh $rc $suffix $path";
-            my $res  = `$comm`;
-            print "CLI: $comm\nRESULT: $res\n" ;
+			my ($name,$_path,$suffix) = fileparse($rc, qw(.tar.gz .tgz .zip));
+			my $comm = "$path/RT-Extension-Pluginmanager/bin/rt-plugin-extract.sh $rc $suffix $path";
+			my $res  = `$comm`;
+			print "CLI: $comm\nRESULT: $res\n" ;
 ##
 # Create config 
 ##
-            (my $c = $PluginTicket->{_mp_PluginName})=~s/-/::/ig;  
-            write_file($conf, "Plugin(\"$c\");\n");
+			(my $c = $PluginTicket->{_mp_PluginName})=~s/-/::/ig;  
+			write_file($conf, "Plugin(\"$c\");\n");
 ##
 # Change CFs of Queue 
 ##
-            my $user = RT::User->new($CurrentUser);
-            $user->Load('root');
-            my $ticketObj = RT::Ticket->new($user); # empty ticket object
-            $ticketObj->Load($PluginTicket->{id});
-            $ticketObj->Comment(Content => $PluginTicket->{_mp_PluginName});
-            my $cfObj = RT::CustomField->new($user);
-            $cfObj->Load('_pm_PluginName');
-            $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $PluginTicket->{_mp_PluginName});
-            $cfObj->Load('_pm_OnDate');
-            $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => getTimestamp());
-            $cfObj->Load('_pm_PluginStatus');
-            $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => 1);
+			my $user = RT::User->new($CurrentUser);
+			$user->Load('root');
+			my $ticketObj = RT::Ticket->new($user); # empty ticket object
+			$ticketObj->Load($PluginTicket->{id});
+			$ticketObj->Comment(Content => $PluginTicket->{_mp_PluginName});
+			my $cfObj = RT::CustomField->new($user);
+			$cfObj->Load('_pm_PluginName');
+			$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $PluginTicket->{_mp_PluginName});
+			$cfObj->Load('_pm_OnDate');
+			$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => getTimestamp());
+			$cfObj->Load('_pm_PluginStatus');
+			$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => 1);
+
+			my $cfObj = RT::CustomField->new($CurrentUser);
+			$cfObj->Load('_mp_ImmidiateInstall');
+			my $values = $ticketObj->CustomFieldValues($cfObj->id);
+			while(my $value = $values->Next){
+				my ($transactionID, $msg) =  $ticketObj->DeleteCustomFieldValue(Field => $cfObj, ValueId =>  $value->id);
+			}
 ##
 # Change the ticket status 
 ##          
-            WriteMessageToTicket($CurrentUser, $PluginTicket->{id}, "$res\n");
+			WriteMessageToTicket($CurrentUser, $PluginTicket->{id}, "$res\n");
 
-            WriteMessageAndCloseTicket($CurrentUser, $PluginTicket->{id}, "$PluginTicket->{_mp_PluginName} installed.");
+			WriteMessageAndCloseTicket($CurrentUser, $PluginTicket->{id}, "$PluginTicket->{_mp_PluginName} installed.");
 
-            $isSomeReasonToRestartApache += 1;
-        } else {
+			$isSomeReasonToRestartApache += 1;
+		} else {
 ##
 # Install from CPAN
 ##
-            my $path = $RT::LocalPluginPath;
-            my $conf = "$RT::EtcPath/RT_SiteConfig.d/$PluginTicket->{_mp_PluginName}.pm";
-            (my $_component = $PluginTicket->{_mp_LinkToDownload}) =~ s/^.{6}//s;
+			my $path = $RT::LocalPluginPath;
+			my $conf = "$RT::EtcPath/RT_SiteConfig.d/$PluginTicket->{_mp_PluginName}.pm";
+			(my $_component = $PluginTicket->{_mp_LinkToDownload}) =~ s/^.{6}//s;
 
-        ## Install dependencies
-            my $comm = "cpanm --installdeps $_component";
-            my $res  = `$comm`;
-            print "CLI: $comm\nRESULT: $res\n" ;
-            WriteMessageToTicket($CurrentUser, $PluginTicket->{id}, "$res\n");
+		## Install dependencies
+			my $comm = "cpanm --installdeps $_component";
+			my $res  = `$comm`;
+			print "CLI: $comm\nRESULT: $res\n" ;
+			WriteMessageToTicket($CurrentUser, $PluginTicket->{id}, "$res\n");
 
-        ## Install plugin
-            my $comm = "cpanm $_component";
-            my $res  = `$comm`;
-            print "CLI: $comm\nRESULT: $res\n" ;
-            WriteMessageToTicket($CurrentUser, $PluginTicket->{id}, "$res\n");
+		## Install plugin
+			my $comm = "cpanm $_component";
+			my $res  = `$comm`;
+			print "CLI: $comm\nRESULT: $res\n" ;
+			WriteMessageToTicket($CurrentUser, $PluginTicket->{id}, "$res\n");
 ##
 # Create config 
 ##
-            (my $c = $PluginTicket->{_mp_PluginName})=~s/-/::/ig;  
+			(my $c = $PluginTicket->{_mp_PluginName})=~s/-/::/ig;  
 ##            print "$conf\t$c\n";
-            write_file($conf, "Plugin(\"$c\");\n");
+			write_file($conf, "Plugin(\"$c\");\n");
 ##
 # Change CFs of Queue 
 ##
-            my $user = RT::User->new($CurrentUser);
-            $user->Load('root');
-            my $ticketObj = RT::Ticket->new($user); # empty ticket object
-            $ticketObj->Load($PluginTicket->{id});
-            $ticketObj->Comment(Content => $PluginTicket->{_mp_PluginName});
-            my $cfObj = RT::CustomField->new($user);
-            $cfObj->Load('_pm_PluginName');
-            $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $PluginTicket->{_mp_PluginName});
-            $cfObj->Load('_pm_OnDate');
-            $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => getTimestamp());
-            $cfObj->Load('_pm_PluginStatus');
-            $ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => 1);
+			my $user = RT::User->new($CurrentUser);
+			$user->Load('root');
+			my $ticketObj = RT::Ticket->new($user); # empty ticket object
+			$ticketObj->Load($PluginTicket->{id});
+			$ticketObj->Comment(Content => $PluginTicket->{_mp_PluginName});
+			my $cfObj = RT::CustomField->new($user);
+			$cfObj->Load('_pm_PluginName');
+			$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $PluginTicket->{_mp_PluginName});
+			$cfObj->Load('_pm_OnDate');
+			$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => getTimestamp());
+			$cfObj->Load('_pm_PluginStatus');
+			$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => 1);
+
+			my $cfObj = RT::CustomField->new($CurrentUser);
+			$cfObj->Load('_mp_ImmidiateInstall');
+			my $values = $ticketObj->CustomFieldValues($cfObj->id);
+			while(my $value = $values->Next){
+				my ($transactionID, $msg) =  $ticketObj->DeleteCustomFieldValue(Field => $cfObj, ValueId =>  $value->id);
+			}
 ##
 # Change the ticket status 
 ## 
-            WriteMessageAndCloseTicket($CurrentUser, $PluginTicket->{id}, "$PluginTicket->{_mp_PluginName} installed.");
+			WriteMessageAndCloseTicket($CurrentUser, $PluginTicket->{id}, "$PluginTicket->{_mp_PluginName} installed.");
 
-            $isSomeReasonToRestartApache += 1;
-        }
+			$isSomeReasonToRestartApache += 1;
+		}
 ##
 # If exists initaldata fine -- import it
 ##
-        if (-e -r -T "$RT::LocalPluginPath/$PluginTicket->{_mp_PluginName}/etc/initialdata") {
-            my $comm = "$RT::SbinPath/rt-setup-database --action insert --datafile $RT::LocalPluginPath/$PluginTicket->{_mp_PluginName}/etc/initialdata --dba '$RT::DatabaseUser' --dba-password '$RT::DatabasePassword'";
-            my $res  = `$comm`;
-            WriteMessageToTicket($CurrentUser, $PluginTicket->{id}, "$res\n");
-        }
-
-    }
+		if (-e -r -T "$RT::LocalPluginPath/$PluginTicket->{_mp_PluginName}/etc/initialdata") {
+			my $comm = "$RT::SbinPath/rt-setup-database --action insert --datafile $RT::LocalPluginPath/$PluginTicket->{_mp_PluginName}/etc/initialdata --dba '$RT::DatabaseUser' --dba-password '$RT::DatabasePassword'";
+			my $res  = `$comm`;
+			WriteMessageToTicket($CurrentUser, $PluginTicket->{id}, "$res\n");
+		}
+	}
 }
 
 ##
 #  If there were some installations, then we gonna restart apache web server.
 ##
 if ( $isSomeReasonToRestartApache > 0 ) {
-    print "Now we gonna restart your Apache\n";
-    my $path = $RT::LocalPluginPath;
-    my $comm = "$path/RT-Extension-Pluginmanager/bin/rt-restart-apache.sh";
-    my $res  = `$comm`;
-    print "CLI: $comm\nRESULT: $res\n" ;
+	print "Now we gonna restart your Apache\n";
+	my $path = $RT::LocalPluginPath;
+	my $comm = "$path/RT-Extension-Pluginmanager/bin/rt-restart-apache.sh";
+	my $res  = `$comm`;
+	print "CLI: $comm\nRESULT: $res\n" ;
 } else {
-    print "Nothing to do.\n";
+	print "Nothing to do.\n";
 }
 
 1;

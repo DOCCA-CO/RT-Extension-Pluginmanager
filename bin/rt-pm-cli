@@ -41,26 +41,26 @@ sub ReloadTicketSet {
 	$foo->Prepare();
 	while ( my $ticket = $tickets->Next() ) {
 	# Do something with each ticket we've found
-	my $QueueObj = $ticket->QueueObj;
-	my $queue_cfs = $queue->TicketCustomFields;
-	$queue_cfs->LimitToQueue($queue->Id);
-	my %cf;
-	while (my $queue_cf=$queue_cfs->Next()) {
-		$cf{$queue_cf->Name} = $ticket->FirstCustomFieldValue($queue_cf->Name);
-	}
-
-	push @PMQueueTickets, {
-		id=>$ticket->Id, 
-		subject=>$ticket->Subject,
-		_pm_OffDate => $cf{'_pm_OffDate'} || "",
-		_pm_OnDate => $cf{'_pm_OnDate'} || "",
-		_pm_PlannedOffDate => $cf{'_pm_PlannedOffDate'} || "",
-		_pm_PlannedOnDate => $cf{'_pm_PlannedOnDate'} || "",
-		_pm_PluginName => $cf{'_pm_PluginName'} || "",
-		_pm_PluginStatus => $cf{'_pm_PluginStatus'} || 0,
-		_pm_Config => $cf{'_pm_Config'} || "",
-		_pm_ConfigChanged => $cf{'_pm_ConfigChanged'} || 0,
-	}
+		my $QueueObj = $ticket->QueueObj;
+		my $queue_cfs = $queue->TicketCustomFields;
+		$queue_cfs->LimitToQueue($queue->Id);
+		my %cf;
+		while (my $queue_cf=$queue_cfs->Next()) {
+			$cf{$queue_cf->Name} = $ticket->FirstCustomFieldValue($queue_cf->Name);
+		}
+		push @PMQueueTickets, {
+			id=>$ticket->Id, 
+			subject=>$ticket->Subject,
+			_pm_OffDate => $cf{'_pm_OffDate'} || "",
+			_pm_OnDate => $cf{'_pm_OnDate'} || "",
+			_pm_PlannedOffDate => $cf{'_pm_PlannedOffDate'} || "",
+			_pm_PlannedOnDate => $cf{'_pm_PlannedOnDate'} || "",
+			_pm_PluginName => $cf{'_pm_PluginName'} || "",
+			_pm_PluginStatus => $cf{'_pm_PluginStatus'} || 0,
+			_pm_Config => $cf{'_pm_Config'} || "",
+			_pm_ConfigChanged => $cf{'_pm_ConfigChanged'} || 0,
+			_pm_ImmidiateApply => $cf{'_pm_ImmidiateApply'} || 0,
+		}
 	}
 	return @PMQueueTickets;
 }
@@ -90,7 +90,7 @@ foreach my $PluginTicket (@PMQueueTickets) {
 		if ($PluginTicket->{_pm_PlannedOffDate} ne "") {
 			print "\t*A: Off = $PluginTicket->{_pm_PlannedOffDate}\n";
 			my ($_year,$_mon,$_mday,$_hour,$_min,$_sec) = split(/[\s-:]+/, $PluginTicket->{_pm_PlannedOffDate});
-			if ( ($year == $_year) && ($mon==$_mon) && ($mday==$_mday) && ($hour==$_hour) && ( ($_min >= $min)  &&  ($_min <= $min+2) ) ) {
+			if ( (($year == $_year) && ($mon==$_mon) && ($mday==$_mday) && ($hour==$_hour) && ( ($_min >= $min)  &&  ($_min <= $min+2) )) || ($PluginTicket->{_pm_ImmidiateApply} eq '1') ) {
 				if (!rename ($config_name, $cfg_name_off)) {
 					my $err = RT::Ticket->new($user);
 					$err->Load($PluginTicket->{id});
@@ -127,7 +127,7 @@ foreach my $PluginTicket (@PMQueueTickets) {
 		if ($PluginTicket->{_pm_PlannedOnDate} ne "") {
 			print "\t*A: On  = $PluginTicket->{_pm_PlannedOnDate}\n";
 			my ($_year,$_mon,$_mday,$_hour,$_min,$_sec) = split(/[\s-:]+/, $PluginTicket->{_pm_PlannedOnDate});
-			if ( ($year == $_year) && ($mon==$_mon) && ($mday==$_mday) && ($hour==$_hour) && ($hour==$_hour) && ( ($_min >= $min)  &&  ($_min <= $min+2) ) ) {
+			if ( (($year == $_year) && ($mon==$_mon) && ($mday==$_mday) && ($hour==$_hour) && ($hour==$_hour) && ( ($_min >= $min)  &&  ($_min <= $min+2) )) || ($PluginTicket->{_pm_ImmidiateApply} eq '1') ) {
 				if (!rename($cfg_name_off, $config_name)) {
 					my $err = RT::Ticket->new($user);
 					$err->Load($PluginTicket->{id});
@@ -135,6 +135,11 @@ foreach my $PluginTicket (@PMQueueTickets) {
 					my $cfObj = RT::CustomField->new($user);
 					$cfObj->Load('_pm_PlannedOnDate');
 					my $values = $err->CustomFieldValues($cfObj->id);
+					while(my $value = $values->Next){
+						my ($transactionID, $msg) =  $err->DeleteCustomFieldValue(Field => $cfObj, ValueId =>  $value->id);
+					}
+					$cfObj->Load('_pm_ImmidiateApply');
+					$values = $err->CustomFieldValues($cfObj->id);
 					while(my $value = $values->Next){
 						my ($transactionID, $msg) =  $err->DeleteCustomFieldValue(Field => $cfObj, ValueId =>  $value->id);
 					}
@@ -147,6 +152,11 @@ foreach my $PluginTicket (@PMQueueTickets) {
 					my $cfObj = RT::CustomField->new($user);
 					$cfObj->Load('_pm_PlannedOnDate');
 					my $values = $ok->CustomFieldValues($cfObj->id);
+					while(my $value = $values->Next){
+						my ($transactionID, $msg) =  $ok->DeleteCustomFieldValue(Field => $cfObj, ValueId =>  $value->id);
+					}
+					$cfObj->Load('_pm_ImmidiateApply');
+					$values = $ok->CustomFieldValues($cfObj->id);
 					while(my $value = $values->Next){
 						my ($transactionID, $msg) =  $ok->DeleteCustomFieldValue(Field => $cfObj, ValueId =>  $value->id);
 					}
