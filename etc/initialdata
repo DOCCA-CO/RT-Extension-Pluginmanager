@@ -124,4 +124,30 @@ push @CustomFields, {
 	ApplyTo => [ qw / _Pluginmanager  /  ] ,
 };
 
+push @CustomFields, {
+	MaxValues => '1',
+	Disabled => '0',
+	EntryHint => 'Szabad értékmegadás (egy)',
+	LookupType => 'RT::Queue-RT::Ticket',
+	Pattern => '',
+	Name => '_pm_ImmidiateApply',
+	Description => '',
+	UniqueValues => '0',
+	Type => 'Freeform',
+	ApplyTo => [ '_Pluginmanager' ] ,
+};
+
+push @CustomFields, {
+	MaxValues => '1',
+	Disabled => '0',
+	EntryHint => 'Szabad értékmegadás (egy)',
+	LookupType => 'RT::Queue-RT::Ticket',
+	Name => '_mp_ImmidiateInstall',
+	UniqueValues => '0',
+	Description => '',
+	Pattern => '',
+	Type => 'Freeform',
+	ApplyTo => [ '_Pluginmanager' ] ,
+};
+
 1;
