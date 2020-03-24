@@ -451,7 +451,7 @@ if ( $MarketAction ) {
 						}
 					}
 					$cfObj->Load('_pm_ConfigChanged');
-					$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => '1');
+					$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => '0');
 					push @results, loc('Ticket: #[_1] [_2]', $ticketObj->EffectiveId, $nm);
 				} else {
 					push @results, loc('Oops, something went wrong: [_1]', $msg);
@@ -499,7 +499,7 @@ if ( $MarketAction ) {
 					}
 				}
 				$cfObj->Load('_pm_ConfigChanged');
-				$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => '1');
+				$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => '0');
 				push @results, loc('Ticket: #[_1] [_2]', $ticketObj->EffectiveId, $nm);
 			} else {
 				push @results, loc('Oops, something went wrong: [_1]', $msg);

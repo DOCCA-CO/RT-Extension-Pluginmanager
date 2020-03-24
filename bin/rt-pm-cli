@@ -80,6 +80,14 @@ $mon+=1;
 
 my $isSomeReasonToRestartApache = 0;
 
+unless(-e "/tmp/pm.lock") {
+	#Create the file if it doesn't exist
+	overwrite_file("/tmp/pm.lock", "\@$year-$mon-$mday $hour:$min:$sec - Manager work");
+} else {
+	die("Some other process is already running");
+}
+
+
 foreach my $PluginTicket (@PMQueueTickets) {
 	my $user = RT::User->new($CurrentUser);
 	$user->Load('root');
@@ -206,6 +214,8 @@ if ( $isSomeReasonToRestartApache > 0 ) {
 } else {
 	print "Nothing to do.\n";
 }
+
+unlink('/tmp/pm.lock') or die "Could not delete the .lock file!\n";
 
 1;
 
