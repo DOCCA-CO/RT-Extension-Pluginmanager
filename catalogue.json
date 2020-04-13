@@ -54,7 +54,7 @@
 			"version": "0.1",
 			"contributor": "DOCCA OutSource IT Kft.",
 			"learnmore": "https://servicedesk-marketplace.com/",
-			"description": "This is a test plug-in for market testing",
+			"description": "With this plugin you can easily create a child ticket of your main ticket.",
 			"link": "https://servicedesk-marketplace.com/downloads/RT-Extension-QuickChild.tar.gz",
 			"screenshot":"https://dummyimage.com/480x200/368/fff.jpg&text=No+screenshot",
 			"config": "Set( $QuickChildPrefix, '' );\nSet( @QuickChildCFs, () );\nSet( $QuickChildRedirect, 1 );\n1;"
@@ -142,11 +142,21 @@
 			"config": "Set (@RO, ('SeeQueue', 'ShowTicket', 'SeeCustomField', 'ShowOutgoingEmail', 'ShowTicketComments') );\nSet (@RW, ('CommentOnTicket', 'Watch', 'SeeQueue', 'ShowTicket', 'SeeCustomField', 'ReplyToTicket', 'CreateTicket', 'SetInitialCustomField', 'ModifyCustomField', 'WatchAsAdminCc', 'ShowOutgoingEmail', 'ShowTicketComments', 'ReassignTicket', 'ModifyTicket', 'OwnTicket', 'StealTicket', 'TakeTicket') );\n1;"
 		},
 		{
+			"name": "CollapsibleLists",
+			"version": "0.1.8",
+			"contributor": "DOCCA OutSource IT Kft.",
+			"learnmore": "https://servicedesk-marketplace.com/",
+			"description": "Browse your your queues as a tree-like structure. Please use this plugin or QueueBrowser.",
+			"link": "https://servicedesk-marketplace.com/downloads/RT-Extension-CollapsibleLists.tar.gz",
+			"screenshot":"https://servicedesk-marketplace.com/wp-content/uploads/2020/04/Screenshot-2020-04-07-172112.png",
+			"config": "Set($qbParentCfId, \"Q-ParentQueue\");\nSet($qbDescCfId, 13);\n1;"
+		},
+		{
 			"name": "QueueBrowser",
 			"version": "0.1.8",
 			"contributor": "DOCCA OutSource IT Kft.",
 			"learnmore": "https://servicedesk-marketplace.com/",
-			"description": "Browse your tickets with a look and feel as a mail client.",
+			"description": "Browse your tickets with a look and feel as a mail client. Please use this plugin or CollapsibleLists.",
 			"link": "https://servicedesk-marketplace.com/downloads/RT-Extension-QueueBrowser.tar.gz",
 			"screenshot":"https://servicedesk-marketplace.com/wp-content/uploads/2020/04/Screenshot-2020-04-07-165910.png",
 			"config": "Set($qbParentCfId, \"Q-ParentQueue\");\nSet($qbDescCfId, 13);\n1;"
