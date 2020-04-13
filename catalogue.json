@@ -18,7 +18,6 @@
 			"description": "A mobile view for Request Tracker.",
 			"link": "https://servicedesk-marketplace.com/downloads/RT-Extension-Mobile.tar.gz",
 			"screenshot":"https://servicedesk-marketplace.com/wp-content/uploads/2020/04/Screenshot_20200406_172354_com.android.chrome.jpg",
-			"config": "### This is a test config file\n Set( %hash, ( 'first' => 1,'secont' => 2,'third' => 3,'fourth' => 4,'fifth' => 5 ) );\nSet( $variable_1, 1 );\nSet( $variable_2, 2 );\n1;"
 		},
 		{
 			"name": "AttachmentsColored",
