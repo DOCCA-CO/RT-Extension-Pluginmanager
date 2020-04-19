@@ -1,5 +1,5 @@
 {
-	"plugin": [
+	"data": [
 		{
 			"name": "Jse",
 			"key": "",

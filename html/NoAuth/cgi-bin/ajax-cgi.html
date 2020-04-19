@@ -1,0 +1,105 @@
+<%init>
+use strict;
+use utf8;
+use warnings;
+
+use lib "/opt/rt4/lib";
+use lib "/opt/rt4/local/lib";
+
+use RT;
+
+RT::LoadConfig();
+RT::Init();
+
+use XML::Simple;
+use LWP::Simple;
+
+use File::Slurp qw(write_file);
+use File::Basename qw ( basename fileparse );
+use Time::Local;
+
+use RT::Queue;
+use RT::Ticket;
+use RT::CustomField;
+
+use JSON;
+use POSIX qw(strftime);
+use Time::Local;
+
+use Data::Dumper;
+
+my $json;
+
+{
+  local $/; #Enable 'slurp' mode
+  open my $fh, "<", "/tmp/catalogue.json";
+  $json = <$fh>;
+  close $fh;
+}
+
+my $CurrentUser = $RT::SystemUser;
+my $ref = from_json($json);
+my @catalogue = @{ $ref->{'plugin'} };
+
+my ($val, $msg) = CreateTicket($CurrentUser, $remoteKey, @catalogue); 
+
+$r->content_type('application/json');
+
+my %output;
+$output{val} = $val;
+$output{msg} = $msg;
+
+$m->out( to_json( \%output, {utf8 => 1, pretty => 1} ) );
+$m->abort();
+
+sub CreateTicket {
+	my ($CurrentUser, $PluginName, @cat) = @_;
+	my $Queue = "_Pluginmanager";
+	my $ticketObj = RT::Ticket->new($CurrentUser); # empty ticket object
+
+	my ($item) = grep {
+		$_->{name} eq $PluginName
+	} @cat;
+
+	my $pl = $item->{link};
+	my $nm = '';
+	if (index($pl, 'cpanm') >= 0) {
+		## In case of cpanm
+		($nm = $pl) =~ s/^.{6}//s;
+		$nm =~ s/::/-/ig;
+	} else {
+		## In case of zip, tar.gz
+		($nm = $pl) =~ s/^.*\///;
+		$nm = substr $nm, 0, index( $nm, q{.} ) ;##  =~ s/\.[^.]+$//;
+	}
+	my %args = (
+		Queue => $Queue,
+		Requestor => 'nobody',
+		Subject => $nm,
+		Priority => 10,
+		InitialPriority => 0,
+	);
+
+	my ($val, $msg) = $ticketObj->Create(%args);
+
+	if ($val) {
+		$ticketObj->SetStatus('stalled');
+		$ticketObj->Comment(Content => $nm);
+		my $cfObj = RT::CustomField->new($CurrentUser);
+		$cfObj->Load('_mp_PluginName');
+		$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $nm);
+
+		$cfObj->Load('_mp_LinkToDownload');
+		$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $pl);
+		$cfObj->Load('_pm_Config');
+		$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $item->{config});
+		$cfObj->Load('_pm_ConfigChanged');
+		$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => '1');
+	}
+	return ($val, $msg);
+}
+</%init>
+<%args>
+$remoteAction => undef
+$remoteKey => undef
+</%args>

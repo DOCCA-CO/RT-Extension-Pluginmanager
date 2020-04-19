@@ -30,7 +30,7 @@
 <td></td>
 <td>
 % if($element->{link}) {
-<input type="checkbox" name="plugin" value="<%$element->{link}%>" />
+<input type="checkbox" name="plugin" value="<%$element->{link}%>" <% ($element->{name} eq $remoteKey)?"checked='checked'":"" %>/>
 % } 
 </td>
 % print "<td class='pluginame ";
@@ -49,7 +49,7 @@
 
 % if ( $AdminGroup->HasMemberRecursively($session{'CurrentUser'}->PrincipalObj) ) {
 <fieldset style="margin:10px 0 10px 0;">
-	<legend><label><input type="checkbox" name="MarketAction" value="1" />&nbsp;Download and Install</label></legend>
+	<legend><label><input type="checkbox" name="MarketAction" value="1" <% ($remoteAction eq 'install')?"checked=checked":"" %> />&nbsp;Download and Install</label></legend>
 	<p>
 		<input type="radio" name="install" value="1" id="instnow" />
 		<label for="instnow">Install immediately</label>
@@ -153,6 +153,7 @@
 % if ( $AdminGroup->HasMemberRecursively($session{'CurrentUser'}->PrincipalObj) ) {
 		<button id="conig_cancel" name="conig_cancel" value="1" type="reset" style="float:right;"><&|/l&>Cancel</&></button>
 		<button id="conig_submit" name="conig_submit" value="1" type="submit" style="float:right;"><&|/l&>Save</&></button>
+		<div id="plugin-name" style="float:left; line-height:32px; padding-left: 24px; color: #600; font-weight: bolder; font-size: 14px;"></div>
 		<label style="float:right; line-height:32px; padding-right: 24px;">
 			<input type="checkbox" id="conig_save" name="conig_save" value="1">
 			<&|/l&>Are you sure you want to edit the configuration</&>
@@ -172,7 +173,7 @@
 function loadConfig(id) {
 	var arr1 = PluginTickets.filter(d => d.id == id);
 	jQuery('#conf_pm').val(arr1[0]._pm_Config);
-	jQuery('#conf_id').val(id);
+	jQuery('#plugin-name').text(arr1[0]._pm_PluginName);
 	return true;
 }
 
@@ -552,4 +553,6 @@ $Reload => undef
 $ManagerAction => undef
 $ConfigAction => undef
 $MarketAction => undef
+$remoteAction => undef
+$remoteKey => undef
 </%ARGS>

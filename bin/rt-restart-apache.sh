@@ -8,5 +8,4 @@ sleep 1
 ps auxww|grep apache2
 rm -rf /opt/rt4/var/mason_data/obj/*
 service apache2 start
-tail -f /var/log/syslog
 exit 0
