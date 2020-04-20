@@ -1,21 +1,25 @@
-<%init>
-use strict;
-use utf8;
-use warnings;
+#!/usr/bin/perl
 
+##use strict;
 use lib "/opt/rt4/lib";
 use lib "/opt/rt4/local/lib";
 
 use RT;
+use RT::Interface::CLI qw(CleanEnv GetCurrentUser);
 
+#CleanEnv();
 RT::LoadConfig();
 RT::Init();
 
+use RT::Search::FromSQL;
 use XML::Simple;
 use LWP::Simple;
 
-use File::Slurp qw(write_file);
-use File::Basename qw ( basename fileparse );
+## use File::Path;
+use File::Slurp qw( read_dir overwrite_file );
+use File::Spec::Functions qw( catfile );
+use File::Basename qw ( basename );
+use POSIX qw(strftime);
 use Time::Local;
 
 use RT::Queue;
@@ -23,12 +27,13 @@ use RT::Ticket;
 use RT::CustomField;
 
 use JSON;
-use POSIX qw(strftime);
-use Time::Local;
-
-use Data::Dumper;
 
 my $json;
+
+my ($remoteKey, $remoteAction) = @ARGV;
+unless ($remoteKey) {
+	die "Usage: $0 PluginName\n";
+}
 
 {
 	local $/; #Enable 'slurp' mode
@@ -98,8 +103,3 @@ sub CreateTicket {
 	}
 	return ($val, $msg);
 }
-</%init>
-<%args>
-$remoteAction => undef
-$remoteKey => undef
-</%args>
