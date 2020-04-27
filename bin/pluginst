@@ -48,14 +48,11 @@ my @catalogue = @{ $ref->{'plugin'} };
 
 my ($val, $msg) = CreateTicket($CurrentUser, $remoteKey, @catalogue); 
 
-$r->content_type('application/json');
-
-my %output;
-$output{val} = $val;
-$output{msg} = $msg;
-
-$m->out( to_json( \%output, {utf8 => 1, pretty => 1} ) );
-$m->abort();
+if ($val == 0) {
+	print "$msg\n";
+} else {
+	print "The \'$remoteKey\' plugin is put in queue for installation.";
+}
 
 sub CreateTicket {
 	my ($CurrentUser, $PluginName, @cat) = @_;
@@ -63,8 +60,10 @@ sub CreateTicket {
 	my $ticketObj = RT::Ticket->new($CurrentUser); # empty ticket object
 
 	my ($item) = grep {
-		$_->{name} eq $PluginName
+		lc($_->{name}) eq lc($PluginName)
 	} @cat;
+
+	return (0, 'No plugin found') unless ($item);
 
 	my $pl = $item->{link};
 	my $nm = '';
