@@ -224,7 +224,7 @@ jQuery(function ($) {
 
 </script>
 <!-- // PALACSINTA //
-% print Dumper(\@catalogue);
+%# print Dumper(\@catalogue);
 //-->
 
 <%INIT>
@@ -413,9 +413,10 @@ if ( $MarketAction ) {
 			foreach my $pl (@{$ARGS{plugin}}) {
 				my $ticketObj = RT::Ticket->new($current_user); # empty ticket object
 				my $nm = '';
-				if (index($pl, 'cpanm') >= 0) {
+				if (index($pl, '/pod/') >= 0) {
 				## In case of cpanm
-					($nm = $pl) =~ s/^.{6}//s;
+					my $idx = index($pl, '/pod/') + 5;
+					$nm = substr $pl, $idx;
 					$nm =~ s/::/-/ig;
 				} else {
 				## In case of zip, tar.gz
@@ -462,9 +463,10 @@ if ( $MarketAction ) {
 			my $ticketObj = RT::Ticket->new($current_user); # empty ticket object
 			my $nm = '';
 			($nm = $ARGS{plugin}) =~ s/^.*\///;
-			if (index($nm, 'cpanm') >= 0) {
+			if (index($nm, '/pod/') >= 0) {
 			## In case of cpanm
-				$nm =~ s/^.{6}//s;
+				my $idx = index($nm, '/pod/') + 5;
+				$nm = substr $nm, $idx;
 				$nm =~ s/::/-/ig;
 			} else {
 			## In case of zip, tar.gz

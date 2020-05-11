@@ -63,9 +63,10 @@ sub CreateTicket {
 
 	my $pl = $item->{link};
 	my $nm = '';
-	if (index($pl, 'cpanm') >= 0) {
+	if (index($pl, '/pod/') >= 0) {
 		## In case of cpanm
-		($nm = $pl) =~ s/^.{6}//s;
+		my $idx = index($pl, '/pod/') + 5;
+		$nm = substr $pl, $idx;
 		$nm =~ s/::/-/ig;
 	} else {
 		## In case of zip, tar.gz
@@ -94,6 +95,8 @@ sub CreateTicket {
 		$cfObj->Load('_pm_Config');
 		$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => $item->{config});
 		$cfObj->Load('_pm_ConfigChanged');
+		$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => '1');
+		$cfObj->Load('_mp_ImmidiateInstall');
 		$ticketObj->AddCustomFieldValue(Field => $cfObj->Id, Value => '1');
 	}
 	return ($val, $msg);

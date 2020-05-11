@@ -39,8 +39,8 @@
 
 		<script type="text/javascript" language="javascript">
 
-var rt = "http://doc-llt-21890:8080";
-var mp = "/Tools/Market.html";
+var rt = "http://doc-llt-21890:8080"; //RT instance
+var mp = "/Tools/Market.html"; //IMPORTANT, this is a constant value.
 
 $(document).ready(function() {
 	$('#catalogue')
@@ -50,7 +50,7 @@ $(document).ready(function() {
 			columnDefs: [
 				{ "width": "20%", "targets": 5 }
 			],
-			ajax: "catalogue.txt",
+			ajax: "catalogue.json",
 				columns: [
 					{ "data": "name" },
 					{ "data": "version" },
