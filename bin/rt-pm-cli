@@ -208,7 +208,7 @@ foreach my $PluginTicket (@PMQueueTickets) {
 if ( $isSomeReasonToRestartApache > 0 ) {
 	print "Now we gonna restart your Apache\n";
 	my $path = $RT::LocalPluginPath;
-	my $comm = "$path/RT-Extension-Pluginmanager/bin/rt-restart-apache.sh";
+	my $comm = "$path/RT-Extension-Pluginmanager/bin/rt-restart";
 	my $res  = `$comm`;
 	print "CLI: $comm\nRESULT: $res\n" ;
 } else {
