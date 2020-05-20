@@ -252,11 +252,11 @@ my @installed = RT->Config->GetObfuscated( 'Plugins', $RT::SystemUser );
 my $AdminGroup = RT::Group->new($session{'CurrentUser'});
 $AdminGroup->Load(RT->Config->Get('AdminGroupId'));
 
-$url = 'https://servicedesk-marketplace.com/downloads/';
+$url = 'https://servicedesk-marketplace.com/ext/export.php';
 $file = 'catalogue.json';
 
 if ( ($Reload==1) or (not -e -r -T "/tmp/$file") ) {
-	my $rc = getstore($url.$file, "/tmp/$file");
+	my $rc = getstore($url, "/tmp/$file");
 	if (is_error($rc)) {
 		die "cannot get $file from <$url> failed with $rc";
 	}
