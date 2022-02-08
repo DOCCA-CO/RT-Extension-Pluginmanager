@@ -4,6 +4,8 @@
 RT-Extension-Pluginmanager is a RT plugin for managing - activate/deactivate plugins.
 Also it will have a marketlace function. It means, you can download and install plugins from "maketplace"
 
+RT v5.0 support
+
 ## Features
 
 - [x] Activate/deactivate installed plugins
