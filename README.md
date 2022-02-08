@@ -27,7 +27,7 @@ You will need to create a **Queue**: *_Pluginmanager*. Also you will need some *
 - _mp_PluginName, _mp_RestartDate, _mp_LinkToDownload
 - _pm_OffDate, _pm_OnDate, _pm_PlannedOffDate, _pm_PlannedOnDate, _pm_PluginName,  _pm_PluginStatus
 
-All data placed to initial data file in `/opt/rt4/local/plugins/RT-Extension-Pluginmanager/etc/initialdata`
+All data placed to initial data file in `/opt/rt5/local/plugins/RT-Extension-Pluginmanager/etc/initialdata`
 
 You just need to import it :) 
 
@@ -37,8 +37,8 @@ Note: you cannot manage plugins, if config files for activation are not in `/opt
 
 Also you will need to configure some tasks in cron
 ```crontab
-*/2 * * * * /opt/rt4/local/plugins/RT-Extension-Pluginmanager/bin/rt-pm-cli
-*/11 * * * * /opt/rt4/local/plugins/RT-Extension-Pluginmanager/bin/rt-marketplace
+*/2 * * * * /opt/rt5/local/plugins/RT-Extension-Pluginmanager/bin/rt-pm-cli
+*/11 * * * * /opt/rt5/local/plugins/RT-Extension-Pluginmanager/bin/rt-marketplace
 ```
 
 ## Warnings
